@@ -1,2 +1,3 @@
 #!/bin/sh 
-ruby dgate.rb $*
+CURDIR=`dirname $0`
+ruby $CURDIR/dgate.rb $*
