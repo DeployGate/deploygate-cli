@@ -5,7 +5,9 @@ require 'httpclient'
 require "readline"
 require 'pp'
 
+#API_BASE_URL = "http://stg.deploygate.com"
 API_BASE_URL = "http://localhost:3000"
+#API_BASE_URL = "http://picora.us:8080"
 SETTING_FILE = ENV["HOME"] + "/.dgate"
 $settings = {
   'name' => "",
@@ -87,6 +89,7 @@ def do_check_session
   if check_res.nil?
     print "Your session was expired or invalid.\n"
     exit unless  do_create_session
+    check_res = get_request('/api/sessions/user',{})
   end
   $settings['name'] = check_res['name']
   return true
