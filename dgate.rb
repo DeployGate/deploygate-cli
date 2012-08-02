@@ -2,7 +2,6 @@
 require 'net/http'
 require 'json'
 require 'httpclient'
-require "readline"
 require 'pp'
 
 #API_BASE_URL = "http://stg.deploygate.com"
