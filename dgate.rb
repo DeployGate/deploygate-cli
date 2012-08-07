@@ -4,8 +4,8 @@ require 'json'
 require 'httpclient'
 require 'pp'
 
-API_BASE_URL = "http://stg.deploygate.com"
-#API_BASE_URL = "http://localhost:3000"
+#API_BASE_URL = "http://stg.deploygate.com"
+API_BASE_URL = "http://localhost:3000"
 #API_BASE_URL = "http://picora.us:8080"
 SETTING_FILE = ENV["HOME"] + "/.dgate"
 $settings = {
