@@ -1,11 +1,12 @@
 #!/usr/bin/ruby 
+require 'optparse'
 require 'net/http'
 require 'json'
 require 'httpclient'
 require 'pp'
 
-API_BASE_URL = "https://stg.deploygate.com"
-#API_BASE_URL = "http://localhost:3000"
+#API_BASE_URL = "https://stg.deploygate.com"
+API_BASE_URL = "http://localhost:3000"
 #API_BASE_URL = "http://picora.us:8080"
 SETTING_FILE = ENV["HOME"] + "/.dgate"
 $settings = {
@@ -97,6 +98,7 @@ def do_check_session
 end
 
 def do_push_file
+  message = $message || ''
   file_path = nil
   target_user = nil
   if ARGV[2].nil?
@@ -114,7 +116,7 @@ def do_push_file
   open(file_path) do |file|
     push_res = post_request(
         sprintf("/api/users/%s/apps",target_user),
-        { :file => file }
+        { :file => file , :message => message}
         )
   end
   if push_res.nil?
@@ -146,7 +148,29 @@ def do_push_file
   print "Revision :\t" + push_res['revision'].to_s + "\n"
   print "URL :\t\t" + web_url
   print "\n\n"
-  system "open " + web_url
+  if(!$open_with_browser.nil? || push_res['revision'] == 1)
+    system "open " + web_url
+  end
+end
+
+def do_help_show
+  print "help===========\n"
+  exit
+end
+
+### options
+OptionParser.new do |option|
+  Version = "0.0.1"
+  option.on('-m [ PUSH MESSAGE ]','push message'){ |message| $message = message }
+  option.on('-h','--help','show this message'){ do_help_show }
+  option.on('-o','--open','open with browser (Mac OS only)'){ $open_with_browser = true }
+  begin
+    option.parse!
+  rescue
+    print "Invalid option.\n";
+    do_help_show
+    exit
+  end
 end
 
 #### main
