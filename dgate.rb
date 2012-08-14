@@ -1,5 +1,6 @@
 #!/usr/bin/ruby 
 require 'optparse'
+require 'optparse/shellwords'
 require 'net/http'
 require 'json'
 require 'httpclient'
@@ -62,12 +63,11 @@ def do_load_settings
 end
 
 def do_create_session
+  $stdout.sync = true
   print "Email: "
-  STDOUT.flush
   email = $stdin.gets.chop
   system "stty -echo"
   print "Password: "
-  STDOUT.flush
   password = $stdin.gets.chop
   print "\n"
   system "stty echo"
@@ -153,23 +153,24 @@ def do_push_file
   end
 end
 
-def do_help_show
-  print "help===========\n"
-  exit
-end
-
 ### options
-OptionParser.new do |option|
+parser = OptionParser.new do |option|
   Version = "0.0.1"
-  option.on('-m [ PUSH MESSAGE ]','push message'){ |message| $message = message }
-  option.on('-h','--help','show this message'){ do_help_show }
-  option.on('-o','--open','open with browser (Mac OS only)'){ $open_with_browser = true }
+  option.banner = "Usage: dgate [<options>] <subcommand> [<args>]"
+  option.separator("")
+  option.separator("Subcommand: push, logout")
+  option.separator("")
+  option.separator("Options:")
+
+  option.on('-m', '--message=MESSAGE', '(push) optional message of this push') { |message| $message = message }
+  option.on('-o', '--[no-]open', TrueClass, '(push) open with browser (Mac OS only)') { $open_with_browser = true }
+
   begin
     option.parse!
-  rescue
-    print "Invalid option.\n";
-    do_help_show
-    exit
+  rescue => err
+    $stderr.puts err
+    $stderr.puts option
+    exit 1
   end
 end
 
@@ -178,7 +179,8 @@ do_load_settings
 command = ARGV[0]
 
 if command.nil?
-  print "Please set dgate command.\n"
+  $stderr.puts "Please set dgate command."
+  $stderr.puts parser
   exit
 end
 
