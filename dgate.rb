@@ -27,7 +27,9 @@ def post_request(path,params)
   res = client.post(url,params,extheaders)
   return nil unless res.status_code == 200
   res_object = JSON.parse(res.body)
-  return nil if res_object['error'] == true
+  if res_object['error'] == true
+    raise res_object['because'] || "error"
+  end
   return res_object['results']
 end
 
@@ -39,7 +41,7 @@ def get_request(path,params)
   unless api_token.nil?
     extheaders.push(['AUTHORIZATION',api_token])
   end
-#params = {'token' => api_token}
+  #params = {'token' => api_token}
   res = client.get(url,params,extheaders)
   return nil unless res.status_code == 200
   res_object = JSON.parse(res.body)
@@ -71,14 +73,16 @@ def do_create_session
   password = $stdin.gets.chop
   print "\n"
   system "stty echo"
-  login_res = post_request(
-    '/api/sessions',{
-      'email' => email, 
-      'password' => password
-    })
-  if login_res.nil?
+  login_res = {};
+  begin
+    login_res = post_request(
+      '/api/sessions',{
+        'email' => email, 
+        'password' => password
+      })
+  rescue => e
     print "Invalid email or password.\n"
-    exit
+    return false
   end
   $settings['token'] = login_res['api_token']
   $settings['name'] = login_res['name']
@@ -114,10 +118,19 @@ def do_push_file
   end
   push_res = nil
   open(file_path) do |file|
-    push_res = post_request(
-        sprintf("/api/users/%s/apps",target_user),
-        { :file => file , :message => message}
-        )
+    begin
+      push_res = post_request(
+          sprintf("/api/users/%s/apps",target_user),
+          { :file => file , :message => message}
+          )
+    rescue => e
+      if e.message == 'file'
+        print "Failed, This file is not app binary.\n"
+      else
+        print "Failed, You reach limit of current plan.\nPlease upgrade DeployGate Plan :)\n"
+      end
+      exit
+    end
   end
   if push_res.nil?
     print "Sorry, push operation was faild.\n"
@@ -127,11 +140,17 @@ def do_push_file
       API_BASE_URL,target_user,push_res['package_name'])
   #if first app, start to share.
   if push_res['revision'] == 1
-    share_res = post_request(
-        sprintf(
-          "/api/users/%s/apps/%s/share",
-          target_user,push_res['package_name']),{}
-        )
+    share_res = nil
+    begin
+      share_res = post_request(
+          sprintf(
+            "/api/users/%s/apps/%s/share",
+            target_user,push_res['package_name']),{}
+          )
+    rescue
+      print "Faild to change permission of your app.\n"
+      exit
+    end
     if !share_res['secret'].nil?
       web_url += sprintf("?key=%s",share_res['secret'])
     end
