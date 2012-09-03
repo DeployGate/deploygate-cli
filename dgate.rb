@@ -13,10 +13,15 @@ $settings = {
   'token' => ""
 }
 
+def new_client
+  client = HTTPClient.new
+  client.ssl_config.set_trust_ca File.join(File.dirname(__FILE__), "startcom-ca.pem")
+  return client
+end
 
 def post_request(path,params)
   url = API_BASE_URL + path
-  client = HTTPClient.new
+  client = new_client
   extheaders = []
   api_token = $settings['token']
   unless api_token.nil?
@@ -33,7 +38,7 @@ end
 
 def get_request(path,params)
   url = API_BASE_URL + path
-  client = HTTPClient.new
+  client = new_client
   extheaders = []
   api_token = $settings['token']
   unless api_token.nil?
