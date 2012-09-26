@@ -15,7 +15,6 @@ $settings = {
 
 def new_client
   client = HTTPClient.new
-  client.ssl_config.set_trust_ca File.join(File.dirname(__FILE__), "startcom-ca.pem")
   return client
 end
 
