@@ -129,9 +129,9 @@ def do_push_file
       if e.message == 'file'
         print "Failed, This file is not app binary.\n"
       elsif e.message == 'permit'
-        print "Failed, You don't have permit to push.\n"
+        print "Failed, You don't have permit to upload.\n"
       elsif e.message == 'blank'
-        print "Failed, This file is blank.\n"
+        print "Failed, Target file is not selected.\n"
       elsif e.message == 'limit'
         print "Failed, You reach limit of current plan.\nPlease upgrade DeployGate Plan :)\n"
       end
