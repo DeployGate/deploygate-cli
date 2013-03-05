@@ -128,7 +128,11 @@ def do_push_file
     rescue => e
       if e.message == 'file'
         print "Failed, This file is not app binary.\n"
-      else
+      elsif e.message == 'permit'
+        print "Failed, Deny to uplaod this file.\n"
+      elsif e.message == 'blank'
+        print "Failed, Invalid e-mail or password.\n"
+      elsif e.message == 'limit'
         print "Failed, You reach limit of current plan.\nPlease upgrade DeployGate Plan :)\n"
       end
       exit
