@@ -123,7 +123,7 @@ def do_push_file
     begin
       push_res = post_request(
           sprintf("/api/users/%s/apps",target_user),
-          { :file => file , :message => message}
+          { :file => file , :message => message, :disable_notify => $disable_notify ? 'yes' : 'no'}
           )
     rescue => e
       if e.message == 'file'
@@ -189,6 +189,7 @@ parser = OptionParser.new do |option|
 
   option.on('-m', '--message=MESSAGE', '(push) optional message of this push') { |message| $message = message }
   option.on('-o', '--[no-]open', TrueClass, '(push) open with browser (Mac OS only)') { $open_with_browser = true }
+  option.on('--disable-notify', FalseClass, '(push) disable notify via email (iOS app only)') { $disable_notify = true }
 
   begin
     option.parse!
