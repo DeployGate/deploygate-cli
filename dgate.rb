@@ -142,10 +142,9 @@ def do_push_file
     print "Sorry, push operation was faild.\n"
     exit
   end
-  web_url =  sprintf("%s/users/%s/apps/%s",
-      API_BASE_URL,target_user,push_res['package_name'])
+  web_url = API_BASE_URL + push_res['path']
   #if first app, start to share.
-  if push_res['revision'] == 1
+  if push_res['revision'] == 1 && push_res['os_name'].downcase == 'android'
     share_res = nil
     begin
       share_res = post_request(
