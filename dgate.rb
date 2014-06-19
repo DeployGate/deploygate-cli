@@ -189,6 +189,20 @@ parser = OptionParser.new do |option|
   option.on('-m', '--message=MESSAGE', '(push) optional message of this push') { |message| $message = message }
   option.on('-o', '--[no-]open', TrueClass, '(push) open with browser (Mac OS only)') { $open_with_browser = true }
 
+  option.separator("")
+  option.separator("Examples:")
+  option.separator("    Push/Update app of your own with message and open it in browser after push")
+  option.separator("    $ dgate -m 'develop build' -o push <app_file_path>")
+  option.separator("")
+  option.separator("    Push/Update app of inviter who invited your as developer")
+  option.separator("    $ dgate push <owner_name> <app_file_path>")
+  option.separator("")
+  option.separator("    Push/Update app of group")
+  option.separator("    $ dgate push <group_name> <app_file_path>")
+  option.separator("")
+  option.separator("    Change account or logout")
+  option.separator("    $ dgate logout")
+
   begin
     option.parse!
   rescue => err
