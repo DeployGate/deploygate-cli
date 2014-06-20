@@ -1,4 +1,4 @@
-#!/usr/bin/ruby 
+#!/usr/bin/ruby
 require 'optparse'
 require 'optparse/shellwords'
 require 'net/http'
@@ -180,9 +180,12 @@ end
 ### options
 parser = OptionParser.new do |option|
   Version = "0.0.1"
-  option.banner = "Usage: dgate [<options>] <subcommand> [<args>]"
   option.separator("")
-  option.separator("Subcommand: push, logout")
+  option.banner = "Usage: dgate <subcommand> [<args>] [<options>]"
+  option.separator("")
+  option.separator("Commands:")
+  option.separator("    push", "Push/Update app")
+  option.separator("    logout", "logout or change account")
   option.separator("")
   option.separator("Options:")
 
@@ -191,14 +194,14 @@ parser = OptionParser.new do |option|
 
   option.separator("")
   option.separator("Examples:")
-  option.separator("    Push/Update app of your own with message and open it in browser after push")
-  option.separator("    $ dgate -m 'develop build' -o push <app_file_path>")
+  option.separator("    Push/Update app to your own")
+  option.separator("    $ dgate push <app_file_path>")
   option.separator("")
-  option.separator("    Push/Update app of inviter who invited your as developer")
+  option.separator("    Push/Update app to inviter who invited your as developer")
   option.separator("    $ dgate push <owner_name> <app_file_path>")
   option.separator("")
-  option.separator("    Push/Update app of group")
-  option.separator("    $ dgate push <group_name> <app_file_path>")
+  option.separator("    Push/Update app to group with message and open it in browser after push")
+  option.separator("    $ dgate push <group_name> <app_file_path> -m 'develop build' -o")
   option.separator("")
   option.separator("    Change account or logout")
   option.separator("    $ dgate logout")
