@@ -1,6 +1,6 @@
-# Dgate
+# dgate
 
-TODO: Write a gem description
+A command-line interface for DeployGate
 
 ## Installation
 
@@ -18,12 +18,8 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Push/Update an application:
 
-## Contributing
+    $ dgate push [package file path]
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+See https://deploygate.com/docs/cli for more information.
