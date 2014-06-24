@@ -184,8 +184,8 @@ parser = OptionParser.new do |option|
   option.banner = "Usage: dgate <subcommand> [<args>] [<options>]"
   option.separator("")
   option.separator("Commands:")
-  option.separator("    push", "Push/Update app")
-  option.separator("    logout", "logout or change account")
+  option.separator("    push      push or update app")
+  option.separator("    logout    logout or change account")
   option.separator("")
   option.separator("Options:")
 
