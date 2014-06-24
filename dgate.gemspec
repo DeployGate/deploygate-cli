@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{You can push or update apps to DeployGate in your terminal.}
   spec.summary       = %q{A command-line interface for DeployGate}
   spec.homepage      = "https://deploygate.com"
-  spec.license       = "MIT"
+  spec.license       = "Apache-2.0"
 
   spec.add_dependency 'json', '1.7.4'
   spec.add_dependency 'httpclient', '2.2.5'
