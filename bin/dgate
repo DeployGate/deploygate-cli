@@ -1,4 +1,6 @@
 #!/usr/bin/ruby
+
+require 'dgate'
 require 'optparse'
 require 'optparse/shellwords'
 require 'net/http'
@@ -179,7 +181,7 @@ end
 
 ### options
 parser = OptionParser.new do |option|
-  Version = "0.0.1"
+  Version = Dgate::VERSION
   option.separator("")
   option.banner = "Usage: dgate <subcommand> [<args>] [<options>]"
   option.separator("")
