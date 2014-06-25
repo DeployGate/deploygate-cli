@@ -13,8 +13,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://deploygate.com"
   spec.license       = "Apache-2.0"
 
-  spec.add_dependency 'json', '1.7.4'
-  spec.add_dependency 'httpclient', '2.2.5'
+  spec.add_dependency 'json', '~> 1.7.4'
+  spec.add_dependency 'httpclient', '~> 2.2.5'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
