@@ -16,7 +16,7 @@ $settings = {
 }
 
 def new_client
-  client = HTTPClient.new
+  client = HTTPClient.new(agent_name: "dgate/#{Dgate::VERSION}")
   return client
 end
 
