@@ -182,7 +182,6 @@ end
 ### options
 parser = OptionParser.new do |option|
   Version = Dgate::VERSION
-  option.separator("")
   option.banner = "Usage: dgate <subcommand> [<args>] [<options>]"
   option.separator("")
   option.separator("Commands:")
