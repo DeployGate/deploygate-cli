@@ -140,6 +140,8 @@ def do_push_file
         print "Failed, Target file is not selected.\n"
       elsif e.message == 'limit'
         print "Failed, You reach limit of current plan.\nPlease upgrade DeployGate Plan :)\n"
+      else
+        puts e.message
       end
       exit
     end
