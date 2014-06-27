@@ -6,7 +6,7 @@ require 'optparse/shellwords'
 require 'net/http'
 require 'json'
 require 'httpclient'
-require 'pp'
+require 'rbconfig'
 
 API_BASE_URL = "https://deploygate.com"
 SETTING_FILE = ENV["HOME"] + "/.dgate"
@@ -51,6 +51,10 @@ def get_request(path,params)
   res_object = JSON.parse(res.body)
   return nil if res_object['error'] == true
   return res_object['results']
+end
+
+def openable?
+  RbConfig::CONFIG['host_os'].include?('darwin')
 end
 
 def do_save_settings
@@ -174,7 +178,7 @@ def do_push_file
   print "Revision :\t" + push_res['revision'].to_s + "\n"
   print "URL :\t\t" + web_url
   print "\n\n"
-  if(!$open_with_browser.nil? || push_res['revision'] == 1)
+  if((!$open_with_browser.nil? || push_res['revision'] == 1) && openable?)
     system "open " + web_url
   end
 end
