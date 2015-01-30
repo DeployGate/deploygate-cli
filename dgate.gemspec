@@ -24,7 +24,7 @@ Or see the docs at:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_dependency 'json', '~> 1.7.4'
+  spec.add_dependency 'json', '~> 1.8.2'
   spec.add_dependency 'httpclient', '~> 2.2.5'
 
   spec.add_development_dependency "bundler", "~> 1.3"
