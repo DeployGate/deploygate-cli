@@ -1,8 +1,7 @@
-require "dgate/version"
+require "commander/import"
 
 module Dgate
 end
 
 require "dgate/command_builder"
-require "dgate/commands/base"
-require "dgate/commands/run"
+require "dgate/version"

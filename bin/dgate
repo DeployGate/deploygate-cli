@@ -3,4 +3,4 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 require "dgate"
 
-Dgate::CommandBuilder.new(ARGV).build.call
+Dgate::CommandBuilder.new().call
