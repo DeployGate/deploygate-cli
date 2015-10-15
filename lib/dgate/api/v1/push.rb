@@ -14,7 +14,14 @@ module Dgate
             end
 
             return nil if res.nil?
-            res
+
+            {
+                :application_name => res['name'],
+                :owner_name => res['user']['name'],
+                :package_name => res['package_name'],
+                :revision => res['revision'],
+                :web_url => Base::BASE_URL + res['path']
+            }
           end
         end
       end

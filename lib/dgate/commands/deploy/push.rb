@@ -23,18 +23,17 @@ module Dgate
               return false
             end
 
-            res = Dgate::Deploy.push(file_path, owner, message, disable_notify)
+            data = Dgate::Deploy.push(file_path, owner, message, disable_notify)
 
-            web_url = BASE_URL + res['path']
             puts 'Push app file successful!'
             puts ''
-            puts "Name :\t\t #{res['name']}"
-            puts "Owner :\t\t #{res['user']['name']}"
-            puts "Package :\t #{res['package_name']}"
-            puts "Revision :\t #{res['revision'].to_s}"
-            puts "URL :\t\t #{web_url}"
-            if((open || res['revision'] == 1) && openable?)
-              system "open #{web_url}"
+            puts "Name :\t\t #{data[:application_name]}"
+            puts "Owner :\t\t #{data[:owner_name]}"
+            puts "Package :\t #{data[:package_name]}"
+            puts "Revision :\t #{data[:revision]}"
+            puts "URL :\t\t #{data[:web_url]}"
+            if((open || data[:revision] == 1) && openable?)
+              system "open #{data[:web_url]}"
             end
           end
 
