@@ -3,12 +3,14 @@ module Dgate
     SETTING_FILE = ENV["HOME"] + "/.dgate"
     attr_reader :name, :token
 
+    @@login = nil
+
     def initialize
       load_setting
     end
 
     def login?
-      API::V1::Session.check(@name, @token)
+      @@login = @@login || API::V1::Session.check(@name, @token)
     end
 
     def self.login(email, password)
@@ -28,6 +30,7 @@ module Dgate
 
     def self.delete
       save('', '') # delete config values
+      @@login = false
     end
 
     private

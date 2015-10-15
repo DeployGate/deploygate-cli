@@ -18,10 +18,12 @@ module Dgate
         c.syntax = 'dgate deploy /path/to/app'
         c.description = 'deploy command'
         c.option '--message STRING', String, 'release message'
+        c.option '--user STRING', String, 'owner name or group name'
         c.option '--open', 'open browser'
+        c.option '--disable_notify', 'disable notify via email (iOS app only)'
         c.action do |args, options|
-          options.default :message => '', :open => false
-          p 'deploy'
+          options.default :message => '', :user => nil, :open => false, 'disable_notify' => false
+          Commands::Deploy.run(args, options)
         end
       end
       command :logout do |c|

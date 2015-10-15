@@ -3,13 +3,12 @@ module Dgate
     class Init
       class << self
         def run
-          login
+          login unless Session.new().login?
 
           finish
         end
 
         def login
-          return if Session.new().login?
           puts 'Start login!'
           print 'Email: '
           email= STDIN.gets.chop

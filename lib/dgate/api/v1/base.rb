@@ -4,8 +4,7 @@ module Dgate
       class Base
         API_BASE_URL = 'https://deploygate.com/api'
 
-        def initialize(name = nil, token = nil)
-          @name = name
+        def initialize(token = nil)
           @token = token
         end
 

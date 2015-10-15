@@ -6,7 +6,7 @@ module Dgate
 
         class << self
           def check(name, token)
-            res = Base.new(name, token).get(ENDPOINT + '/user', {})
+            res = Base.new(token).get(ENDPOINT + '/user', {})
             return false if res.nil?
 
             name == res['name']
