@@ -11,7 +11,7 @@ module Dgate
         c.syntax = 'dgate init'
         c.description = 'dgate init command'
         c.action do |args, options|
-          p 'init'
+          Commands::Init.run
         end
       end
       command :deploy do |c|
@@ -22,6 +22,13 @@ module Dgate
         c.action do |args, options|
           options.default :message => '', :open => false
           p 'deploy'
+        end
+      end
+      command :logout do |c|
+        c.syntax = 'dgate logout'
+        c.description = 'dgate logout command'
+        c.action do |args, options|
+          Commands::Logout.run
         end
       end
     end
