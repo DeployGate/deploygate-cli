@@ -14,6 +14,7 @@ module Dgate
           Commands::Init.run
         end
       end
+
       command :deploy do |c|
         c.syntax = 'dgate deploy /path/to/app'
         c.description = 'deploy command'
@@ -26,6 +27,8 @@ module Dgate
           Commands::Deploy.run(args, options)
         end
       end
+      alias_command :'push', :deploy
+
       command :logout do |c|
         c.syntax = 'dgate logout'
         c.description = 'dgate logout command'
