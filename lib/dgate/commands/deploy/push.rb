@@ -16,14 +16,7 @@ module Dgate
             owner          = options.user || session.name
             open           = options.open
             disable_notify = options.disable_notify
-
-            file_path = args.first
-            if file_path.nil? || !File.exist?(file_path)
-              upload_error({
-                               :message => 'Target file is not found'
-                           })
-              return false
-            end
+            file_path      = args.first
 
             puts 'Upload start'
             data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
