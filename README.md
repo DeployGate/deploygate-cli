@@ -6,27 +6,42 @@ A command-line interface for DeployGate
 
 Add this line to your application's Gemfile:
 
-    gem 'dgate'
+```
+gem 'dgate'
+```
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install dgate
+```
+$ gem install dgate
+```
 
 ## Usage
 
+### Setup
+
+```
+$ dgate init # login
+```
+
+### Deploy
 Push/Update an application:
 
-    $ dgate push [package file path]
+```
+$ dgate deploy [package file path]
+```
 
 See https://deploygate.com/docs/cli for more information.
 
 ## License
 
-Copyright (C) 2014 DeployGate All rights reserved.
+Copyright (C) 2015 DeployGate All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
