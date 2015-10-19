@@ -5,6 +5,10 @@ module Dgate
         ENDPOINT = '/sessions'
 
         class << self
+
+          # @param [String] name
+          # @param [String] token
+          # @return [Boolean]
           def check(name, token)
             res = Base.new(token).get(ENDPOINT + '/user', {})
             return false if res['error']
@@ -12,6 +16,9 @@ module Dgate
             name == res['results']['name']
           end
 
+          # @param [String] email
+          # @param [String] password
+          # @return [Hash]
           def login(email, password)
             res = Base.new().post(ENDPOINT, {:email => email, :password => password})
 

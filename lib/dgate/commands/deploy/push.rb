@@ -5,6 +5,10 @@ module Dgate
         BASE_URL = 'https://deploygate.com'
 
         class << self
+
+          # @param [Array] args
+          # @param [Commander::Command::Options] options
+          # @return [void]
           def upload(args, options)
             session = Dgate::Session.new()
             unless session.login?
@@ -32,11 +36,15 @@ module Dgate
             end
           end
 
+          # @return [Boolean]
           def openable?
             RbConfig::CONFIG['host_os'].include?('darwin')
           end
 
 
+          # @param [Hash] data
+          # @param [Boolean] open
+          # @return [void]
           def upload_success(data, open)
             Message::Success.print('Push app file successful!')
             data_message = <<EOS
@@ -52,6 +60,8 @@ EOS
             end
           end
 
+          # @param [Hash] data
+          # @return [void]
           def upload_error(data)
             Message::Error.print('Push app file error!')
             puts "Error message: #{data[:message]}"

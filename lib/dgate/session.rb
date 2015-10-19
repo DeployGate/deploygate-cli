@@ -5,14 +5,19 @@ module Dgate
 
     @@login = nil
 
+    # @return [Dgate::Session]
     def initialize
       load_setting
     end
 
+    # @return [Boolean]
     def login?
       @@login = @@login || API::V1::Session.check(@name, @token)
     end
 
+    # @param [String] email
+    # @param [String] password
+    # @return [Hash]
     def self.login(email, password)
       data = API::V1::Session.login(email, password)
 
@@ -25,6 +30,9 @@ module Dgate
       data
     end
 
+    # @param [String] name
+    # @param [String] token
+    # @return [void]
     def self.save(name, token)
       settings = {
           :name => name,
@@ -36,6 +44,7 @@ module Dgate
       file.close
     end
 
+    # @return [void]
     def self.delete
       save('', '') # delete config values
       @@login = false
@@ -43,6 +52,7 @@ module Dgate
 
     private
 
+    # @return [void]
     def load_setting
       return unless File.exist?(SETTING_FILE)
       file = open(SETTING_FILE)

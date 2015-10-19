@@ -5,10 +5,15 @@ module Dgate
         BASE_URL     = 'https://deploygate.com'
         API_BASE_URL = "#{BASE_URL}/api"
 
+        # @param [String] token
+        # @return [Dgate::API::V1::Base]
         def initialize(token = nil)
           @token = token
         end
 
+        # @param [String] path
+        # @param [Hash] params
+        # @return [Hash] Responce parse json
         def get(path, params)
           url = API_BASE_URL + path
 
@@ -16,6 +21,10 @@ module Dgate
           JSON.parse(res.body)
         end
 
+        # @param [String] path
+        # @param [Hash] params
+        # @yield Upload process block
+        # @return [Hash] Responce parse json
         def post(path, params, &process_block)
           url = API_BASE_URL + path
 

@@ -5,6 +5,14 @@ module Dgate
         ENDPOINT = "/users/%s/apps"
 
         class << self
+
+          # @param [String] file_path
+          # @param [String] target_user
+          # @param [String] token
+          # @param [String] message
+          # @param [Boolean] disable_notify
+          # @yield Upload process block
+          # @return [Hash]
           def upload(file_path, target_user, token, message, disable_notify = false, &process_block)
             res = nil
             open(file_path) do |file|

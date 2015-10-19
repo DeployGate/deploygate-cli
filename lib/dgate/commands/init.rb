@@ -2,12 +2,15 @@ module Dgate
   module Commands
     class Init
       class << self
+
+        # @return [void]
         def run
           login unless Session.new().login?
 
           finish
         end
 
+        # @return [void]
         def login
           puts 'Start login!'
           print 'Email: '
@@ -28,6 +31,7 @@ module Dgate
           end
         end
 
+        # @return [void]
         def finish
           Message::Success.print('Finish dgate init!')
         end
