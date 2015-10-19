@@ -13,7 +13,7 @@ module Dgate
       # @param [Boolean] disable_notify
       # @yield Upload process block
       # @return [Hash]
-      def push(file_path, target_user, message, disable_notify, &process_block)
+      def push(file_path, target_user, message, disable_notify = false, &process_block)
         raise NotFileExistError, 'Target file is not found' if file_path.nil? || !File.exist?(file_path)
 
         session = Dgate::Session.new()

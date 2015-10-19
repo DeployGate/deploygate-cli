@@ -20,7 +20,8 @@ describe Dgate::API::V1::Push do
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
-      results = Dgate::API::V1::Push.upload(test_file_path, target_user, token, message)
+      call_process_block = false
+      results = Dgate::API::V1::Push.upload(test_file_path, target_user, token, message) {call_process_block = true}
       expect(results).to eq ({
                                 :error => response[:error],
                                 :message => response[:because],
@@ -30,6 +31,7 @@ describe Dgate::API::V1::Push do
                                 :revision => response[:results][:revision],
                                 :web_url => Dgate::API::V1::Base::BASE_URL + response[:results][:path]
                             })
+      expect(call_process_block).to be_truthy
     end
 
     it "failed" do
