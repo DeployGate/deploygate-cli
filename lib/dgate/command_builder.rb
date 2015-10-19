@@ -1,8 +1,9 @@
 module Dgate
   class CommandBuilder
+    include Commander::Methods
     attr_reader :arguments
 
-    def call
+    def run
       program :name, 'Dgate'
       program :version,  VERSION
       program :description, 'You can push or update apps to DeployGate in your terminal.'
@@ -36,6 +37,8 @@ module Dgate
           Commands::Logout.run
         end
       end
+
+      run!
     end
   end
 end

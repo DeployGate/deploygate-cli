@@ -1,4 +1,4 @@
-require "commander/import"
+require "commander"
 require "json"
 require "httpclient"
 require "io/console"

@@ -21,7 +21,7 @@ module Dgate
         token = session.token
 
 
-        API::V1::Push.upload(file_path, target_user, token, message, disable_notify) { process_block.call }
+        API::V1::Push.upload(file_path, target_user, token, message, disable_notify) { process_block.call unless process_block.nil? }
       end
     end
   end

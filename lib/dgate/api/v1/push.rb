@@ -18,9 +18,8 @@ module Dgate
             open(file_path) do |file|
               res = Base.new(token).post(
                 sprintf(ENDPOINT, target_user),
-                { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' }) { process_block.call }
+                { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' }) { process_block.call unless process_block.nil? }
             end
-
 
             upload_results = {
                 :error => res['error'],
