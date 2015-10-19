@@ -16,11 +16,21 @@ module Dgate
           JSON.parse(res.body)
         end
 
-        def post(path, params)
+        def post(path, params, &process_block)
           url = API_BASE_URL + path
 
-          res = client.post(url, params, headers)
-          JSON.parse(res.body)
+          connection = client.post_async(url, params, headers)
+          while true
+            break if connection.finished?
+            process_block.call unless process_block.nil?
+          end
+          io = connection.pop.content
+          body = ''
+          while str = io.read(40)
+            body += str
+          end
+
+          JSON.parse(body)
         end
 
         private

@@ -5,12 +5,12 @@ module Dgate
         ENDPOINT = "/users/%s/apps"
 
         class << self
-          def upload(file_path, target_user, token, message, disable_notify = false)
+          def upload(file_path, target_user, token, message, disable_notify = false, &process_block)
             res = nil
             open(file_path) do |file|
               res = Base.new(token).post(
                 sprintf(ENDPOINT, target_user),
-                { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' })
+                { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' }) { process_block.call }
             end
 
 

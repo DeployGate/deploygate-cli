@@ -25,7 +25,12 @@ module Dgate
               return false
             end
 
-            data = Dgate::Deploy.push(file_path, owner, message, disable_notify)
+            puts 'Upload start'
+            data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
+              print '.'
+              sleep 0.2
+            }
+            puts ''
 
             if data[:error]
               upload_error(data)
