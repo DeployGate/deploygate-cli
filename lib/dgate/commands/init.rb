@@ -19,17 +19,17 @@ module Dgate
           data = Session.login(email, password)
           if data[:error]
             # login failed
-            puts 'Login failed...'
+            Message::Error.print('Login failed')
             puts "Error message: #{data[:message]}"
             exit
           else
             # login success
-            puts 'Login Success!'
+            Message::Success.print('Login success!')
           end
         end
 
         def finish
-          puts 'Finish dgate init!'
+          Message::Success.print('Finish dgate init!')
         end
       end
     end

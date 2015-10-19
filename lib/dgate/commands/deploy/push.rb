@@ -40,20 +40,22 @@ module Dgate
 
 
           def upload_success(data, open)
-            puts 'Push app file successful!'
-            puts ''
-            puts "Name :\t\t #{data[:application_name]}"
-            puts "Owner :\t\t #{data[:owner_name]}"
-            puts "Package :\t #{data[:package_name]}"
-            puts "Revision :\t #{data[:revision]}"
-            puts "URL :\t\t #{data[:web_url]}"
+            Message::Success.print('Push app file successful!')
+            data_message = <<EOS
+Name: \t\t #{data[:application_name]}
+Owner: \t\t #{data[:owner_name]}
+Package: \t #{data[:package_name]}
+Revision: \t #{data[:revision]}
+URL: \t\t #{data[:web_url]}
+EOS
+            puts(data_message)
             if((open || data[:revision] == 1) && openable?)
               system "open #{data[:web_url]}"
             end
           end
 
           def upload_error(data)
-            puts 'Push app file error!'
+            Message::Error.print('Push app file error!')
             puts "Error message: #{data[:message]}"
           end
         end
