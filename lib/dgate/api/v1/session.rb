@@ -7,17 +7,18 @@ module Dgate
         class << self
           def check(name, token)
             res = Base.new(token).get(ENDPOINT + '/user', {})
-            return false if res.nil?
+            return false if res['error']
 
-            name == res['name']
+            name == res['results']['name']
           end
 
           def login(email, password)
             res = Base.new().post(ENDPOINT, {:email => email, :password => password})
-            return false if res.nil?
+            return false if res['error']
 
-            name  = res['name']
-            token = res['api_token']
+            results = res['results']
+            name  = results['name']
+            token = results['api_token']
             Dgate::Session.save(name, token)
 
             true

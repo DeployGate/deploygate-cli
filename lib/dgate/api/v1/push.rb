@@ -13,15 +13,24 @@ module Dgate
                 { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' })
             end
 
-            return nil if res.nil?
 
-            {
-                :application_name => res['name'],
-                :owner_name => res['user']['name'],
-                :package_name => res['package_name'],
-                :revision => res['revision'],
-                :web_url => Base::BASE_URL + res['path']
+            upload_results = {
+                :error => res['error'],
+                :message => res['because']
             }
+
+            results = res['results']
+            unless results.nil?
+              upload_results.merge!({
+                  :application_name => results['name'],
+                  :owner_name => results['user']['name'],
+                  :package_name => results['package_name'],
+                  :revision => results['revision'],
+                  :web_url => Base::BASE_URL + results['path']
+              })
+            end
+
+            upload_results
           end
         end
       end

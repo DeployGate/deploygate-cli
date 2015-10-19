@@ -19,12 +19,27 @@ module Dgate
 
             file_path = args.first
             if file_path.nil? || !File.exist?(file_path)
-              puts 'target file is not found.\n'
+              upload_error({
+                               :message => 'Target file is not found'
+                           })
               return false
             end
 
             data = Dgate::Deploy.push(file_path, owner, message, disable_notify)
 
+            if data[:error]
+              upload_error(data)
+            else
+              upload_success(data, open)
+            end
+          end
+
+          def openable?
+            RbConfig::CONFIG['host_os'].include?('darwin')
+          end
+
+
+          def upload_success(data, open)
             puts 'Push app file successful!'
             puts ''
             puts "Name :\t\t #{data[:application_name]}"
@@ -37,8 +52,9 @@ module Dgate
             end
           end
 
-          def openable?
-            RbConfig::CONFIG['host_os'].include?('darwin')
+          def upload_error(data)
+            puts 'Push app file error!'
+            puts "Error message: #{data[:message]}"
           end
         end
       end

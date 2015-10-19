@@ -10,11 +10,17 @@ module Dgate
         end
 
         def get(path, params)
-          send(:get, path, params)
+          url = API_BASE_URL + path
+
+          res = client.get(url, params, headers)
+          JSON.parse(res.body)
         end
 
         def post(path, params)
-          send(:post, path, params)
+          url = API_BASE_URL + path
+
+          res = client.post(url, params, headers)
+          JSON.parse(res.body)
         end
 
         private
@@ -30,24 +36,6 @@ module Dgate
           end
 
           extheaders
-        end
-
-        def send(method, path, params)
-          url = API_BASE_URL + path
-
-          res = nil
-          case method
-            when :get
-              res = client.get(url, params, headers)
-            when :post
-              res = client.post(url, params, headers)
-          end
-          return unless res.status_code == 200
-
-          res_object = JSON.parse(res.body)
-          return if res_object['error']
-
-          res_object['results']
         end
       end
     end
