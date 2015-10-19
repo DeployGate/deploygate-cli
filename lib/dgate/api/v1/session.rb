@@ -14,14 +14,22 @@ module Dgate
 
           def login(email, password)
             res = Base.new().post(ENDPOINT, {:email => email, :password => password})
-            return false if res['error']
+
+            login_results = {
+                :error => res['error'],
+                :message => res['because']
+            }
 
             results = res['results']
-            name  = results['name']
-            token = results['api_token']
-            Dgate::Session.save(name, token)
+            unless results.nil?
+              login_results.merge!({
+                                       :name => results['name'],
+                                       :token => results['api_token']
 
-            true
+                                   })
+            end
+
+            login_results
           end
         end
       end

@@ -14,7 +14,15 @@ module Dgate
     end
 
     def self.login(email, password)
-      API::V1::Session.login(email, password)
+      data = API::V1::Session.login(email, password)
+
+      unless data[:error]
+        name = data[:name]
+        token = data[:token]
+        save(name, token)
+      end
+
+      data
     end
 
     def self.save(name, token)

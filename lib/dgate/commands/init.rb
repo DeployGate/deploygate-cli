@@ -16,12 +16,15 @@ module Dgate
           password = STDIN.noecho(&:gets).chop
           puts ''
 
-          if Session.login(email, password)
-            # login success
-            puts 'Login Success!'
-          else
+          data = Session.login(email, password)
+          if data[:error]
             # login failed
             puts 'Login failed...'
+            puts "Error message: #{data[:message]}"
+            exit
+          else
+            # login success
+            puts 'Login Success!'
           end
         end
 
