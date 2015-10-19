@@ -32,7 +32,6 @@ module Dgate
               login_results.merge!({
                                        :name => results['name'],
                                        :token => results['api_token']
-
                                    })
             end
 

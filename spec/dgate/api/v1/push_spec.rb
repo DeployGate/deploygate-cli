@@ -1,5 +1,3 @@
-require "spec_helper"
-
 describe Dgate::API::V1::Push do
   describe "#upload" do
     it "success" do
@@ -18,7 +16,7 @@ describe Dgate::API::V1::Push do
           }
       }
 
-      stub_request(:post, "https://deploygate.com/api/users/#{target_user}/apps").
+      stub_request(:post, "#{API_ENDPOINT}/users/#{target_user}/apps").
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
@@ -43,7 +41,7 @@ describe Dgate::API::V1::Push do
           :because => 'error message'
       }
 
-      stub_request(:post, "https://deploygate.com/api/users/#{target_user}/apps").
+      stub_request(:post, "#{API_ENDPOINT}/users/#{target_user}/apps").
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
