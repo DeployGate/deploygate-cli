@@ -28,6 +28,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'httpclient', '~> 2.2.5'
   spec.add_dependency 'commander', '~> 4.3.5'
   spec.add_dependency 'color_echo', '~> 2.0.1'
+  spec.add_dependency 'file-find', '~> 0.3.8'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'

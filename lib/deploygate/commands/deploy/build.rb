@@ -5,8 +5,23 @@ module DeployGate
         class << self
           def run(args, options)
             # android/ios build
-            if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.include?(File.extname(args.first))
+            work_dir = args.first
+
+            if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.include?(File.extname(work_dir))
               ios(args, options)
+            else
+              projects = []
+              DeployGate::Build::Ios::WORK_DIR_EXTNAMES.each do |pattern|
+                rule = File::Find.new(:pattern => "*#{pattern}", :path => [work_dir])
+                rule.find {|f| projects.push(f) unless DeployGate::Build::Ios::EX_WORK_NAMES.include?(File.basename(f))}
+              end
+              return if projects.empty?
+
+              select_project = projects.first
+              projects.each do |project|
+                select_project = project if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.first == File.extname(project)
+              end
+              ios([select_project], options)
             end
           end
 

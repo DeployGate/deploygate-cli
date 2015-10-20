@@ -4,6 +4,7 @@ module DeployGate
       AD_HOC = 'ad-hoc'
       ENTERPRISE = 'enterprise'
       WORK_DIR_EXTNAMES = ['.xcworkspace', '.xcodeproj']
+      EX_WORK_NAMES = ['Pods.xcodeproj', 'project.xcworkspace']
 
       class NotWorkDirExistError < StandardError
       end

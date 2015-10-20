@@ -7,6 +7,7 @@ module DeployGate
         # @param [Commander::Command::Options] options
         def run(args, options)
           # push or build(android/ios)
+          args.push(Dir.pwd) if args.empty?
 
           work_file_path = args.first
           if File.directory?(work_file_path)
