@@ -4,12 +4,14 @@ module DeployGate
 
       # @return [String]
       def file_path
-        ENV["HOME"] + "/.dg"
+        File.join(ENV["HOME"], '.dg/credentials')
       end
 
       # @param [Hash] config
       # @return [void]
       def write(config)
+        FileUtils.mkdir_p(File.dirname(file_path))
+
         data = JSON.generate(config)
         file = File.open(file_path, "w+")
         file.print data
