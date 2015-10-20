@@ -10,7 +10,7 @@ module DeployGate
 
       command :init do |c|
         c.syntax = 'dg init'
-        c.description = 'dg init command'
+        c.description = 'project initial command'
         c.action do |args, options|
           Commands::Init.run
         end
@@ -18,10 +18,10 @@ module DeployGate
 
       command :deploy do |c|
         c.syntax = 'dg deploy /path/to/app'
-        c.description = 'deploy command'
+        c.description = 'upload to deploygate'
         c.option '--message STRING', String, 'release message'
         c.option '--user STRING', String, 'owner name or group name'
-        c.option '--open', 'open browser'
+        c.option '--open', 'open browser (OSX only)'
         c.option '--disable_notify', 'disable notify via email (iOS app only)'
         c.action do |args, options|
           options.default :message => '', :user => nil, :open => false, 'disable_notify' => false
@@ -32,7 +32,7 @@ module DeployGate
 
       command :logout do |c|
         c.syntax = 'dg logout'
-        c.description = 'dg logout command'
+        c.description = 'logout'
         c.action do |args, options|
           Commands::Logout.run
         end
