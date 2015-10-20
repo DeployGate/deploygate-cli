@@ -19,3 +19,6 @@ tmp
 # IntelliJ IDEA
 .idea
 dgate.iml
+
+# test file
+spec/test_files/.dgate
