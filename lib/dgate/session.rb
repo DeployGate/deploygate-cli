@@ -1,6 +1,5 @@
 module Dgate
   class Session
-    SETTING_FILE = ENV["HOME"] + "/.dgate"
     attr_reader :name, :token
 
     @@login = nil
@@ -12,7 +11,7 @@ module Dgate
 
     # @return [Boolean]
     def login?
-      @@login = @@login || API::V1::Session.check(@name, @token)
+      @@login = @@login.nil? ? API::V1::Session.check(@name, @token) : @@login
     end
 
     # @param [String] email
@@ -38,10 +37,7 @@ module Dgate
           :name => name,
           :token => token
       }
-      data = JSON.generate(settings)
-      file = open(SETTING_FILE, "w+")
-      file.print data
-      file.close
+      Config.write(settings)
     end
 
     # @return [void]
@@ -54,11 +50,8 @@ module Dgate
 
     # @return [void]
     def load_setting
-      return unless File.exist?(SETTING_FILE)
-      file = open(SETTING_FILE)
-      data = file.read
-      file.close
-      settings = JSON.parse(data)
+      return unless Config.exist?
+      settings = Config.read
       @name = settings['name']
       @token = settings['token']
     end

@@ -40,10 +40,31 @@ describe Dgate::Session do
   end
 
   describe "#save" do
-    # TODO: replace ENV["HOME"]
+    it "call Config.write" do
+      config_data = {
+          :name => 'test',
+          :token => 'token'
+      }
+      call_config_write_and_fix_config = false
+      allow(Dgate::Config).to receive(:write) { |c| call_config_write_and_fix_config = c == config_data}
+
+
+      Dgate::Session.save(config_data[:name], config_data[:token])
+      expect(call_config_write_and_fix_config).to be_truthy
+    end
   end
 
   describe "#delete" do
-    # TODO: replace ENV["HOME"]
+    it "call save" do
+      call_save = false
+      allow(Dgate::Session).to receive(:save) { |name, token| call_save = (name == '' && token == '')}
+
+
+      Dgate::Session.delete
+      expect(call_save).to be_truthy
+
+      login = Dgate::Session.new.login?
+      expect(login).to be_falsey
+    end
   end
 end
