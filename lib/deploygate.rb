@@ -5,6 +5,9 @@ require "io/console"
 require "rbconfig"
 require "color_echo"
 
+# ios build
+require "gym"
+
 module DeployGate
 end
 
@@ -16,9 +19,11 @@ require "deploygate/commands/init"
 require "deploygate/commands/logout"
 require "deploygate/commands/deploy"
 require "deploygate/commands/deploy/push"
+require "deploygate/commands/deploy/build"
 require "deploygate/config"
 require "deploygate/session"
 require "deploygate/deploy"
+require "deploygate/build/ios"
 require "deploygate/message/error"
 require "deploygate/message/success"
 require "deploygate/version"

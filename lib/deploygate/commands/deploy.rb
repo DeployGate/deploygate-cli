@@ -7,7 +7,14 @@ module DeployGate
         # @param [Commander::Command::Options] options
         def run(args, options)
           # push or build(android/ios)
-          Push.upload(args, options)
+
+          work_file_path = args.first
+          if File.directory?(work_file_path)
+            Build.run(args, options)
+          else
+            # file upload
+            Push.upload(args, options)
+          end
         end
       end
     end
