@@ -1,5 +1,8 @@
 module Dgate
   class Session
+    class LoginError < StandardError
+    end
+
     attr_reader :name, :token
 
     @@login = nil
@@ -16,17 +19,14 @@ module Dgate
 
     # @param [String] email
     # @param [String] password
-    # @return [Hash]
+    # @return [void]
     def self.login(email, password)
       data = API::V1::Session.login(email, password)
+      raise LoginError, data[:message] if data[:error]
 
-      unless data[:error]
-        name = data[:name]
-        token = data[:token]
-        save(name, token)
-      end
-
-      data
+      name = data[:name]
+      token = data[:token]
+      save(name, token)
     end
 
     # @param [String] name

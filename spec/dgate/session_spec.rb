@@ -20,22 +20,22 @@ describe Dgate::Session do
       allow(Dgate::API::V1::Session).to receive(:login).and_return(data)
       allow(Dgate::Session).to receive(:save) { call_save = true }
 
-      result = Dgate::Session.login('test@example.com', 'test')
-      expect(result).to eq(data)
+      expect {
+        Dgate::Session.login('test@example.com', 'test')
+      }.not_to raise_error
       expect(call_save).to be_truthy
     end
 
     it "failed" do
       data = {
           :error => true,
+          :message => 'error message'
       }
-      call_save = false
       allow(Dgate::API::V1::Session).to receive(:login).and_return(data)
-      allow(Dgate::Session).to receive(:save) { call_save = true }
 
-      result = Dgate::Session.login('test@example.com', 'test')
-      expect(result).to eq(data)
-      expect(call_save).to be_falsey
+      expect {
+        Dgate::Session.login('test@example.com', 'test')
+      }.to raise_error(Dgate::Session::LoginError)
     end
   end
 
