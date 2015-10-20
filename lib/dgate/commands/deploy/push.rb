@@ -21,10 +21,9 @@ module Dgate
             open           = options.open
             disable_notify = options.disable_notify
             file_path      = args.first
-            print_upload_message({:file_path => file_path, :owner_name => owner})
 
             data = nil
-            print 'Uploading..'
+            print "Uploading to #{owner}.."
             begin
               data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
                 print '.'
@@ -40,18 +39,6 @@ module Dgate
           # @return [Boolean]
           def openable?
             RbConfig::CONFIG['host_os'].include?('darwin')
-          end
-
-          # @param [Hash] data
-          # @return [void]
-          def print_upload_message(data)
-            puts('Upload file detail')
-            data_message = <<EOS
-File: \t\t #{data[:file_path]}
-Owner: \t\t #{data[:owner_name]}
-EOS
-            puts(data_message)
-            puts ''
           end
 
           # @param [Hash] data
