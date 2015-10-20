@@ -1,5 +1,7 @@
 # deploygate-cli
 
+## This is a beta version
+
 A command-line interface for DeployGate
 
 ## Installation
@@ -36,8 +38,6 @@ Push/Update an application:
 ```
 $ dg deploy [package file path]
 ```
-
-See https://deploygate.com/docs/cli for more information.
 
 ## License
 
