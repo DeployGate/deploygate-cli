@@ -25,15 +25,7 @@ $ gem install deploygate
 ```
 
 ## Usage
-
-### Setup
-
-```
-$ dg init # login
-```
-
-### Deploy
-Push/Update an application:
+Upload an application:
 
 ```
 $ dg deploy [package file path]
