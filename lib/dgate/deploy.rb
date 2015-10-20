@@ -4,6 +4,8 @@ module Dgate
     end
     class NotFileExistError < StandardError
     end
+    class UploadError < StandardError
+    end
 
     class << self
 
@@ -21,7 +23,10 @@ module Dgate
         token = session.token
 
 
-        API::V1::Push.upload(file_path, target_user, token, message, disable_notify) { process_block.call unless process_block.nil? }
+        data = API::V1::Push.upload(file_path, target_user, token, message, disable_notify) { process_block.call unless process_block.nil? }
+        raise UploadError, data[:message] if data[:error]
+
+        data
       end
     end
   end

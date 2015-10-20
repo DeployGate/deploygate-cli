@@ -21,19 +21,20 @@ module Dgate
             open           = options.open
             disable_notify = options.disable_notify
             file_path      = args.first
+            print_upload_message({:file_path => file_path, :owner_name => owner})
 
-            puts 'Upload start'
-            data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
-              print '.'
-              sleep 0.2
-            }
-            puts ''
-
-            if data[:error]
-              upload_error(data)
-            else
-              upload_success(data, open)
+            data = nil
+            print 'Uploading..'
+            begin
+              data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
+                print '.'
+                sleep 0.2
+              }
+            rescue => e
+              upload_error(e)
             end
+
+            upload_success(data, open)
           end
 
           # @return [Boolean]
@@ -41,12 +42,23 @@ module Dgate
             RbConfig::CONFIG['host_os'].include?('darwin')
           end
 
+          # @param [Hash] data
+          # @return [void]
+          def print_upload_message(data)
+            puts('Upload file detail:')
+            data_message = <<EOS
+File: \t\t #{data[:file_path]}
+Owner: \t\t #{data[:owner_name]}
+EOS
+            puts(data_message)
+            puts ''
+          end
 
           # @param [Hash] data
           # @param [Boolean] open
           # @return [void]
           def upload_success(data, open)
-            Message::Success.print('Push app file successful!')
+            Message::Success.print('done')
             data_message = <<EOS
 Name: \t\t #{data[:application_name]}
 Owner: \t\t #{data[:owner_name]}
@@ -60,11 +72,11 @@ EOS
             end
           end
 
-          # @param [Hash] data
+          # @param [StandardError] error
           # @return [void]
-          def upload_error(data)
-            Message::Error.print('Push app file error!')
-            puts "Error message: #{data[:message]}"
+          def upload_error(error)
+            Message::Error.print('failed')
+            raise error
           end
         end
       end

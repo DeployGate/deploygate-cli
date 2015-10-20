@@ -12,7 +12,8 @@ module Dgate
 
         # @return [void]
         def login
-          puts 'Start login!'
+          puts 'Welcome to DeployGate!'
+          puts ''
           print 'Email: '
           email= STDIN.gets.chop
           print 'Password: '
@@ -23,17 +24,19 @@ module Dgate
             Session.login(email, password)
           rescue Session::LoginError => e
             # login failed
-            Message::Error.print('Login failed')
+            Message::Error.print('Login failed...')
+            Message::Error.print('Please try again')
             raise e
           end
 
           # login success
-          Message::Success.print('Login success!')
+          session = Session.new
+          Message::Success.print("Hello #{session.name}!")
         end
 
         # @return [void]
         def finish
-          Message::Success.print('Finish dgate init!')
+          Message::Success.print('Enjoy development!')
         end
       end
     end

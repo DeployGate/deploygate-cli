@@ -7,7 +7,8 @@ module Dgate
         def run
           Dgate::Session.delete
 
-          Message::Success.print('Logout finish!')
+          Message::Success.print('Logout success!')
+          Message::Success.print('Goodbye! :)')
         end
       end
     end
