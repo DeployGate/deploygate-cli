@@ -6,7 +6,7 @@ module DeployGate
     def run
       program :name, 'dg'
       program :version,  VERSION
-      program :description, 'You can push or update apps to DeployGate in your terminal.'
+      program :description, 'You can control to DeployGate in your terminal.'
 
       command :init do |c|
         c.syntax = 'dg init'

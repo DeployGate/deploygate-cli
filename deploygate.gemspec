@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = DeployGate::VERSION
   spec.authors       = ["deploygate"]
   spec.email         = ["contact@deploygate.com"]
-  spec.description   = %q{You can push or update apps to DeployGate in your terminal.}
+  spec.description   = %q{You can control to DeployGate in your terminal}
   spec.summary       = %q{A command-line interface for DeployGate}
   spec.homepage      = "https://deploygate.com"
   spec.license       = "Apache-2.0"
