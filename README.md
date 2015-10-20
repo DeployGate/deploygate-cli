@@ -1,4 +1,5 @@
 # deploygate-cli
+[![Gem Version](https://badge.fury.io/rb/deploygate.svg)](https://badge.fury.io/rb/deploygate)
 [![Build Status](https://travis-ci.org/DeployGate/deploygate-cli.svg?branch=master)](https://travis-ci.org/DeployGate/deploygate-cli)
 
 ## This is a beta version
