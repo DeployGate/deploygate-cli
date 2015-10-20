@@ -45,7 +45,7 @@ module Dgate
           # @param [Hash] data
           # @return [void]
           def print_upload_message(data)
-            puts('Upload file detail:')
+            puts('Upload file detail')
             data_message = <<EOS
 File: \t\t #{data[:file_path]}
 Owner: \t\t #{data[:owner_name]}
