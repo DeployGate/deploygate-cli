@@ -1,3 +1,3 @@
 module DeployGate
-  VERSION = "2.0.0"
+  VERSION = "0.0.1"
 end
