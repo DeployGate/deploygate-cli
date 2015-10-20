@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module API
     module V1
       class Base
@@ -6,7 +6,7 @@ module Dgate
         API_BASE_URL = "#{BASE_URL}/api"
 
         # @param [String] token
-        # @return [Dgate::API::V1::Base]
+        # @return [DeployGate::API::V1::Base]
         def initialize(token = nil)
           @token = token
         end
@@ -45,7 +45,7 @@ module Dgate
         private
 
         def client
-          HTTPClient.new(:agent_name => "dgate/#{Dgate::VERSION}")
+          HTTPClient.new(:agent_name => "dg/#{DeployGate::VERSION}")
         end
 
         def headers

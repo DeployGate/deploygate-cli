@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module Message
     class Error
       class << self

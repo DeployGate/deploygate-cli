@@ -1,4 +1,4 @@
-# dgate
+# deploygate-cli
 
 A command-line interface for DeployGate
 
@@ -7,7 +7,7 @@ A command-line interface for DeployGate
 Add this line to your application's Gemfile:
 
 ```
-gem 'dgate'
+gem 'deploygate'
 ```
 
 And then execute:
@@ -19,7 +19,7 @@ $ bundle
 Or install it yourself as:
 
 ```
-$ gem install dgate
+$ gem install deploygate
 ```
 
 ## Usage
@@ -27,14 +27,14 @@ $ gem install dgate
 ### Setup
 
 ```
-$ dgate init # login
+$ dg init # login
 ```
 
 ### Deploy
 Push/Update an application:
 
 ```
-$ dgate deploy [package file path]
+$ dg deploy [package file path]
 ```
 
 See https://deploygate.com/docs/cli for more information.

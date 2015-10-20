@@ -1,12 +1,12 @@
 require "webmock/rspec"
 require "json"
 
-require "dgate"
+require "deploygate"
 
 RSpec.configure do |config|
   config.before :each do
     # config file mock
-    allow(Dgate::Config).to receive(:file_path).and_return(File.join(SPEC_FILE_PATH, 'test_files/.dgate'))
+    allow(DeployGate::Config).to receive(:file_path).and_return(File.join(SPEC_FILE_PATH, 'test_files/.dg'))
   end
 end
 

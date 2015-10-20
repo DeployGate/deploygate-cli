@@ -1,4 +1,4 @@
-describe Dgate::API::V1::Session do
+describe DeployGate::API::V1::Session do
   describe "#check" do
     it "logined" do
       token = 'token'
@@ -13,7 +13,7 @@ describe Dgate::API::V1::Session do
           to_return(:body => response.to_json)
 
 
-      result = Dgate::API::V1::Session.check(name, token)
+      result = DeployGate::API::V1::Session.check(name, token)
       expect(result).to be_truthy
     end
 
@@ -28,7 +28,7 @@ describe Dgate::API::V1::Session do
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
-      result = Dgate::API::V1::Session.check(name, token)
+      result = DeployGate::API::V1::Session.check(name, token)
       expect(result).to be_falsey
     end
   end
@@ -49,7 +49,7 @@ describe Dgate::API::V1::Session do
           with(:body => {:email => email, :password => pass}).
           to_return(:body => response.to_json)
 
-      results = Dgate::API::V1::Session.login(email, pass)
+      results = DeployGate::API::V1::Session.login(email, pass)
       expect(results).to eq ({
                                :error => response[:error],
                                :message => response[:because],
@@ -72,7 +72,7 @@ describe Dgate::API::V1::Session do
           with(:body => {:email => email, :password => pass}).
           to_return(:body => response.to_json)
 
-      results = Dgate::API::V1::Session.login(email, pass)
+      results = DeployGate::API::V1::Session.login(email, pass)
       expect(results).to eq ({
                                 :error => response[:error],
                                 :message => response[:because]

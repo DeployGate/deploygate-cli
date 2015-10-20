@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module Commands
     module Deploy
       class << self

@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module API
     module V1
       class Session

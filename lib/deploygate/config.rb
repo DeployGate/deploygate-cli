@@ -1,10 +1,10 @@
-module Dgate
+module DeployGate
   class Config
     class << self
 
       # @return [String]
       def file_path
-        ENV["HOME"] + "/.dgate"
+        ENV["HOME"] + "/.dg"
       end
 
       # @param [Hash] config

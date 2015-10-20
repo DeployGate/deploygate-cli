@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   class Session
     class LoginError < StandardError
     end
@@ -7,7 +7,7 @@ module Dgate
 
     @@login = nil
 
-    # @return [Dgate::Session]
+    # @return [DeployGate::Session]
     def initialize
       load_setting
     end

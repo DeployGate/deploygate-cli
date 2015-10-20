@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module Message
     class Success
       class << self

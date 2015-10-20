@@ -1,4 +1,4 @@
-describe Dgate::Config do
+describe DeployGate::Config do
   describe "#write" do
     it "write data" do
       write_data = {
@@ -6,9 +6,9 @@ describe Dgate::Config do
           :token => 'token'
       }
       allow(File).to receive(:open).and_return(StringIO.new("", "w+"))
-      Dgate::Config.write(write_data)
+      DeployGate::Config.write(write_data)
 
-      file = File.open(Dgate::Config.file_path)
+      file = File.open(DeployGate::Config.file_path)
       expect(file.string).to eq(write_data.to_json.to_s)
     end
   end
@@ -20,7 +20,7 @@ describe Dgate::Config do
           :token => 'token'
       }.to_json.to_s
       allow(File).to receive(:open).and_return(StringIO.new(write_data))
-      data = Dgate::Config.read
+      data = DeployGate::Config.read
 
       expect(data).to eq(JSON.parse(write_data))
     end

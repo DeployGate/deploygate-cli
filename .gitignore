@@ -18,7 +18,7 @@ tmp
 
 # IntelliJ IDEA
 .idea
-dgate.iml
+deploygate-cli.iml
 
 # test file
-spec/test_files/.dgate
+spec/test_files/.dg

@@ -1,23 +1,23 @@
-module Dgate
+module DeployGate
   class CommandBuilder
     include Commander::Methods
     attr_reader :arguments
 
     def run
-      program :name, 'Dgate'
+      program :name, 'dg'
       program :version,  VERSION
       program :description, 'You can push or update apps to DeployGate in your terminal.'
 
       command :init do |c|
-        c.syntax = 'dgate init'
-        c.description = 'dgate init command'
+        c.syntax = 'dg init'
+        c.description = 'dg init command'
         c.action do |args, options|
           Commands::Init.run
         end
       end
 
       command :deploy do |c|
-        c.syntax = 'dgate deploy /path/to/app'
+        c.syntax = 'dg deploy /path/to/app'
         c.description = 'deploy command'
         c.option '--message STRING', String, 'release message'
         c.option '--user STRING', String, 'owner name or group name'
@@ -31,8 +31,8 @@ module Dgate
       alias_command :'push', :deploy
 
       command :logout do |c|
-        c.syntax = 'dgate logout'
-        c.description = 'dgate logout command'
+        c.syntax = 'dg logout'
+        c.description = 'dg logout command'
         c.action do |args, options|
           Commands::Logout.run
         end

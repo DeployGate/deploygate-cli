@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   class Deploy
     class NotLoginError < StandardError
     end
@@ -18,7 +18,7 @@ module Dgate
       def push(file_path, target_user, message, disable_notify = false, &process_block)
         raise NotFileExistError, 'Target file is not found' if file_path.nil? || !File.exist?(file_path)
 
-        session = Dgate::Session.new()
+        session = DeployGate::Session.new()
         raise NotLoginError, 'Must login user' unless session.login?
         token = session.token
 

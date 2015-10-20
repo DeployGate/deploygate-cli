@@ -1,4 +1,4 @@
-module Dgate
+module DeployGate
   module Commands
     module Deploy
       class Push
@@ -10,10 +10,10 @@ module Dgate
           # @param [Commander::Command::Options] options
           # @return [void]
           def upload(args, options)
-            session = Dgate::Session.new()
+            session = DeployGate::Session.new()
             unless session.login?
               Init.login
-              session = Dgate::Session.new()
+              session = DeployGate::Session.new()
             end
 
             message        = options.message
@@ -25,7 +25,7 @@ module Dgate
             data = nil
             print "Uploading to #{owner}.."
             begin
-              data = Dgate::Deploy.push(file_path, owner, message, disable_notify) {
+              data = DeployGate::Deploy.push(file_path, owner, message, disable_notify) {
                 print '.'
                 sleep 0.2
               }

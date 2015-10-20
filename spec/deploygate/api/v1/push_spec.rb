@@ -1,4 +1,4 @@
-describe Dgate::API::V1::Push do
+describe DeployGate::API::V1::Push do
   describe "#upload" do
     it "success" do
       target_user = 'test'
@@ -21,7 +21,7 @@ describe Dgate::API::V1::Push do
           to_return(:body => response.to_json)
 
       call_process_block = false
-      results = Dgate::API::V1::Push.upload(test_file_path, target_user, token, message) {call_process_block = true}
+      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message) {call_process_block = true}
       expect(results).to eq ({
                                 :error => response[:error],
                                 :message => response[:because],
@@ -29,7 +29,7 @@ describe Dgate::API::V1::Push do
                                 :owner_name => response[:results][:user][:name],
                                 :package_name => response[:results][:package_name],
                                 :revision => response[:results][:revision],
-                                :web_url => Dgate::API::V1::Base::BASE_URL + response[:results][:path]
+                                :web_url => DeployGate::API::V1::Base::BASE_URL + response[:results][:path]
                             })
       expect(call_process_block).to be_truthy
     end
@@ -47,7 +47,7 @@ describe Dgate::API::V1::Push do
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
-      results = Dgate::API::V1::Push.upload(test_file_path, target_user, token, message)
+      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message)
       expect(results).to eq ({:error => response[:error], :message => response[:because]})
     end
   end
