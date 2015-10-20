@@ -20,10 +20,12 @@ describe Dgate::Session do
       allow(Dgate::API::V1::Session).to receive(:login).and_return(data)
       allow(Dgate::Session).to receive(:save) { call_save = true }
 
+      Dgate::Session.delete
       expect {
         Dgate::Session.login('test@example.com', 'test')
       }.not_to raise_error
       expect(call_save).to be_truthy
+      expect(Dgate::Session.new.login?).to be_truthy
     end
 
     it "failed" do

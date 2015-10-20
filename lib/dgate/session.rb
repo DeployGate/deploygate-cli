@@ -27,6 +27,7 @@ module Dgate
       name = data[:name]
       token = data[:token]
       save(name, token)
+      @@login = true
     end
 
     # @param [String] name
