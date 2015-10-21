@@ -11,11 +11,15 @@ module DeployGate
 
       attr_reader :work_path
 
+      # @param [String] work_path
+      # @return [DeployGate::Build::Ios]
       def initialize(work_path)
         @work_path = work_path
         raise NotWorkDirExistError, 'Not work dir exist' unless File.exist?(@work_path)
       end
 
+      # @param [String] export_method
+      # @return [String]
       def build(export_method = AD_HOC)
         values = {
             :export_method => export_method,
@@ -28,10 +32,14 @@ module DeployGate
         absolute_ipa_path
       end
 
+      # @param [String] path
+      # @return [Boolean]
       def self.workspace?(path)
         WORK_DIR_EXTNAMES.include?(File.basename(path))
       end
 
+      # @param [String] path
+      # @return [Array]
       def self.find_workspaces(path)
         projects = []
         WORK_DIR_EXTNAMES.each do |pattern|
@@ -42,6 +50,8 @@ module DeployGate
         projects
       end
 
+      # @param [Array] workspaces
+      # @return [String]
       def self.select_workspace(workspaces)
         select = workspaces.empty? ? nil : workspaces.first
         workspaces.each do |workspace|

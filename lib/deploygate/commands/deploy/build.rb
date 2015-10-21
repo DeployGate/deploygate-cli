@@ -3,6 +3,10 @@ module DeployGate
     module Deploy
       class Build
         class << self
+
+          # @param [Array] args
+          # @param [Hash] options
+          # @return [void]
           def run(args, options)
             # android/ios build
             work_dir = args.first
@@ -20,6 +24,9 @@ module DeployGate
             end
           end
 
+          # @param [Array] args
+          # @param [Hash] options
+          # @return [void]
           def ios(args, options)
             ios = DeployGate::Build::Ios.new(args.first)
 
