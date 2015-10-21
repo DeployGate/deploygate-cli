@@ -40,7 +40,7 @@ module DeployGate
       # @param [String] path
       # @return [Boolean]
       def self.workspace?(path)
-        WORK_DIR_EXTNAMES.include?(File.basename(path))
+        WORK_DIR_EXTNAMES.include?(File.extname(path))
       end
 
       # @param [String] path

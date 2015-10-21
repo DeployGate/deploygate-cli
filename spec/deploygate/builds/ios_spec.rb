@@ -35,14 +35,14 @@ describe DeployGate::Builds::Ios do
 
   describe "#workspace?" do
     it "pod workspace" do
-      allow(File).to receive(:basename).and_return('.xcworkspace')
+      allow(File).to receive(:extname).and_return('.xcworkspace')
 
       result = DeployGate::Builds::Ios.workspace?('path')
       expect(result).to be_truthy
     end
 
     it "default workspace" do
-      allow(File).to receive(:basename).and_return('.xcodeproj')
+      allow(File).to receive(:extname).and_return('.xcodeproj')
 
       result = DeployGate::Builds::Ios.workspace?('path')
       expect(result).to be_truthy
