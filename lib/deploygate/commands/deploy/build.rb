@@ -7,21 +7,16 @@ module DeployGate
             # android/ios build
             work_dir = args.first
 
-            if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.include?(File.extname(work_dir))
-              ios(args, options)
-            else
-              projects = []
-              DeployGate::Build::Ios::WORK_DIR_EXTNAMES.each do |pattern|
-                rule = File::Find.new(:pattern => "*#{pattern}", :path => [work_dir])
-                rule.find {|f| projects.push(f) unless DeployGate::Build::Ios::EX_WORK_NAMES.include?(File.basename(f))}
+            if DeployGate::Build.ios?(work_dir)
+              if DeployGate::Build::Ios.workspace?(work_dir)
+                ios(args, options)
+              else
+                workspaces = DeployGate::Build::Ios.find_workspaces(work_dir)
+                workspace = DeployGate::Build::Ios.select_workspace(workspaces)
+                ios([workspace], options)
               end
-              return if projects.empty?
-
-              select_project = projects.first
-              projects.each do |project|
-                select_project = project if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.first == File.extname(project)
-              end
-              ios([select_project], options)
+            elsif DeployGate::Build.android?(work_dir)
+              # TODO: support android build
             end
           end
 

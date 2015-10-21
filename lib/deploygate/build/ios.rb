@@ -27,6 +27,29 @@ module DeployGate
 
         absolute_ipa_path
       end
+
+      def self.workspace?(path)
+        WORK_DIR_EXTNAMES.include?(File.basename(path))
+      end
+
+      def self.find_workspaces(path)
+        projects = []
+        WORK_DIR_EXTNAMES.each do |pattern|
+          rule = File::Find.new(:pattern => "*#{pattern}", :path => [path])
+          rule.find {|f| projects.push(f) unless EX_WORK_NAMES.include?(File.basename(f))}
+        end
+
+        projects
+      end
+
+      def self.select_workspace(workspaces)
+        select = workspaces.empty? ? nil : workspaces.first
+        workspaces.each do |workspace|
+          select = workspace if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.first == File.extname(workspace)
+        end
+
+        select
+      end
     end
   end
 end
