@@ -12,11 +12,11 @@ module DeployGate
             work_dir = args.first
 
             if DeployGate::Build.ios?(work_dir)
-              if DeployGate::Build::Ios.workspace?(work_dir)
+              if DeployGate::Builds::Ios.workspace?(work_dir)
                 ios(args, options)
               else
-                workspaces = DeployGate::Build::Ios.find_workspaces(work_dir)
-                workspace = DeployGate::Build::Ios.select_workspace(workspaces)
+                workspaces = DeployGate::Builds::Ios.find_workspaces(work_dir)
+                workspace = DeployGate::Builds::Ios.select_workspace(workspaces)
                 ios([workspace], options)
               end
             elsif DeployGate::Build.android?(work_dir)
@@ -28,7 +28,7 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(args, options)
-            ios = DeployGate::Build::Ios.new(args.first)
+            ios = DeployGate::Builds::Ios.new(args.first)
 
             puts 'Select Export method:'
             puts '1. ad-hoc'
@@ -39,9 +39,9 @@ module DeployGate
             method = nil
             case input
               when '1'
-                method = DeployGate::Build::Ios::AD_HOC
+                method = DeployGate::Builds::Ios::AD_HOC
               when '2'
-                method = DeployGate::Build::Ios::ENTERPRISE
+                method = DeployGate::Builds::Ios::ENTERPRISE
             end
 
             ipa_path = ios.build(method)

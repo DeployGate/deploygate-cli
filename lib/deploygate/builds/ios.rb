@@ -1,5 +1,5 @@
 module DeployGate
-  module Build
+  module Builds
     class Ios
       AD_HOC = 'ad-hoc'
       ENTERPRISE = 'enterprise'
@@ -12,7 +12,7 @@ module DeployGate
       attr_reader :work_path
 
       # @param [String] work_path
-      # @return [DeployGate::Build::Ios]
+      # @return [DeployGate::Builds::Ios]
       def initialize(work_path)
         @work_path = work_path
         raise NotWorkDirExistError, 'Not work dir exist' unless File.exist?(@work_path)
