@@ -5,8 +5,8 @@ module DeployGate
       # @param [String] path
       # @return [Boolean]
       def ios?(path)
-        workspaces = DeployGate::Build::Ios.find_workspaces(path)
-        DeployGate::Build::Ios.workspace?(path) || !workspaces.empty?
+        workspaces = DeployGate::Builds::Ios.find_workspaces(path)
+        DeployGate::Builds::Ios.workspace?(path) || !workspaces.empty?
       end
 
       # @param [String] path
