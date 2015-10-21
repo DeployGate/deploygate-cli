@@ -3,10 +3,13 @@ module DeployGate
     class Ios
       AD_HOC = 'ad-hoc'
       ENTERPRISE = 'enterprise'
+      SUPPORT_EXPORT_METHOD = [AD_HOC, ENTERPRISE]
       WORK_DIR_EXTNAMES = ['.xcworkspace', '.xcodeproj']
       EX_WORK_NAMES = ['Pods.xcodeproj', 'project.xcworkspace']
 
       class NotWorkDirExistError < StandardError
+      end
+      class NotSupportExportMethodError < StandardError
       end
 
       attr_reader :work_path
@@ -21,6 +24,8 @@ module DeployGate
       # @param [String] export_method
       # @return [String]
       def build(export_method = AD_HOC)
+        raise NotSupportExportMethodError, 'Not support export' unless SUPPORT_EXPORT_METHOD.include?(export_method)
+
         values = {
             :export_method => export_method,
             :workspace => @work_path
@@ -55,7 +60,7 @@ module DeployGate
       def self.select_workspace(workspaces)
         select = workspaces.empty? ? nil : workspaces.first
         workspaces.each do |workspace|
-          select = workspace if DeployGate::Build::Ios::WORK_DIR_EXTNAMES.first == File.extname(workspace)
+          select = workspace if DeployGate::Builds::Ios::WORK_DIR_EXTNAMES.first == File.extname(workspace)
         end
 
         select
