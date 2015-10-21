@@ -12,24 +12,18 @@ module DeployGate
             work_dir = args.first
 
             if DeployGate::Build.ios?(work_dir)
-              if DeployGate::Builds::Ios.workspace?(work_dir)
-                ios(args, options)
-              else
-                workspaces = DeployGate::Builds::Ios.find_workspaces(work_dir)
-                workspace = DeployGate::Builds::Ios.select_workspace(workspaces)
-                ios([workspace], options)
-              end
+              root_path = DeployGate::Builds::Ios.project_root_path(work_dir)
+              workspaces = DeployGate::Builds::Ios.find_workspaces(root_path)
+              ios(workspaces, options)
             elsif DeployGate::Build.android?(work_dir)
               # TODO: support android build
             end
           end
 
-          # @param [Array] args
+          # @param [Array] workspaces
           # @param [Hash] options
           # @return [void]
-          def ios(args, options)
-            ios = DeployGate::Builds::Ios.new(args.first)
-
+          def ios(workspaces, options)
             puts 'Select Export method:'
             puts '1. ad-hoc'
             puts '2. Enterprise'
@@ -44,7 +38,7 @@ module DeployGate
                 method = DeployGate::Builds::Ios::ENTERPRISE
             end
 
-            ipa_path = ios.build(method)
+            ipa_path = DeployGate::Builds::Ios.new.build(workspaces, method)
             Push.upload([ipa_path], options)
           end
         end

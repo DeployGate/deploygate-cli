@@ -1,11 +1,9 @@
 describe DeployGate::Builds::Ios do
-  describe "#initialize" do
-    it "raise not work dir" do
-      allow(File).to receive(:exist?).and_return(false)
-
-      expect {
-        DeployGate::Builds::Ios.new('path')
-      }.to raise_error DeployGate::Builds::Ios::NotWorkDirExistError
+  before do
+    class ProjectMock
+      def schemes
+        []
+      end
     end
   end
 
@@ -16,8 +14,9 @@ describe DeployGate::Builds::Ios do
       allow_any_instance_of(Gym::Manager).to receive(:work) { call_gym_manager = true }
       allow(File).to receive(:exist?).and_return(true)
       allow(File).to receive(:expand_path).and_return('path')
+      allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
-      DeployGate::Builds::Ios.new('path').build
+      DeployGate::Builds::Ios.new.build([])
       expect(call_gym_manager).to be_truthy
     end
 
@@ -26,9 +25,10 @@ describe DeployGate::Builds::Ios do
       allow_any_instance_of(Gym::Manager).to receive(:work) {}
       allow(File).to receive(:exist?).and_return(true)
       allow(File).to receive(:expand_path).and_return('path')
+      allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
       expect {
-        DeployGate::Builds::Ios.new('path').build('not support export method')
+        DeployGate::Builds::Ios.new.build([], 'not support export method')
       }.to raise_error DeployGate::Builds::Ios::NotSupportExportMethodError
     end
   end
@@ -41,10 +41,26 @@ describe DeployGate::Builds::Ios do
       expect(result).to be_truthy
     end
 
-    it "default workspace" do
+    it "xcode project" do
       allow(File).to receive(:extname).and_return('.xcodeproj')
 
       result = DeployGate::Builds::Ios.workspace?('path')
+      expect(result).to be_falsey
+    end
+  end
+
+  describe "#project?" do
+    it "pod workspace" do
+      allow(File).to receive(:extname).and_return('.xcworkspace')
+
+      result = DeployGate::Builds::Ios.project?('path')
+      expect(result).to be_falsey
+    end
+
+    it "xcode project" do
+      allow(File).to receive(:extname).and_return('.xcodeproj')
+
+      result = DeployGate::Builds::Ios.project?('path')
       expect(result).to be_truthy
     end
   end
@@ -53,17 +69,46 @@ describe DeployGate::Builds::Ios do
     # TODO: add test
   end
 
-  describe "#select_workspace" do
-    it "should select pods workspace" do
-      select_workspace = 'test.xcworkspace'
-      workspeces = ['test.xcodeproj', select_workspace]
-      expect(DeployGate::Builds::Ios.select_workspace(workspeces)).to eq select_workspace
+  describe "#project_root_path" do
+    let(:root_path) {'test'}
+    it "when test/test.xcodeproj/project.xcworkspace" do
+      expect(DeployGate::Builds::Ios.project_root_path('test/test.xcodeproj/project.xcworkspace')).to eq root_path
     end
 
-    it "default project" do
-      select_workspace = 'test.xcodeproj'
-      workspeces = [select_workspace]
-      expect(DeployGate::Builds::Ios.select_workspace(workspeces)).to eq select_workspace
+    it "when test/test.xcodeproj" do
+      expect(DeployGate::Builds::Ios.project_root_path('test/test.xcodeproj')).to eq root_path
+    end
+
+    it "when test/test.xcworkspace" do
+      expect(DeployGate::Builds::Ios.project_root_path('test/test.xcworkspace')).to eq root_path
+    end
+
+    it "when test/" do
+      expect(DeployGate::Builds::Ios.project_root_path('test/')).to eq root_path + '/'
+    end
+  end
+
+  describe "#scheme_workspace" do
+    it "should select project.xcworkspace" do
+      workspaces = ['project.xcworkspace', 'test.xcworkspace']
+      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
+    end
+
+    it "single workspace" do
+      workspaces = ['test.xcworkspace']
+      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
+    end
+  end
+
+  describe "#build_workspace" do
+    it "not select project.xcworkspace" do
+      workspaces = ['project.xcworkspace', 'test.xcworkspace']
+      expect(DeployGate::Builds::Ios.build_workspace(workspaces)).to eq workspaces.last
+    end
+
+    it "single workspace" do
+      workspaces = ['project.xcworkspace']
+      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
     end
   end
 end
