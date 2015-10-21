@@ -6,6 +6,8 @@ module DeployGate
         # @param [Array] args
         # @param [Commander::Command::Options] options
         def run(args, options)
+          Init.login unless DeployGate::Session.new.login?
+
           # push or build(android/ios)
           args.push(Dir.pwd) if args.empty?
 
