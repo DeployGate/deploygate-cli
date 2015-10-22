@@ -5,6 +5,8 @@ require "io/console"
 require "rbconfig"
 require "color_echo"
 require "file/find"
+require "openssl"
+require "plist"
 
 # ios build
 require "gym"
