@@ -24,21 +24,8 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
-            puts 'Select Export method:'
-            puts '1. ad-hoc'
-            puts '2. Enterprise'
-            print '? '
-            input = STDIN.gets.chop
-
-            method = nil
-            case input
-              when '1'
-                method = DeployGate::Builds::Ios::AD_HOC
-              when '2'
-                method = DeployGate::Builds::Ios::ENTERPRISE
-            end
-
-            ipa_path = DeployGate::Builds::Ios.new.build(workspaces, method)
+            method = DeployGate::Builds::Ios::Export.method
+            ipa_path = DeployGate::Builds::Ios.build(workspaces, method)
             Push.upload([ipa_path], options)
           end
         end
