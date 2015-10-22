@@ -8,9 +8,11 @@ module DeployGate
         PROFILE_EXTNAME = '.mobileprovision'
 
         class << self
+          # @return [String]
           def method
-            result = AD_HOC
+            result = nil
             profiles.each do |profile_path|
+              result = AD_HOC if adhoc?(profile_path) && result.nil?
               result = ENTERPRISE if inhouse?(profile_path)
             end
 
@@ -21,13 +23,14 @@ module DeployGate
           # @return [Boolean]
           def adhoc?(profile_path)
             plist = analyze_profile(profile_path)
-            plist['ProvisionsAllDevices'].nil?
+            !plist['Entitlements']['get-task-allow'] && plist['ProvisionsAllDevices'].nil?
           end
 
           # @param [String] profile_path
           # @return [Boolean]
           def inhouse?(profile_path)
-            !adhoc?(profile_path)
+            plist = analyze_profile(profile_path)
+            !plist['Entitlements']['get-task-allow'] && !plist['ProvisionsAllDevices'].nil?
           end
 
           # @param [String] profile_path
