@@ -48,8 +48,13 @@ module DeployGate
           # @return [Array]
           def profiles
             profiles = []
-            rule = File::Find.new(:pattern => "*#{PROFILE_EXTNAME}", :path => [profile_dir_path])
-            rule.find {|f| profiles.push(f)}
+            Find.find(profile_dir_path) do |path|
+              next if path == profile_dir_path
+              Find.prune if FileTest.directory?(path)
+              if File.extname(path) == PROFILE_EXTNAME
+                profiles.push(path)
+              end
+            end
 
             profiles
           end

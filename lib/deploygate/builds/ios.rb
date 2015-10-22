@@ -45,12 +45,26 @@ module DeployGate
           PROJECT_DIR_EXTNAME == File.extname(path)
         end
 
-        # @param [String] path
+        def ios_root?(base_path)
+          Find.find(base_path) do |path|
+            next if path == base_path
+            return true if workspace?(path) || project?(path)
+            Find.prune if FileTest.directory?(path)
+          end
+          false
+        end
+
+        # @param [String] base_path
+        # @param [Boolean] current_only
         # @return [Array]
-        def find_workspaces(path)
+        def find_workspaces(base_path)
           projects = []
-          rule = File::Find.new(:pattern => "*#{WORK_DIR_EXTNAME}", :path => [path])
-          rule.find {|f| projects.push(f)}
+          Find.find(base_path) do |path|
+            next if path == base_path
+            if File.extname(path) == WORK_DIR_EXTNAME
+              projects.push(path)
+            end
+          end
 
           projects
         end
