@@ -11,6 +11,8 @@ require "pbxplorer" # TODO: error gym
 
 # ios build
 require "gym"
+require "spaceship"
+require "sigh"
 
 module DeployGate
 end
@@ -31,6 +33,7 @@ require "deploygate/build"
 require "deploygate/builds/ios"
 require "deploygate/builds/ios/export"
 require "deploygate/builds/ios/analyze"
+require "deploygate/builds/ios/set_profile"
 require "deploygate/message/error"
 require "deploygate/message/success"
 require "deploygate/version"

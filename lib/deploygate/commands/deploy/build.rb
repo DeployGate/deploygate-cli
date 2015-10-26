@@ -39,7 +39,7 @@ module DeployGate
             begin
               method = analyze.run(identifier)
             rescue DeployGate::Builds::Ios::Analyze::NotLocalProvisioningProfileError => e
-              raise e # TODO: start fastlane/sigh
+              method = create_provisioning(identifier)
             end
 
             ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, method)
@@ -65,6 +65,21 @@ module DeployGate
             end
 
             result
+          end
+
+          # @param [String] identifier
+          # @return [String]
+          def create_provisioning(identifier)
+            print 'Username: '
+            username = STDIN.gets.chop
+
+            set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
+            if set_profile.app_id_create
+              puts "Create #{identifier} app id"
+            end
+            set_profile.create_provisioning
+
+            set_profile.method
           end
         end
       end
