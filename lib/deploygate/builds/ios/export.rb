@@ -8,6 +8,7 @@ module DeployGate
         PROFILE_EXTNAME = '.mobileprovision'
 
         class << self
+          # @param [String] bundle_identifier
           # @return [String]
           def target_provisioning_profile(bundle_identifier)
             result = nil

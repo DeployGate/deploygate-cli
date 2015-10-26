@@ -44,6 +44,8 @@ module DeployGate
             Push.upload([ipa_path], options)
           end
 
+          # @param [Array] schemes
+          # @return [String]
           def select_schemes(schemes)
             result = nil
             puts 'Select scheme:'

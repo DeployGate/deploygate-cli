@@ -10,18 +10,23 @@ module DeployGate
         BASE_WORK_DIR_NAME = 'project.xcworkspace'
         BUILD_CONFIGRATION = 'Release'
 
+        # @param [Array] workspaces
+        # @return [DeployGate::Builds::Ios::Analyze]
         def initialize(workspaces)
           @workspaces = workspaces
           @scheme_workspace = find_scheme_workspace(workspaces)
           @build_workspace = find_build_workspace(workspaces)
         end
 
+        # @return [Array]
         def schemes
           config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @scheme_workspace})
           project = FastlaneCore::Project.new(config)
           project.schemes
         end
 
+        # @param [String] scheme_name
+        # @return [Hash]
         def run(scheme_name)
           identifier = target_bundle_identifier(@scheme_workspace, scheme_name, BUILD_CONFIGRATION)
           provisioning_profile = Export.target_provisioning_profile(identifier)
@@ -35,6 +40,10 @@ module DeployGate
 
         private
 
+        # @param [String] scheme_workspace
+        # @param [String] scheme_name
+        # @param [String] build_configration
+        # @return [String]
         def target_bundle_identifier(scheme_workspace, scheme_name, build_configration)
           project_file = XCProjectFile.new(File.join(File.dirname(scheme_workspace), PBXPROJ_FILE_NAME))
           target = project_file.project.targets.reject{|target| target['name'] != scheme_name}.first
