@@ -37,10 +37,10 @@ module DeployGate
         # @param [String] scheme_name
         # @return [String]
         def target_bundle_identifier(scheme_name)
-          project_file = XCProjectFile.new(File.join(File.dirname(@scheme_workspace), PBXPROJ_FILE_NAME))
-          target = project_file.project.targets.reject{|target| target['name'] != scheme_name}.first
-          conf = target.build_configuration_list.build_configurations.reject{|conf| conf['name'] != BUILD_CONFIGRATION}.first
-          conf['buildSettings']['PRODUCT_BUNDLE_IDENTIFIER']
+          project = Xcodeproj::Project.open(File.dirname(@scheme_workspace))
+          target = project.targets.reject{|target| target.name != scheme_name}.first
+          conf = target.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
+          conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
         end
 
         private

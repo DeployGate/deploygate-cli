@@ -7,12 +7,12 @@ require "color_echo"
 require "openssl"
 require "plist"
 require "find"
-require "pbxplorer" # TODO: error gym
 
 # ios build
 require "gym"
 require "spaceship"
 require "sigh"
+require "xcodeproj"
 
 module DeployGate
 end

@@ -33,7 +33,6 @@ module DeployGate
               target_shceme = select_schemes(schemes)
             end
 
-
             identifier = analyze.target_bundle_identifier(target_shceme)
             method = nil
             begin

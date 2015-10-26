@@ -3,7 +3,6 @@ module DeployGate
     module Ios
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
-      PBXPROJ_FILE_NAME = 'project.pbxproj'
 
       class NotSupportExportMethodError < StandardError
       end
