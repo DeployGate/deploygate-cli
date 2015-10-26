@@ -33,14 +33,16 @@ module DeployGate
               target_shceme = select_schemes(schemes)
             end
 
-            data = nil
+
+            identifier = analyze.target_bundle_identifier(target_shceme)
+            method = nil
             begin
-              data = analyze.run(target_shceme)
+              method = analyze.run(identifier)
             rescue DeployGate::Builds::Ios::Analyze::NotLocalProvisioningProfileError => e
               raise e # TODO: start fastlane/sigh
             end
 
-            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, data[:method])
+            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, method)
             Push.upload([ipa_path], options)
           end
 

@@ -25,31 +25,25 @@ module DeployGate
           project.schemes
         end
 
-        # @param [String] scheme_name
-        # @return [Hash]
-        def run(scheme_name)
-          identifier = target_bundle_identifier(@scheme_workspace, scheme_name, BUILD_CONFIGRATION)
+        # @param [String] identifier
+        # @return [String]
+        def run(identifier)
           provisioning_profile = Export.target_provisioning_profile(identifier)
           raise NotLocalProvisioningProfileError if provisioning_profile.nil?
 
-          {
-              :method => Export.adhoc?(provisioning_profile) ? Export::AD_HOC : Export::ENTERPRISE,
-              :provisoning_profile => provisioning_profile
-          }
+          Export.adhoc?(provisioning_profile) ? Export::AD_HOC : Export::ENTERPRISE
+        end
+
+        # @param [String] scheme_name
+        # @return [String]
+        def target_bundle_identifier(scheme_name)
+          project_file = XCProjectFile.new(File.join(File.dirname(@scheme_workspace), PBXPROJ_FILE_NAME))
+          target = project_file.project.targets.reject{|target| target['name'] != scheme_name}.first
+          conf = target.build_configuration_list.build_configurations.reject{|conf| conf['name'] != BUILD_CONFIGRATION}.first
+          conf['buildSettings']['PRODUCT_BUNDLE_IDENTIFIER']
         end
 
         private
-
-        # @param [String] scheme_workspace
-        # @param [String] scheme_name
-        # @param [String] build_configration
-        # @return [String]
-        def target_bundle_identifier(scheme_workspace, scheme_name, build_configration)
-          project_file = XCProjectFile.new(File.join(File.dirname(scheme_workspace), PBXPROJ_FILE_NAME))
-          target = project_file.project.targets.reject{|target| target['name'] != scheme_name}.first
-          conf = target.build_configuration_list.build_configurations.reject{|conf| conf['name'] != build_configration}.first
-          conf['buildSettings']['PRODUCT_BUNDLE_IDENTIFIER']
-        end
 
         # @param [Array] workspaces
         # @return [String]
