@@ -69,7 +69,7 @@ module DeployGate
           # @param [String] identifier
           # @return [String]
           def create_provisioning(identifier)
-            print 'Username: '
+            print 'apple developer Username: '
             username = STDIN.gets.chop
 
             set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
