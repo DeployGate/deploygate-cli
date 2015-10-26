@@ -5,6 +5,11 @@ describe DeployGate::Builds::Ios do
         []
       end
     end
+    class AnalyzeMock
+      def build_workspace
+        ''
+      end
+    end
   end
 
   describe "#build" do
@@ -16,7 +21,7 @@ describe DeployGate::Builds::Ios do
       allow(File).to receive(:expand_path).and_return('path')
       allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
-      DeployGate::Builds::Ios.build([])
+      DeployGate::Builds::Ios.build(AnalyzeMock.new, '')
       expect(call_gym_manager).to be_truthy
     end
 
@@ -28,7 +33,7 @@ describe DeployGate::Builds::Ios do
       allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
       expect {
-        DeployGate::Builds::Ios.build([], 'not support export method')
+        DeployGate::Builds::Ios.build(AnalyzeMock.new, '', 'not support export method')
       }.to raise_error DeployGate::Builds::Ios::NotSupportExportMethodError
     end
   end
@@ -85,30 +90,6 @@ describe DeployGate::Builds::Ios do
 
     it "when test/" do
       expect(DeployGate::Builds::Ios.project_root_path('test/')).to eq root_path + '/'
-    end
-  end
-
-  describe "#scheme_workspace" do
-    it "should select project.xcworkspace" do
-      workspaces = ['project.xcworkspace', 'test.xcworkspace']
-      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
-    end
-
-    it "single workspace" do
-      workspaces = ['test.xcworkspace']
-      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
-    end
-  end
-
-  describe "#build_workspace" do
-    it "not select project.xcworkspace" do
-      workspaces = ['project.xcworkspace', 'test.xcworkspace']
-      expect(DeployGate::Builds::Ios.build_workspace(workspaces)).to eq workspaces.last
-    end
-
-    it "single workspace" do
-      workspaces = ['project.xcworkspace']
-      expect(DeployGate::Builds::Ios.scheme_workspace(workspaces)).to eq workspaces.first
     end
   end
 end
