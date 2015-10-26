@@ -26,7 +26,12 @@ module DeployGate
           def ios(workspaces, options)
             analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
             schemes = analyze.schemes
-            target_shceme = schemes.first # TODO: select scheme user
+            raise 'Scheme empty error' if schemes.empty?
+
+            target_shceme = schemes.first
+            if schemes.count > 1
+              target_shceme = select_schemes(schemes)
+            end
 
             data = nil
             begin
@@ -37,6 +42,25 @@ module DeployGate
 
             ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, data[:method])
             Push.upload([ipa_path], options)
+          end
+
+          def select_schemes(schemes)
+            result = nil
+            puts 'Select scheme:'
+            schemes.each_with_index do |scheme, index|
+              puts "#{index + 1}. #{scheme}"
+            end
+            print '? '
+            select = STDIN.gets.chop
+            begin
+              result = schemes[Integer(select) - 1]
+              raise 'not select' if result.nil?
+            rescue => e
+              puts 'Please select scheme number'
+              return select_schemes(schemes)
+            end
+
+            result
           end
         end
       end
