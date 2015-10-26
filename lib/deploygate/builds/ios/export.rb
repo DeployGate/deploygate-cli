@@ -9,11 +9,23 @@ module DeployGate
 
         class << self
           # @return [String]
-          def method
+          def target_provisioning_profile(bundle_identifier)
             result = nil
             profiles.each do |profile_path|
-              result = AD_HOC if adhoc?(profile_path) && result.nil?
-              result = ENTERPRISE if inhouse?(profile_path)
+              plist = analyze_profile(profile_path)
+              entities = plist['Entitlements']
+              unless entities['get-task-allow']
+                team = entities['com.apple.developer.team-identifier']
+                application_id = entities['application-identifier']
+                application_id.slice!(/^#{team}\./)
+                if bundle_identifier.match(application_id)
+                  if adhoc?(profile_path) && result.nil?
+                    result = profile_path
+                  elsif inhouse?(profile_path)
+                    result = profile_path
+                  end
+                end
+              end
             end
 
             result

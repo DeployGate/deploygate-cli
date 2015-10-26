@@ -7,6 +7,7 @@ require "color_echo"
 require "openssl"
 require "plist"
 require "find"
+require "pbxplorer" # TODO: error gym
 
 # ios build
 require "gym"
@@ -29,6 +30,7 @@ require "deploygate/deploy"
 require "deploygate/build"
 require "deploygate/builds/ios"
 require "deploygate/builds/ios/export"
+require "deploygate/builds/ios/analyze"
 require "deploygate/message/error"
 require "deploygate/message/success"
 require "deploygate/version"

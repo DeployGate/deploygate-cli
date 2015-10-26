@@ -24,8 +24,18 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
-            method = DeployGate::Builds::Ios::Export.method
-            ipa_path = DeployGate::Builds::Ios.build(workspaces, method)
+            analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
+            schemes = analyze.schemes
+            target_shceme = schemes.first # TODO: select scheme user
+
+            data = nil
+            begin
+              data = analyze.run(target_shceme)
+            rescue DeployGate::Builds::Ios::Analyze::NotLocalProvisioningProfileError => e
+              raise e # TODO: start fastlane/sigh
+            end
+
+            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, data[:method])
             Push.upload([ipa_path], options)
           end
         end

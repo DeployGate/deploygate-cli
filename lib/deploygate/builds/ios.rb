@@ -1,30 +1,26 @@
 module DeployGate
   module Builds
     module Ios
-      BASE_WORK_DIR_NAME = 'project.xcworkspace'
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
+      PBXPROJ_FILE_NAME = 'project.pbxproj'
 
       class NotSupportExportMethodError < StandardError
       end
 
       class << self
-        # @param [Array] workspaces
+        # @param [Analyze] ios_analyze
+        # @param [String] target_scheme
         # @param [String] export_method
         # @return [String]
-        def build(workspaces, export_method = Export::AD_HOC)
+        def build(ios_analyze, target_scheme, export_method = Export::AD_HOC)
           raise NotSupportExportMethodError, 'Not support export' unless Export::SUPPORT_EXPORT_METHOD.include?(export_method)
-
-          scheme_workspace = scheme_workspace(workspaces)
-          build_workspace  = build_workspace(workspaces)
-          config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => scheme_workspace})
-          project = FastlaneCore::Project.new(config)
-          schemes = project.schemes
 
           values = {
               :export_method => export_method,
-              :workspace => build_workspace,
-              :scheme => schemes.count == 1 ? schemes.first : nil
+              :workspace => ios_analyze.build_workspace,
+              :configuration => Analyze::BUILD_CONFIGRATION,
+              :scheme => target_scheme
           }
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
           absolute_ipa_path = File.expand_path(Gym::Manager.new.work(v))
@@ -77,38 +73,6 @@ module DeployGate
             result = project_root_path(File.dirname(path))
           end
           result
-        end
-
-        # @param [Array] workspaces
-        # @return [String]
-        def scheme_workspace(workspaces)
-          return nil if workspaces.empty?
-          return workspaces.first if workspaces.count == 1
-
-          select = nil
-          workspaces.each do |workspace|
-            if BASE_WORK_DIR_NAME == File.basename(workspace)
-              select = workspace
-            end
-          end
-
-          select
-        end
-
-        # @param [Array] workspaces
-        # @return [String]
-        def build_workspace(workspaces)
-          return nil if workspaces.empty?
-          return workspaces.first if workspaces.count == 1
-
-          select = nil
-          workspaces.each do |workspace|
-            if BASE_WORK_DIR_NAME != File.basename(workspace)
-              select = workspace
-            end
-          end
-
-          select
         end
       end
     end

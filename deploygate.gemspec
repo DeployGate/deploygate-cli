@@ -29,6 +29,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'commander', '~> 4.3.5'
   spec.add_dependency 'color_echo', '~> 2.0.1'
   spec.add_dependency 'plist', '~> 3.1.0'
+  spec.add_dependency 'pbxplorer', '~> 1.0.0'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'
