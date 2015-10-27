@@ -5,6 +5,7 @@ module DeployGate
         attr_reader :method
 
         OUTPUT_PATH = '/tmp/dg/provisioning_profile/'
+        CERTIFICATE_OUTPUT_PATH = '/tmp/dg/certificate/'
 
         # @param [String] username
         # @param [String] identifier
@@ -45,7 +46,17 @@ module DeployGate
           else
             prod_certs = Spaceship.certificate.all.reject{|cert| cert.class != Spaceship::Portal::Certificate::InHouse}
           end
-          distribution_cert_ids = prod_certs.map(&:id)
+
+          # check local install certificate
+          FileUtils.mkdir_p(CERTIFICATE_OUTPUT_PATH)
+          distribution_cert_ids = []
+          prod_certs.each do |cert|
+            path = File.join(CERTIFICATE_OUTPUT_PATH, "#{cert.id}.cer")
+            raw_data = cert.download_raw
+            File.write(path, raw_data)
+            distribution_cert_ids.push(cert.id) if FastlaneCore::CertChecker.installed?(path)
+          end
+          raise 'Not local install certificate' if distribution_cert_ids.empty?
 
           FileUtils.mkdir_p(OUTPUT_PATH)
           provisionings = []
