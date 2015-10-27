@@ -37,7 +37,7 @@ module DeployGate
           false
         end
 
-        # @return [void]
+        # @return [String]
         def create_provisioning
           FileUtils.mkdir_p(OUTPUT_PATH)
           values = {
@@ -50,7 +50,6 @@ module DeployGate
           Sigh.config = v
           Sigh::Manager.start
         end
-
       end
     end
   end

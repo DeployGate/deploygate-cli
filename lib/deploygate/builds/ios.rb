@@ -10,16 +10,18 @@ module DeployGate
       class << self
         # @param [Analyze] ios_analyze
         # @param [String] target_scheme
+        # @param [String] codesigning_identity
         # @param [String] export_method
         # @return [String]
-        def build(ios_analyze, target_scheme, export_method = Export::AD_HOC)
+        def build(ios_analyze, target_scheme, codesigning_identity, export_method = Export::AD_HOC)
           raise NotSupportExportMethodError, 'Not support export' unless Export::SUPPORT_EXPORT_METHOD.include?(export_method)
 
           values = {
               :export_method => export_method,
               :workspace => ios_analyze.build_workspace,
               :configuration => Analyze::BUILD_CONFIGRATION,
-              :scheme => target_scheme
+              :scheme => target_scheme,
+              :codesigning_identity => codesigning_identity
           }
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
           absolute_ipa_path = File.expand_path(Gym::Manager.new.work(v))

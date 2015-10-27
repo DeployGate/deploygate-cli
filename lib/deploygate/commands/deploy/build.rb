@@ -34,18 +34,22 @@ module DeployGate
             end
 
             identifier = analyze.target_bundle_identifier(target_shceme)
-            provisioning_profiles = DeployGate::Builds::Ios::Export.target_provisioning_profiles(identifier)
+            data = DeployGate::Builds::Ios::Export.find_local_data(identifier)
+            profiles = data[:profiles]
+            teams = data[:teams]
 
-            method = nil
-            if provisioning_profiles.empty?
-              method = create_provisioning(identifier)
-            elsif provisioning_profiles.count == 1
-              method = DeployGate::Builds::Ios::Export.method(provisioning_profiles.first)
-            elsif provisioning_profiles.count >= 2
-              # TODO: user select provisioning profile
+            target_provisioning_profile = nil
+            if teams.empty?
+              target_provisioning_profile = create_provisioning(identifier)
+            elsif teams.count == 1
+             target_provisioning_profile = DeployGate::Builds::Ios::Export.select_profile(profiles[teams.keys.first])
+            elsif teams.count >= 2
+              target_provisioning_profile = select_teams(teams, profiles)
             end
+            method = DeployGate::Builds::Ios::Export.method(target_provisioning_profile)
+            codesigning_identity = DeployGate::Builds::Ios::Export.codesigning_identity(target_provisioning_profile)
 
-            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, method)
+            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, codesigning_identity, method)
             Push.upload([ipa_path], options)
           end
 
@@ -65,6 +69,31 @@ module DeployGate
             rescue => e
               puts 'Please select scheme number'
               return select_schemes(schemes)
+            end
+
+            result
+          end
+
+          # @param [Hash] teams
+          # @param [Hash] profiles
+          # @return [String]
+          def select_teams(teams, profiles)
+            result = nil
+            puts 'Select team:'
+            teams.each_with_index do |team, index|
+              puts "#{index + 1}. #{team[1]} (#{team[0]})"
+            end
+            print '? '
+            select = STDIN.gets.chop
+            begin
+              team = teams.keys[Integer(select) - 1]
+              team_profiles = profiles[team].first
+              raise 'not select' if team_profiles.nil?
+
+              result = DeployGate::Builds::Ios::Export.select_profile(profiles[team])
+            rescue => e
+              puts 'Please select team number'
+              return select_teams(teams, profiles)
             end
 
             result
@@ -93,13 +122,13 @@ module DeployGate
             end
 
             begin
-              set_profile.create_provisioning
+              provisioning_profile_path = set_profile.create_provisioning
             rescue => e
               DeployGate::Message::Error.print("Error: Failed create provisioning")
               raise e
             end
 
-            set_profile.method
+            provisioning_profile_path
           end
         end
       end

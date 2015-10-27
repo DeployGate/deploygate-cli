@@ -9,9 +9,10 @@ module DeployGate
 
         class << self
           # @param [String] bundle_identifier
-          # @return [Array]
-          def target_provisioning_profiles(bundle_identifier)
-            results = []
+          # @return [Hash]
+          def find_local_data(bundle_identifier)
+            result_profiles = {}
+            teams = {}
             profiles.each do |profile_path|
               plist = analyze_profile(profile_path)
               entities = plist['Entitlements']
@@ -19,13 +20,38 @@ module DeployGate
                 team = entities['com.apple.developer.team-identifier']
                 application_id = entities['application-identifier']
                 application_id.slice!(/^#{team}\./)
+                application_id = '.' + application_id if application_id == '*'
                 if bundle_identifier.match(application_id)
-                  results.push(profile_path)
+                  teams[team] = plist['TeamName'] if teams[team].nil?
+                  result_profiles[team] = [] if result_profiles[team].nil?
+                  result_profiles[team].push(profile_path)
                 end
               end
             end
 
-            results
+            {
+                :teams => teams,
+                :profiles => result_profiles
+            }
+          end
+
+          # @param [Array] profiles
+          # @return [String]
+          def select_profile(profiles)
+            select = nil
+
+            profiles.each do |profile|
+              select = profile if adhoc?(profile) && select.nil?
+              select = profile if inhouse?(profile)
+            end
+            select
+          end
+
+          # @param [String] profile_path
+          # @return [String]
+          def codesigning_identity(profile_path)
+            plist = analyze_profile(profile_path)
+            "iPhone Distribution: #{plist['TeamName']} (#{plist['Entitlements']['com.apple.developer.team-identifier']})"
           end
 
           # @param [String] profile_path
