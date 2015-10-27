@@ -34,11 +34,15 @@ module DeployGate
             end
 
             identifier = analyze.target_bundle_identifier(target_shceme)
+            provisioning_profiles = DeployGate::Builds::Ios::Export.target_provisioning_profiles(identifier)
+
             method = nil
-            begin
-              method = analyze.run(identifier)
-            rescue DeployGate::Builds::Ios::Analyze::NotLocalProvisioningProfileError => e
+            if provisioning_profiles.empty?
               method = create_provisioning(identifier)
+            elsif provisioning_profiles.count == 1
+              method = DeployGate::Builds::Ios::Export.method(provisioning_profiles.first)
+            elsif provisioning_profiles.count >= 2
+              # TODO: user select provisioning profile
             end
 
             ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, method)
@@ -72,11 +76,28 @@ module DeployGate
             print 'apple developer Username: '
             username = STDIN.gets.chop
 
-            set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
-            if set_profile.app_id_create
-              puts "Create #{identifier} app id"
+            begin
+              set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
+            rescue => e
+              DeployGate::Message::Error.print("Error: Please login try again")
+              raise e
             end
-            set_profile.create_provisioning
+
+            begin
+              if set_profile.app_id_create
+                puts "Create #{identifier} app id"
+              end
+            rescue => e
+              DeployGate::Message::Error.print("Error: App id create error")
+              raise e
+            end
+
+            begin
+              set_profile.create_provisioning
+            rescue => e
+              DeployGate::Message::Error.print("Error: Failed create provisioning")
+              raise e
+            end
 
             set_profile.method
           end

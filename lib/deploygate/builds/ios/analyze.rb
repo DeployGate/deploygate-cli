@@ -25,15 +25,6 @@ module DeployGate
           project.schemes
         end
 
-        # @param [String] identifier
-        # @return [String]
-        def run(identifier)
-          provisioning_profile = Export.target_provisioning_profile(identifier)
-          raise NotLocalProvisioningProfileError if provisioning_profile.nil?
-
-          Export.adhoc?(provisioning_profile) ? Export::AD_HOC : Export::ENTERPRISE
-        end
-
         # @param [String] scheme_name
         # @return [String]
         def target_bundle_identifier(scheme_name)

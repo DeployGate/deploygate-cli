@@ -9,9 +9,9 @@ module DeployGate
 
         class << self
           # @param [String] bundle_identifier
-          # @return [String]
-          def target_provisioning_profile(bundle_identifier)
-            result = nil
+          # @return [Array]
+          def target_provisioning_profiles(bundle_identifier)
+            results = []
             profiles.each do |profile_path|
               plist = analyze_profile(profile_path)
               entities = plist['Entitlements']
@@ -20,16 +20,18 @@ module DeployGate
                 application_id = entities['application-identifier']
                 application_id.slice!(/^#{team}\./)
                 if bundle_identifier.match(application_id)
-                  if adhoc?(profile_path) && result.nil?
-                    result = profile_path
-                  elsif inhouse?(profile_path)
-                    result = profile_path
-                  end
+                  results.push(profile_path)
                 end
               end
             end
 
-            result
+            results
+          end
+
+          # @param [String] profile_path
+          # @return [String]
+          def method(profile_path)
+            adhoc?(profile_path) ? AD_HOC : ENTERPRISE
           end
 
           # @param [String] profile_path
