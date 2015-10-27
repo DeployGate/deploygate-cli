@@ -25,15 +25,9 @@ module DeployGate
           # @return [void]
           def ios(workspaces, options)
             analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
-            schemes = analyze.schemes
-            raise 'Scheme empty error' if schemes.empty?
+            target_scheme = analyze.scheme
+            identifier = analyze.target_bundle_identifier
 
-            target_shceme = schemes.first
-            if schemes.count > 1
-              target_shceme = select_schemes(schemes)
-            end
-
-            identifier = analyze.target_bundle_identifier(target_shceme)
             data = DeployGate::Builds::Ios::Export.find_local_data(identifier)
             profiles = data[:profiles]
             teams = data[:teams]
@@ -50,34 +44,13 @@ module DeployGate
             codesigning_identity = DeployGate::Builds::Ios::Export.codesigning_identity(target_provisioning_profile)
 
             begin
-              ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, codesigning_identity, method)
+              ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
             rescue => e
               # TODO: build error handling
               raise e
             end
 
             Push.upload([ipa_path], options)
-          end
-
-          # @param [Array] schemes
-          # @return [String]
-          def select_schemes(schemes)
-            result = nil
-            puts 'Select scheme:'
-            schemes.each_with_index do |scheme, index|
-              puts "#{index + 1}. #{scheme}"
-            end
-            print '? '
-            select = STDIN.gets.chop
-            begin
-              result = schemes[Integer(select) - 1]
-              raise 'not select' if result.nil?
-            rescue => e
-              puts 'Please select scheme number'
-              return select_schemes(schemes)
-            end
-
-            result
           end
 
           # @param [Hash] teams

@@ -2,7 +2,7 @@ module DeployGate
   module Builds
     module Ios
       class Analyze
-        attr_reader :workspaces, :scheme_workspace, :build_workspace
+        attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme
 
         class NotLocalProvisioningProfileError < StandardError
         end
@@ -16,20 +16,17 @@ module DeployGate
           @workspaces = workspaces
           @scheme_workspace = find_scheme_workspace(workspaces)
           @build_workspace = find_build_workspace(workspaces)
-        end
 
-        # @return [Array]
-        def schemes
           config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @scheme_workspace})
           project = FastlaneCore::Project.new(config)
-          project.schemes
+          project.select_scheme
+          @scheme = project.options[:scheme]
         end
 
-        # @param [String] scheme_name
         # @return [String]
-        def target_bundle_identifier(scheme_name)
+        def target_bundle_identifier
           project = Xcodeproj::Project.open(File.dirname(@scheme_workspace))
-          target = project.native_targets.reject{|target| target.name != scheme_name}.first
+          target = project.native_targets.reject{|target| target.name != @scheme}.first
           product_name =  target.product_name
           conf = target.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
           identifier = conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
