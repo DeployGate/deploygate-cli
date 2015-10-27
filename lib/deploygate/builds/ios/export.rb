@@ -21,7 +21,7 @@ module DeployGate
                 application_id = entities['application-identifier']
                 application_id.slice!(/^#{team}\./)
                 application_id = '.' + application_id if application_id == '*'
-                if bundle_identifier.match(application_id)
+                if bundle_identifier.match(application_id) && installed_certificate?(profile_path)
                   # TODO: check provisioning expired
                   teams[team] = plist['TeamName'] if teams[team].nil?
                   result_profiles[team] = [] if result_profiles[team].nil?
@@ -34,6 +34,32 @@ module DeployGate
                 :teams => teams,
                 :profiles => result_profiles
             }
+          end
+
+          # @param [String] profile_path
+          # @return [Boolean]
+          def installed_certificate?(profile_path)
+            plist = analyze_profile(profile_path)
+            certificate_str = plist['DeveloperCertificates'].first.read
+            certificate =  OpenSSL::X509::Certificate.new certificate_str
+            id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
+            installed_identies.include?(id)
+          end
+
+          # @return [Array]
+          def installed_identies
+            available = `security find-identity -v -p codesigning`
+            ids = []
+            available.split("\n").each do |current|
+              next if current.include? "REVOKED"
+              begin
+                (ids << current.match(/.*\) (.*) \".*/)[1])
+              rescue
+                # the last line does not match
+              end
+            end
+
+            ids
           end
 
           # @param [Array] profiles
