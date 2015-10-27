@@ -13,6 +13,7 @@ module DeployGate
           @username = username
           @identifier = identifier
           Spaceship.login(username)
+          Spaceship.select_team
           if Spaceship.client.in_house?
             @method = Export::ENTERPRISE
           else
@@ -50,7 +51,8 @@ module DeployGate
                 :app_identifier => @identifier,
                 :username => @username,
                 :output_path => OUTPUT_PATH,
-                :cert_id => cert_id
+                :cert_id => cert_id,
+                :team_id => Spaceship.client.team_id
             }
             v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
             Sigh.config = v
