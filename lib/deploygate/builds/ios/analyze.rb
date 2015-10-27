@@ -29,9 +29,13 @@ module DeployGate
         # @return [String]
         def target_bundle_identifier(scheme_name)
           project = Xcodeproj::Project.open(File.dirname(@scheme_workspace))
-          target = project.targets.reject{|target| target.name != scheme_name}.first
+          target = project.native_targets.reject{|target| target.name != scheme_name}.first
+          product_name =  target.product_name
           conf = target.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
-          conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
+          identifier = conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
+          identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
+
+          identifier
         end
 
         private
