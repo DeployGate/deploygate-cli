@@ -21,7 +21,7 @@ describe DeployGate::Builds::Ios do
       allow(File).to receive(:expand_path).and_return('path')
       allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
-      DeployGate::Builds::Ios.build(AnalyzeMock.new, '')
+      DeployGate::Builds::Ios.build(AnalyzeMock.new, '', '')
       expect(call_gym_manager).to be_truthy
     end
 
@@ -33,7 +33,7 @@ describe DeployGate::Builds::Ios do
       allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
       expect {
-        DeployGate::Builds::Ios.build(AnalyzeMock.new, '', 'not support export method')
+        DeployGate::Builds::Ios.build(AnalyzeMock.new, '', '', 'not support export method')
       }.to raise_error DeployGate::Builds::Ios::NotSupportExportMethodError
     end
   end
