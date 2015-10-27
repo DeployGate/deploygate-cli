@@ -22,6 +22,7 @@ module DeployGate
                 application_id.slice!(/^#{team}\./)
                 application_id = '.' + application_id if application_id == '*'
                 if bundle_identifier.match(application_id)
+                  # TODO: check provisioning expired
                   teams[team] = plist['TeamName'] if teams[team].nil?
                   result_profiles[team] = [] if result_profiles[team].nil?
                   result_profiles[team].push(profile_path)

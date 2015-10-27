@@ -42,14 +42,20 @@ module DeployGate
             if teams.empty?
               target_provisioning_profile = create_provisioning(identifier)
             elsif teams.count == 1
-             target_provisioning_profile = DeployGate::Builds::Ios::Export.select_profile(profiles[teams.keys.first])
+              target_provisioning_profile = DeployGate::Builds::Ios::Export.select_profile(profiles[teams.keys.first])
             elsif teams.count >= 2
               target_provisioning_profile = select_teams(teams, profiles)
             end
             method = DeployGate::Builds::Ios::Export.method(target_provisioning_profile)
             codesigning_identity = DeployGate::Builds::Ios::Export.codesigning_identity(target_provisioning_profile)
 
-            ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, codesigning_identity, method)
+            begin
+              ipa_path = DeployGate::Builds::Ios.build(analyze, target_shceme, codesigning_identity, method)
+            rescue => e
+              # TODO: build error handling
+              raise e
+            end
+
             Push.upload([ipa_path], options)
           end
 
@@ -122,13 +128,13 @@ module DeployGate
             end
 
             begin
-              provisioning_profile_path = set_profile.create_provisioning
+              provisioning_profiles = set_profile.create_provisioning
             rescue => e
               DeployGate::Message::Error.print("Error: Failed create provisioning")
               raise e
             end
 
-            provisioning_profile_path
+            DeployGate::Builds::Ios::Export.select_profile(provisioning_profiles)
           end
         end
       end

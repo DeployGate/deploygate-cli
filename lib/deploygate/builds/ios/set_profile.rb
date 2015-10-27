@@ -37,18 +37,27 @@ module DeployGate
           false
         end
 
-        # @return [String]
+        # @return [Array]
         def create_provisioning
+          prod_certs = Spaceship.certificate.production.all
+          distribution_cert_ids = prod_certs.map(&:id)
+
           FileUtils.mkdir_p(OUTPUT_PATH)
-          values = {
-              :adhoc => @method == Export::AD_HOC ? true : false,
-              :app_identifier => @identifier,
-              :username => @username,
-              :output_path => OUTPUT_PATH
-          }
-          v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
-          Sigh.config = v
-          Sigh::Manager.start
+          provisionings = []
+          distribution_cert_ids.each do |cert_id|
+            values = {
+                :adhoc => @method == Export::AD_HOC ? true : false,
+                :app_identifier => @identifier,
+                :username => @username,
+                :output_path => OUTPUT_PATH,
+                :cert_id => cert_id
+            }
+            v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
+            Sigh.config = v
+            provisionings.push(Sigh::Manager.start)
+          end
+
+          provisionings
         end
       end
     end
