@@ -16,6 +16,7 @@ module DeployGate
           @workspaces = workspaces
           @scheme_workspace = find_scheme_workspace(workspaces)
           @build_workspace = find_build_workspace(workspaces)
+          @xcodeproj = File.dirname(@scheme_workspace)
 
           config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @scheme_workspace})
           project = FastlaneCore::Project.new(config)
@@ -25,8 +26,12 @@ module DeployGate
 
         # @return [String]
         def target_bundle_identifier
-          project = Xcodeproj::Project.open(File.dirname(@scheme_workspace))
-          target = project.native_targets.reject{|target| target.name != @scheme}.first
+          scheme_file = find_xcschemes
+          xs = Xcodeproj::XCScheme.new(scheme_file)
+          target_name = xs.profile_action.buildable_product_runnable.buildable_reference.target_name
+
+          project = Xcodeproj::Project.open(@xcodeproj)
+          target = project.native_targets.reject{|target| target.name != target_name}.first
           product_name =  target.product_name
           conf = target.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
           identifier = conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
@@ -36,6 +41,17 @@ module DeployGate
         end
 
         private
+
+        def find_xcschemes
+          shared_schemes = Dir[File.join(@xcodeproj, 'xcshareddata', 'xcschemes', '*.xcscheme')].reject do |scheme|
+            @scheme != File.basename(scheme, '.xcscheme')
+          end
+          user_schemes = Dir[File.join(@xcodeproj, 'xcuserdata', '*.xcuserdatad', 'xcschemes', '*.xcscheme')].reject do |scheme|
+            @scheme != File.basename(scheme, '.xcscheme')
+          end
+
+          shared_schemes.concat(user_schemes).first
+        end
 
         # @param [Array] workspaces
         # @return [String]
