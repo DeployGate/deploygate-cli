@@ -108,7 +108,10 @@ module DeployGate
           # @param [String] identifier
           # @return [String]
           def create_provisioning(identifier)
-            print 'apple developer Username: '
+            puts 'Please enter your email address that you are using in the Apple developer center.'
+            puts 'This information is managed by KeychainAccess.'
+            puts 'Docs: https://github.com/fastlane/credentials_manager'
+            print 'Email: '
             username = STDIN.gets.chop
 
             begin
