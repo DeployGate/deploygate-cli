@@ -52,7 +52,11 @@ module DeployGate
           # @return [String]
           def codesigning_identity(profile_path)
             plist = analyze_profile(profile_path)
-            "iPhone Distribution: #{plist['TeamName']} (#{plist['Entitlements']['com.apple.developer.team-identifier']})"
+            method = method(profile_path)
+            identity = "iPhone Distribution: #{plist['TeamName']}"
+            identity += " (#{plist['Entitlements']['com.apple.developer.team-identifier']})" if method == AD_HOC
+
+            identity
           end
 
           # @param [String] profile_path

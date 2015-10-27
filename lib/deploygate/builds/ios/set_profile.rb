@@ -40,7 +40,11 @@ module DeployGate
 
         # @return [Array]
         def create_provisioning
-          prod_certs = Spaceship.certificate.production.all
+          if @method == Export::AD_HOC
+            prod_certs = Spaceship.certificate.production.all
+          else
+            prod_certs = Spaceship.certificate.all.reject{|cert| cert.class != Spaceship::Portal::Certificate::InHouse}
+          end
           distribution_cert_ids = prod_certs.map(&:id)
 
           FileUtils.mkdir_p(OUTPUT_PATH)
