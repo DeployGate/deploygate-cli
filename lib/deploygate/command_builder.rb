@@ -66,7 +66,7 @@ module DeployGate
       }
       url = GithubIssueRequest::Url.new(options).to_s
       puts ''
-      if HighLine.agree('Do you want to report this issue on GitHub? (y/n)') {|q| q.default = "n"}
+      if HighLine.agree('Do you want to report this issue on GitHub? (y/n) ') {|q| q.default = "n"}
         puts "Please open github issue: #{url}"
         system('open', url) if Commands::Deploy::Push.openable?
       end
