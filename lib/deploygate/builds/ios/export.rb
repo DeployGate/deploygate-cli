@@ -21,8 +21,10 @@ module DeployGate
                 application_id = entities['application-identifier']
                 application_id.slice!(/^#{team}\./)
                 application_id = '.' + application_id if application_id == '*'
-                if bundle_identifier.match(application_id) && installed_certificate?(profile_path)
-                  # TODO: check provisioning expired
+                if bundle_identifier.match(application_id) &&
+                    DateTime.now < plist['ExpirationDate'] &&
+                    installed_certificate?(profile_path)
+
                   teams[team] = plist['TeamName'] if teams[team].nil?
                   result_profiles[team] = [] if result_profiles[team].nil?
                   result_profiles[team].push(profile_path)
