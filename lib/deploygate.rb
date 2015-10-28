@@ -7,6 +7,8 @@ require "color_echo"
 require "openssl"
 require "plist"
 require "find"
+require "github_issue_request"
+require "highline"
 
 # ios build
 require "gym"

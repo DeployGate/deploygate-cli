@@ -30,6 +30,8 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'color_echo', '~> 2.0.1'
   spec.add_dependency 'plist', '~> 3.1.0'
   spec.add_dependency 'xcodeproj', '~> 0.28.2'
+  spec.add_dependency 'github_issue_request', '~> 0.0.2'
+  spec.add_dependency 'highline', '~> 1.7.8'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'
