@@ -6,8 +6,18 @@ module DeployGate
         # @param [Array] args
         # @param [Commander::Command::Options] options
         def run(args, options)
+          Init.login unless DeployGate::Session.new.login?
+
           # push or build(android/ios)
-          Push.upload(args, options)
+          args.push(Dir.pwd) if args.empty?
+
+          work_file_path = args.first
+          if File.directory?(work_file_path)
+            Build.run(args, options)
+          else
+            # file upload
+            Push.upload(args, options)
+          end
         end
       end
     end

@@ -21,7 +21,7 @@ describe DeployGate::API::V1::Push do
           to_return(:body => response.to_json)
 
       call_process_block = false
-      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message) {call_process_block = true}
+      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message)
       expect(results).to eq ({
                                 :error => response[:error],
                                 :message => response[:because],
@@ -31,7 +31,6 @@ describe DeployGate::API::V1::Push do
                                 :revision => response[:results][:revision],
                                 :web_url => DeployGate::API::V1::Base::BASE_URL + response[:results][:path]
                             })
-      expect(call_process_block).to be_truthy
     end
 
     it "failed" do

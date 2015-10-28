@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
 dg installed! To get started fast:
 
-  $ dg deploy [app_file_path]
+  $ dg deploy
 
 Or see the docs at:
 
@@ -28,6 +28,15 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'httpclient', '~> 2.2.5'
   spec.add_dependency 'commander', '~> 4.3.5'
   spec.add_dependency 'color_echo', '~> 2.0.1'
+  spec.add_dependency 'plist', '~> 3.1.0'
+  spec.add_dependency 'xcodeproj', '~> 0.28.2'
+  spec.add_dependency 'github_issue_request', '~> 0.0.2'
+  spec.add_dependency 'highline', '~> 1.7.8'
+
+  # ios build
+  spec.add_dependency 'gym', '~> 1.0.0'
+  spec.add_dependency 'spaceship', '~> 0.12.3'
+  spec.add_dependency 'sigh', '~> 1.1.0'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
