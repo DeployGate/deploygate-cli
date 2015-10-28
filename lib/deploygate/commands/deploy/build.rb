@@ -26,7 +26,14 @@ module DeployGate
           def ios(workspaces, options)
             analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
             target_scheme = analyze.scheme
-            identifier = analyze.target_bundle_identifier
+            begin
+              identifier = analyze.target_bundle_identifier
+            rescue
+              # not found bundle identifier
+              puts 'Please input bundle identifier'
+              puts 'Example: com.example.ios'
+              identifier = input_bundle_identifier
+            end
 
             data = DeployGate::Builds::Ios::Export.find_local_data(identifier)
             profiles = data[:profiles]
@@ -51,6 +58,18 @@ module DeployGate
             end
 
             Push.upload([ipa_path], options)
+          end
+
+          def input_bundle_identifier
+            print 'bundle identifier: '
+            identifier = STDIN.gets.chop
+
+            if identifier == '' || identifier.nil?
+              puts 'You must input bundle identifier'
+              return input_bundle_identifier
+            end
+
+            identifier
           end
 
           # @param [Hash] teams
