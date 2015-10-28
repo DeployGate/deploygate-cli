@@ -62,7 +62,7 @@ module DeployGate
       options = {
           :title => title,
           :body  => body,
-          :labels => labels
+          :labels => labels.push("v#{DeployGate::VERSION}")
       }
       url = GithubIssueRequest::Url.new(options).to_s
       puts ''
