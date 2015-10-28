@@ -13,21 +13,22 @@ module DeployGate
           def find_local_data(bundle_identifier)
             result_profiles = {}
             teams = {}
-            profiles.each do |profile_path|
-              plist = analyze_profile(profile_path)
-              entities = plist['Entitlements']
+            profiles = load_profiles
+
+            profiles.each do |profile|
+              entities = profile['Entitlements']
               unless entities['get-task-allow']
                 team = entities['com.apple.developer.team-identifier']
                 application_id = entities['application-identifier']
                 application_id.slice!(/^#{team}\./)
                 application_id = '.' + application_id if application_id == '*'
                 if bundle_identifier.match(application_id) &&
-                    DateTime.now < plist['ExpirationDate'] &&
-                    installed_certificate?(profile_path)
+                    DateTime.now < profile['ExpirationDate'] &&
+                    installed_certificate?(profile)
 
-                  teams[team] = plist['TeamName'] if teams[team].nil?
+                  teams[team] = profile['TeamName'] if teams[team].nil?
                   result_profiles[team] = [] if result_profiles[team].nil?
-                  result_profiles[team].push(profile_path)
+                  result_profiles[team].push(profile)
                 end
               end
             end
@@ -38,14 +39,16 @@ module DeployGate
             }
           end
 
-          # @param [String] profile_path
+          # @param [Hash] profile
           # @return [Boolean]
-          def installed_certificate?(profile_path)
-            plist = analyze_profile(profile_path)
-            certificate_str = plist['DeveloperCertificates'].first.read
-            certificate =  OpenSSL::X509::Certificate.new certificate_str
-            id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
-            installed_identies.include?(id)
+          def installed_certificate?(profile)
+            certs = profile['DeveloperCertificates'].map do |cert|
+              certificate_str = cert.read
+              certificate =  OpenSSL::X509::Certificate.new certificate_str
+              id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
+              installed_identies.include?(id)
+            end
+            certs.include?(true)
           end
 
           # @return [Array]
@@ -76,66 +79,51 @@ module DeployGate
             select
           end
 
-          # @param [String] profile_path
+          # @param [Hash] profile
           # @return [String]
-          def codesigning_identity(profile_path)
-            plist = analyze_profile(profile_path)
-            method = method(profile_path)
-            identity = "iPhone Distribution: #{plist['TeamName']}"
-            identity += " (#{plist['Entitlements']['com.apple.developer.team-identifier']})" if method == AD_HOC
+          def codesigning_identity(profile)
+            method = method(profile)
+            identity = "iPhone Distribution: #{profile['TeamName']}"
+            identity += " (#{profile['Entitlements']['com.apple.developer.team-identifier']})" if method == AD_HOC
 
             identity
           end
 
-          # @param [String] profile_path
+          # @param [Hash] profile
           # @return [String]
-          def method(profile_path)
-            adhoc?(profile_path) ? AD_HOC : ENTERPRISE
+          def method(profile)
+            adhoc?(profile) ? AD_HOC : ENTERPRISE
           end
 
-          # @param [String] profile_path
+          # @param [Hash] profile
           # @return [Boolean]
-          def adhoc?(profile_path)
-            plist = analyze_profile(profile_path)
-            !plist['Entitlements']['get-task-allow'] && plist['ProvisionsAllDevices'].nil?
+          def adhoc?(profile)
+            !profile['Entitlements']['get-task-allow'] && profile['ProvisionsAllDevices'].nil?
           end
 
-          # @param [String] profile_path
+          # @param [Hash] profile
           # @return [Boolean]
-          def inhouse?(profile_path)
-            plist = analyze_profile(profile_path)
-            !plist['Entitlements']['get-task-allow'] && !plist['ProvisionsAllDevices'].nil?
+          def inhouse?(profile)
+            !profile['Entitlements']['get-task-allow'] && !profile['ProvisionsAllDevices'].nil?
           end
 
-          # @param [String] profile_path
-          # @return [Hash]
-          def analyze_profile(profile_path)
-            plist = nil
-            File.open(profile_path) do |profile|
-              asn1 = OpenSSL::ASN1.decode(profile.read)
-              plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
-              plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
-            end
-            plist
-          end
+          def load_profiles
+            profiles_path = File.expand_path("~") + "/Library/MobileDevice/Provisioning Profiles/*.mobileprovision"
+            profile_paths = Dir[profiles_path]
 
-          # @return [Array]
-          def profiles
             profiles = []
-            Find.find(profile_dir_path) do |path|
-              next if path == profile_dir_path
-              Find.prune if FileTest.directory?(path)
-              if File.extname(path) == PROFILE_EXTNAME
-                profiles.push(path)
+            profile_paths.each do |profile_path|
+              File.open(profile_path) do |profile|
+                asn1 = OpenSSL::ASN1.decode(profile.read)
+                plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
+                plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
+                plist['Path'] = profile_path
+                profiles << plist
               end
             end
+            profiles = profiles.sort_by { |profile| profile["Name"].downcase }
 
             profiles
-          end
-
-          # @return [String]
-          def profile_dir_path
-            File.join(ENV['HOME'], 'Library/MobileDevice/Provisioning Profiles')
           end
         end
       end
