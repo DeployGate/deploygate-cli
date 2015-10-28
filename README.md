@@ -26,10 +26,17 @@ $ gem install deploygate
 ```
 
 ## Usage
-Upload an application:
+
+### Upload apps
 
 ```
 $ dg deploy [package file path]
+```
+
+### iOS build and upload
+
+```
+$ dg deploy [ios project path]
 ```
 
 ## License

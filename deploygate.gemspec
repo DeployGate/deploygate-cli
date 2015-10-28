@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
 dg installed! To get started fast:
 
-  $ dg deploy [app_file_path]
+  $ dg deploy
 
 Or see the docs at:
 
