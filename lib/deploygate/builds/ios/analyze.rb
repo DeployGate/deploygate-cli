@@ -20,6 +20,10 @@ module DeployGate
 
           config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @scheme_workspace})
           project = FastlaneCore::Project.new(config)
+          if project.schemes.empty?
+            config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @build_workspace})
+            project = FastlaneCore::Project.new(config)
+          end
           project.select_scheme
           @scheme = project.options[:scheme]
         end
