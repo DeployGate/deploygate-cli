@@ -117,23 +117,23 @@ EOF
             begin
               set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
             rescue => e
-              DeployGate::Message::Error.print("Error: Please login try again")
+              DeployGate::Message::Error.print("Error: Please try login again")
               raise e
             end
 
             begin
               if set_profile.app_id_create
-                puts "Create #{identifier} app id"
+                puts "App ID #{identifier} was created"
               end
             rescue => e
-              DeployGate::Message::Error.print("Error: App id create error")
+              DeployGate::Message::Error.print("Error: Failed to create App ID")
               raise e
             end
 
             begin
               provisioning_profiles = set_profile.create_provisioning
             rescue => e
-              DeployGate::Message::Error.print("Error: Failed create provisioning")
+              DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
               raise e
             end
 
