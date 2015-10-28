@@ -100,9 +100,17 @@ module DeployGate
           # @param [String] identifier
           # @return [String]
           def create_provisioning(identifier)
-            puts 'Please enter your email address that you are using in the Apple developer center.'
-            puts 'This information is managed by KeychainAccess.'
-            puts 'Docs: https://github.com/fastlane/credentials_manager'
+            puts <<EOF
+
+No suitable provisioning profile found to export the app.
+
+Please enter your email and password for Apple Developer Center
+to set up/download provisioning profile automatically so you can
+export the app without any extra steps.
+
+Note: Your password will be stored to Keychain and never be sent to DeployGate.
+
+EOF
             print 'Email: '
             username = STDIN.gets.chop
 
