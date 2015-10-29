@@ -34,14 +34,15 @@ module DeployGate
               puts 'Example: com.example.ios'
               identifier = input_bundle_identifier
             end
+            uuid = analyze.target_xcode_setting_provisioning_profile_uuid
 
-            data = DeployGate::Builds::Ios::Export.find_local_data(identifier)
+            data = DeployGate::Builds::Ios::Export.find_local_data(identifier, uuid)
             profiles = data[:profiles]
             teams = data[:teams]
 
             target_provisioning_profile = nil
             if teams.empty?
-              target_provisioning_profile = create_provisioning(identifier)
+              target_provisioning_profile = create_provisioning(identifier, uuid)
             elsif teams.count == 1
               target_provisioning_profile = DeployGate::Builds::Ios::Export.select_profile(profiles[teams.keys.first])
             elsif teams.count >= 2
@@ -98,8 +99,9 @@ module DeployGate
           end
 
           # @param [String] identifier
+          # @param [String] uuid
           # @return [String]
-          def create_provisioning(identifier)
+          def create_provisioning(identifier, uuid)
             puts <<EOF
 
 No suitable provisioning profile found to export the app.
@@ -131,7 +133,7 @@ EOF
             end
 
             begin
-              provisioning_profiles = set_profile.create_provisioning
+              provisioning_profiles = set_profile.create_provisioning(uuid)
             rescue => e
               DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
               raise e

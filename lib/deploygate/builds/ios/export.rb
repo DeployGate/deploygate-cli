@@ -9,11 +9,13 @@ module DeployGate
 
         class << self
           # @param [String] bundle_identifier
+          # @param [String] uuid
           # @return [Hash]
-          def find_local_data(bundle_identifier)
+          def find_local_data(bundle_identifier, uuid = nil)
             result_profiles = {}
             teams = {}
             profiles = load_profiles
+            profiles.reject! {|profile| profile['UUID'] != uuid} unless uuid.nil?
 
             profiles.each do |profile|
               entities = profile['Entitlements']
@@ -113,17 +115,23 @@ module DeployGate
 
             profiles = []
             profile_paths.each do |profile_path|
-              File.open(profile_path) do |profile|
-                asn1 = OpenSSL::ASN1.decode(profile.read)
-                plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
-                plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
-                plist['Path'] = profile_path
-                profiles << plist
-              end
+              profiles << profile_to_plist(profile_path)
             end
             profiles = profiles.sort_by { |profile| profile["Name"].downcase }
 
             profiles
+          end
+
+          # @param [String] profile_path
+          # @return [Hash]
+          def profile_to_plist(profile_path)
+            File.open(profile_path) do |profile|
+              asn1 = OpenSSL::ASN1.decode(profile.read)
+              plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
+              plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
+              plist['Path'] = profile_path
+              return plist
+            end
           end
         end
       end

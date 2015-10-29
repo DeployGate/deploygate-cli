@@ -39,8 +39,54 @@ module DeployGate
           false
         end
 
+        # @param [String] uuid
         # @return [Array]
-        def create_provisioning
+        def create_provisioning(uuid)
+          FileUtils.mkdir_p(OUTPUT_PATH)
+
+          if uuid.nil?
+            return install_provisioning
+          else
+            return select_uuid_provisioning(uuid)
+          end
+        end
+
+        private
+
+        def select_uuid_provisioning(uuid)
+          adhoc_profiles = Spaceship.provisioning_profile.ad_hoc.all
+          inhouse_profiles = Spaceship.provisioning_profile.in_house.all
+
+          adhoc_profiles.reject!{|p| p.uuid != uuid}
+          inhouse_profiles.reject!{|p| p.uuid != uuid}
+          select_profile = nil
+          method = nil
+          unless adhoc_profiles.empty?
+            select_profile = adhoc_profiles.first
+            method = Export::AD_HOC
+          end
+          unless inhouse_profiles.empty?
+            select_profile = inhouse_profiles.first
+            method = Export::ENTERPRISE
+          end
+          raise 'Not Xcode selected Provisioning Profile' if select_profile.nil?
+
+          values = {
+              :adhoc => method == Export::AD_HOC ? true : false,
+              :app_identifier => @identifier,
+              :username => @username,
+              :output_path => OUTPUT_PATH,
+              :provisioning_name => select_profile.name,
+              :team_id => Spaceship.client.team_id
+          }
+          v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
+          Sigh.config = v
+          download_profile_path = Sigh::Manager.start
+
+          [Export.profile_to_plist(download_profile_path)]
+        end
+
+        def install_provisioning
           if @method == Export::AD_HOC
             prod_certs = Spaceship.certificate.production.all
           else
@@ -58,7 +104,6 @@ module DeployGate
           end
           raise 'Not local install certificate' if distribution_cert_ids.empty?
 
-          FileUtils.mkdir_p(OUTPUT_PATH)
           provisionings = []
           distribution_cert_ids.each do |cert_id|
             values = {
@@ -71,7 +116,8 @@ module DeployGate
             }
             v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
             Sigh.config = v
-            provisionings.push(Sigh::Manager.start)
+            download_profile_path = Sigh::Manager.start
+            provisionings.push(Export.profile_to_plist(download_profile_path))
           end
 
           provisionings
