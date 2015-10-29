@@ -83,7 +83,7 @@ module DeployGate
           Sigh.config = v
           download_profile_path = Sigh::Manager.start
 
-          [Export.profile_to_plist(download_profile_path)]
+          [download_profile_path]
         end
 
         def install_provisioning
@@ -117,7 +117,7 @@ module DeployGate
             v = FastlaneCore::Configuration.create(Sigh::Options.available_options, values)
             Sigh.config = v
             download_profile_path = Sigh::Manager.start
-            provisionings.push(Export.profile_to_plist(download_profile_path))
+            provisionings.push(download_profile_path)
           end
 
           provisionings

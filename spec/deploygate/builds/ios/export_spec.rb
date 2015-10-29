@@ -5,7 +5,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => nil,
           'Entitlements' => {'get-task-allow' => false}
       }
-      expect(DeployGate::Builds::Ios::Export.adhoc?(profile)).to be_truthy
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.adhoc?('path')).to be_truthy
     end
 
     it "when inhouse plist" do
@@ -13,7 +14,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => true,
           'Entitlements' => {'get-task-allow' => false}
       }
-      expect(DeployGate::Builds::Ios::Export.adhoc?(profile)).to be_falsey
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.adhoc?('path')).to be_falsey
     end
 
     it "when not distribution plist" do
@@ -21,7 +23,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => nil,
           'Entitlements' => {'get-task-allow' => true}
       }
-      expect(DeployGate::Builds::Ios::Export.adhoc?(profile)).to be_falsey
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.adhoc?('path')).to be_falsey
     end
   end
 
@@ -31,7 +34,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => nil,
           'Entitlements' => {'get-task-allow' => false}
       }
-      expect(DeployGate::Builds::Ios::Export.inhouse?(profile)).to be_falsey
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.inhouse?('path')).to be_falsey
     end
 
     it "when inhouse plist" do
@@ -39,7 +43,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => true,
           'Entitlements' => {'get-task-allow' => false}
       }
-      expect(DeployGate::Builds::Ios::Export.inhouse?(profile)).to be_truthy
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.inhouse?('path')).to be_truthy
     end
 
     it "when not distribution plist" do
@@ -47,7 +52,8 @@ describe DeployGate::Builds::Ios::Export do
           'ProvisionsAllDevices' => nil,
           'Entitlements' => {'get-task-allow' => true}
       }
-      expect(DeployGate::Builds::Ios::Export.inhouse?(profile)).to be_falsey
+      allow(DeployGate::Builds::Ios::Export).to receive(:profile_to_plist).and_return(profile)
+      expect(DeployGate::Builds::Ios::Export.inhouse?('path')).to be_falsey
     end
   end
 end
