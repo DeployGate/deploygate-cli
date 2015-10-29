@@ -86,10 +86,24 @@ module DeployGate
           # @param [String] profile_path
           # @return [String]
           def codesigning_identity(profile_path)
-            method = method(profile_path)
             profile = profile_to_plist(profile_path)
-            identity = "iPhone Distribution: #{profile['TeamName']}"
-            identity += " (#{profile['Entitlements']['com.apple.developer.team-identifier']})" if method == AD_HOC
+            identity = nil
+
+            profile['DeveloperCertificates'].each do |cert|
+              certificate_str = cert.read
+              certificate =  OpenSSL::X509::Certificate.new certificate_str
+              id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
+
+              available = `security find-identity -v -p codesigning`
+              available.split("\n").each do |current|
+                next if current.include? "REVOKED"
+                begin
+                  search = current.match(/.*\) (.*) \"(.*)\"/)
+                  identity = search[2] if id == search[1]
+                rescue
+                end
+              end
+            end
 
             identity
           end
