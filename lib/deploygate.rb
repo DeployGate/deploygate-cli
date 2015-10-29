@@ -9,6 +9,7 @@ require "plist"
 require "find"
 require "github_issue_request"
 require "highline"
+require "uuid"
 
 # ios build
 require "gym"

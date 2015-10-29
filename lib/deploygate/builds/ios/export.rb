@@ -9,11 +9,14 @@ module DeployGate
 
         class << self
           # @param [String] bundle_identifier
+          # @param [String] uuid
           # @return [Hash]
-          def find_local_data(bundle_identifier)
+          def find_local_data(bundle_identifier, uuid = nil)
             result_profiles = {}
             teams = {}
-            profiles = load_profiles
+            profile_paths = load_profile_paths
+            profiles = profile_paths.map{|p| profile_to_plist(p)}
+            profiles.reject! {|profile| profile['UUID'] != uuid} unless uuid.nil?
 
             profiles.each do |profile|
               entities = profile['Entitlements']
@@ -24,11 +27,11 @@ module DeployGate
                 application_id = '.' + application_id if application_id == '*'
                 if bundle_identifier.match(application_id) &&
                     DateTime.now < profile['ExpirationDate'] &&
-                    installed_certificate?(profile)
+                    installed_certificate?(profile['Path'])
 
                   teams[team] = profile['TeamName'] if teams[team].nil?
                   result_profiles[team] = [] if result_profiles[team].nil?
-                  result_profiles[team].push(profile)
+                  result_profiles[team].push(profile['Path'])
                 end
               end
             end
@@ -39,9 +42,10 @@ module DeployGate
             }
           end
 
-          # @param [Hash] profile
+          # @param [String] profile_path
           # @return [Boolean]
-          def installed_certificate?(profile)
+          def installed_certificate?(profile_path)
+            profile = profile_to_plist(profile_path)
             certs = profile['DeveloperCertificates'].map do |cert|
               certificate_str = cert.read
               certificate =  OpenSSL::X509::Certificate.new certificate_str
@@ -67,63 +71,78 @@ module DeployGate
             ids
           end
 
-          # @param [Array] profiles
+          # @param [Array] profile_paths
           # @return [String]
-          def select_profile(profiles)
+          def select_profile(profile_paths)
             select = nil
 
-            profiles.each do |profile|
-              select = profile if adhoc?(profile) && select.nil?
-              select = profile if inhouse?(profile)
+            profile_paths.each do |path|
+              select = path if adhoc?(path) && select.nil?
+              select = path if inhouse?(path)
             end
             select
           end
 
-          # @param [Hash] profile
+          # @param [String] profile_path
           # @return [String]
-          def codesigning_identity(profile)
-            method = method(profile)
-            identity = "iPhone Distribution: #{profile['TeamName']}"
-            identity += " (#{profile['Entitlements']['com.apple.developer.team-identifier']})" if method == AD_HOC
+          def codesigning_identity(profile_path)
+            profile = profile_to_plist(profile_path)
+            identity = nil
+
+            profile['DeveloperCertificates'].each do |cert|
+              certificate_str = cert.read
+              certificate =  OpenSSL::X509::Certificate.new certificate_str
+              id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
+
+              available = `security find-identity -v -p codesigning`
+              available.split("\n").each do |current|
+                next if current.include? "REVOKED"
+                begin
+                  search = current.match(/.*\) (.*) \"(.*)\"/)
+                  identity = search[2] if id == search[1]
+                rescue
+                end
+              end
+            end
 
             identity
           end
 
-          # @param [Hash] profile
+          # @param [String] profile_path
           # @return [String]
-          def method(profile)
-            adhoc?(profile) ? AD_HOC : ENTERPRISE
+          def method(profile_path)
+            adhoc?(profile_path) ? AD_HOC : ENTERPRISE
           end
 
-          # @param [Hash] profile
+          # @param [String] profile_path
           # @return [Boolean]
-          def adhoc?(profile)
+          def adhoc?(profile_path)
+            profile = profile_to_plist(profile_path)
             !profile['Entitlements']['get-task-allow'] && profile['ProvisionsAllDevices'].nil?
           end
 
-          # @param [Hash] profile
+          # @param [String] profile_path
           # @return [Boolean]
-          def inhouse?(profile)
+          def inhouse?(profile_path)
+            profile = profile_to_plist(profile_path)
             !profile['Entitlements']['get-task-allow'] && !profile['ProvisionsAllDevices'].nil?
           end
 
-          def load_profiles
+          def load_profile_paths
             profiles_path = File.expand_path("~") + "/Library/MobileDevice/Provisioning Profiles/*.mobileprovision"
-            profile_paths = Dir[profiles_path]
+            Dir[profiles_path]
+          end
 
-            profiles = []
-            profile_paths.each do |profile_path|
-              File.open(profile_path) do |profile|
-                asn1 = OpenSSL::ASN1.decode(profile.read)
-                plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
-                plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
-                plist['Path'] = profile_path
-                profiles << plist
-              end
+          # @param [String] profile_path
+          # @return [Hash]
+          def profile_to_plist(profile_path)
+            File.open(profile_path) do |profile|
+              asn1 = OpenSSL::ASN1.decode(profile.read)
+              plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
+              plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
+              plist['Path'] = profile_path
+              return plist
             end
-            profiles = profiles.sort_by { |profile| profile["Name"].downcase }
-
-            profiles
           end
         end
       end
