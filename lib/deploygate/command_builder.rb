@@ -17,7 +17,7 @@ module DeployGate
           begin
             Commands::Init.run
           rescue => e
-            error_handling("Commands::Init Error: #{e.class}", e.message, ['bug', 'Init'])
+            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e), ['bug', 'Init'])
             raise e
           end
         end
@@ -35,7 +35,7 @@ module DeployGate
           begin
             Commands::Deploy.run(args, options)
           rescue => e
-            error_handling("Commands::Deploy Error: #{e.class}", e.message, ['bug', 'Deploy'])
+            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e), ['bug', 'Deploy'])
             raise e
           end
         end
@@ -49,7 +49,7 @@ module DeployGate
           begin
             Commands::Logout.run
           rescue => e
-            error_handling("Commands::Logout Error: #{e.class}", e.message, ['bug', 'Logout'])
+            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e), ['bug', 'Logout'])
             raise e
           end
         end
@@ -58,6 +58,23 @@ module DeployGate
       run!
     end
 
+    # @param [Exception] error
+    # @return [String]
+    def create_error_issue_body(error)
+      return <<EOF
+# Error message
+#{error.message}
+
+# Backtrace
+```
+#{error.backtrace.join("\n")}
+```
+EOF
+    end
+
+    # @param [String] title
+    # @param [String] body
+    # @param [Array] labels
     def error_handling(title, body, labels)
       options = {
           :title => title,

@@ -30,21 +30,37 @@ module DeployGate
 
         # @return [String]
         def target_bundle_identifier
-          scheme_file = find_xcschemes
-          xs = Xcodeproj::XCScheme.new(scheme_file)
-          target_name = xs.profile_action.buildable_product_runnable.buildable_reference.target_name
-
-          project = Xcodeproj::Project.open(@xcodeproj)
-          target = project.native_targets.reject{|target| target.name != target_name}.first
-          product_name =  target.product_name
-          conf = target.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
-          identifier = conf.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
+          product_name = target_product_name
+          identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
           identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
 
           identifier
         end
 
+        # @return [String]
+        def target_xcode_setting_provisioning_profile_uuid
+          uuid = target_build_configration.build_settings['PROVISIONING_PROFILE']
+          UUID.validate(uuid) ? uuid : nil
+        end
+
         private
+
+        def target_build_configration
+          target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
+        end
+
+        def target_product_name
+          target_project_setting.product_name
+        end
+
+        def target_project_setting
+          scheme_file = find_xcschemes
+          xs = Xcodeproj::XCScheme.new(scheme_file)
+          target_name = xs.profile_action.buildable_product_runnable.buildable_reference.target_name
+
+          project = Xcodeproj::Project.open(@xcodeproj)
+          project.native_targets.reject{|target| target.name != target_name}.first
+        end
 
         def find_xcschemes
           shared_schemes = Dir[File.join(@xcodeproj, 'xcshareddata', 'xcschemes', '*.xcscheme')].reject do |scheme|
