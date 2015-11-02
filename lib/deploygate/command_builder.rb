@@ -93,15 +93,50 @@ EOF
 
     # @return [void]
     def check_update
+      current_version = DeployGate::VERSION
+
+      # check cache
+      if DeployGate::Config::CacheVersion.exist?
+        data = DeployGate::Config::CacheVersion.read
+        if Time.parse(data['check_date']) > 1.day.ago
+          # cache available
+          latest_version = data['latest_version']
+          if Gem::Version.new(latest_version) > Gem::Version.new(current_version)
+            show_update_message(latest_version)
+          end
+        else
+          request_gem_update_checker
+        end
+      else
+        request_gem_update_checker
+      end
+    end
+
+    # @return [void]
+    def request_gem_update_checker
       gem_name = DeployGate.name.downcase
       current_version = DeployGate::VERSION
-      checker = GemUpdateChecker::Client.new(gem_name, current_version)
 
-      return unless checker.update_available
+      checker = GemUpdateChecker::Client.new(gem_name, current_version)
+      if checker.update_available
+        show_update_message(checker.latest_version)
+      end
+      cache_data = {
+          :latest_version => checker.latest_version,
+          :check_date => Time.now
+      }
+      DeployGate::Config::CacheVersion.write(cache_data)
+    end
+
+    # @param [String] latest_version
+    # @return [void]
+    def show_update_message(latest_version)
+      gem_name = DeployGate.name.downcase
+      current_version = DeployGate::VERSION
       update_message =<<EOF
 
 #################################################################
-# #{gem_name} #{checker.latest_version} is available. You are on #{current_version}.
+# #{gem_name} #{latest_version} is available. You are on #{current_version}.
 # It is recommended to use the latest version.
 # Update using 'gem update #{gem_name}'.
 #################################################################
