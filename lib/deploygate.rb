@@ -25,6 +25,7 @@ end
 require "deploygate/api/v1/base"
 require "deploygate/api/v1/session"
 require "deploygate/api/v1/push"
+require "deploygate/api/v1/user"
 require "deploygate/command_builder"
 require "deploygate/commands/init"
 require "deploygate/commands/logout"
