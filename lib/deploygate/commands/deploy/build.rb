@@ -56,7 +56,7 @@ module DeployGate
             rescue => e
               # TODO: build error handling
               use_xcode_path = `xcode-select -p`
-              DeployGate::Message::Error.print("Build Xcode path: #{use_xcode_path}")
+              DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
               raise e
             end
 
