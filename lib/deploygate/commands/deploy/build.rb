@@ -17,6 +17,9 @@ module DeployGate
               ios(workspaces, options)
             elsif DeployGate::Build.android?(work_dir)
               # TODO: support android build
+              print_no_target
+            else
+              print_no_target
             end
           end
 
@@ -140,6 +143,16 @@ EOF
             end
 
             DeployGate::Builds::Ios::Export.select_profile(provisioning_profiles)
+          end
+
+          def print_no_target
+            message = <<EOF
+
+No target.
+Please select apk/ipa file path or iOS working dir path.
+
+EOF
+            DeployGate::Message::Warning.print(message)
           end
         end
       end
