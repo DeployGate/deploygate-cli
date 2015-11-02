@@ -58,6 +58,8 @@ module DeployGate
               ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
             rescue => e
               # TODO: build error handling
+              use_xcode_path = `xcode-select -p`
+              DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
               raise e
             end
 
