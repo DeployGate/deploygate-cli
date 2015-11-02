@@ -24,9 +24,6 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
-            use_xcode_path = `xcode-select -p`
-            DeployGate::Message::Success.print("Build Xcode path: #{use_xcode_path}")
-
             analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
             target_scheme = analyze.scheme
             begin
@@ -58,6 +55,8 @@ module DeployGate
               ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
             rescue => e
               # TODO: build error handling
+              use_xcode_path = `xcode-select -p`
+              DeployGate::Message::Error.print("Build Xcode path: #{use_xcode_path}")
               raise e
             end
 
