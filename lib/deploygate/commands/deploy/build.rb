@@ -24,6 +24,9 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
+            use_xcode_path = `xcode-select -p`
+            DeployGate::Message::Success.print("Build Xcode path: #{use_xcode_path}")
+
             analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
             target_scheme = analyze.scheme
             begin
