@@ -48,7 +48,7 @@ describe DeployGate::Session do
           :token => 'token'
       }
       call_config_write_and_fix_config = false
-      allow(DeployGate::Config).to receive(:write) { |c| call_config_write_and_fix_config = c == config_data}
+      allow(DeployGate::Config::Credential).to receive(:write) { |c| call_config_write_and_fix_config = c == config_data}
 
 
       DeployGate::Session.save(config_data[:name], config_data[:token])
