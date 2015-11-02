@@ -148,8 +148,8 @@ EOF
           def print_no_target
             message = <<EOF
 
-No target.
-Please select apk/ipa file path or iOS working dir path.
+No deploy target found.
+Please run on the root directory of iOS project or specify .apk/.ipa file to deploy.
 
 EOF
             DeployGate::Message::Warning.print(message)
