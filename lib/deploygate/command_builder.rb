@@ -5,6 +5,7 @@ module DeployGate
 
     def run
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
+      check_update()
 
       program :name, 'dg'
       program :version,  VERSION
@@ -88,6 +89,25 @@ EOF
         system('open', url) if Commands::Deploy::Push.openable?
       end
       puts ''
+    end
+
+    # @return [void]
+    def check_update
+      gem_name = DeployGate.name.downcase
+      current_version = DeployGate::VERSION
+      checker = GemUpdateChecker::Client.new(gem_name, current_version)
+
+      return unless checker.update_available
+      update_message =<<EOF
+
+#################################################################
+# #{gem_name} #{checker.latest_version} is available. You are on #{current_version}.
+# It is recommended to use the latest version.
+# Update using 'gem update #{gem_name}'.
+#################################################################
+
+EOF
+      DeployGate::Message::Warning.print(update_message)
     end
   end
 end

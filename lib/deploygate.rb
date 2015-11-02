@@ -10,6 +10,7 @@ require "find"
 require "github_issue_request"
 require "highline"
 require "uuid"
+require "gem_update_checker"
 
 # ios build
 require "gym"
@@ -39,4 +40,5 @@ require "deploygate/builds/ios/analyze"
 require "deploygate/builds/ios/set_profile"
 require "deploygate/message/error"
 require "deploygate/message/success"
+require "deploygate/message/warning"
 require "deploygate/version"

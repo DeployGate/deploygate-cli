@@ -33,6 +33,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'github_issue_request', '~> 0.0.2'
   spec.add_dependency 'highline', '~> 1.7.8'
   spec.add_dependency 'uuid', '~> 2.3.8'
+  spec.add_dependency 'gem_update_checker', '~> 0.2.0'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'
