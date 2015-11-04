@@ -8,8 +8,8 @@ module DeployGate
         class << self
           # @param [String] name
           # @param [String] email
-          # @param [String] passowrd
-          # @return [Boolean]
+          # @param [String] password
+          # @return [Hash]
           def create(name, email, password)
             res = Base.new().post(ENDPOINT, {:name => name, :email => email, :password => password})
 
@@ -27,6 +27,25 @@ module DeployGate
             end
 
             user_create_results
+          end
+
+          # @param [String] name_or_email
+          # @return [Hash]
+          def show(name_or_email)
+            res = Base.new().get("#{ENDPOINT}/#{name_or_email}", {})
+            user_show_results = {
+                :error => res['error'],
+                :message => res['because']
+            }
+
+            results = res['results']
+            unless results.nil?
+              user_show_results.merge!({
+                                       :name => results['name'],
+                                   })
+            end
+
+            user_show_results
           end
         end
       end
