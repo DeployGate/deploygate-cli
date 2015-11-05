@@ -5,6 +5,7 @@ module DeployGate
 
     def run
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
+      check_update()
 
       program :name, 'dg'
       program :version,  VERSION
@@ -17,7 +18,7 @@ module DeployGate
           begin
             Commands::Init.run
           rescue => e
-            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e), ['bug', 'Init'])
+            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -35,7 +36,7 @@ module DeployGate
           begin
             Commands::Deploy.run(args, options)
           rescue => e
-            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e), ['bug', 'Deploy'])
+            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -49,7 +50,7 @@ module DeployGate
           begin
             Commands::Logout.run
           rescue => e
-            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e), ['bug', 'Logout'])
+            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -62,6 +63,10 @@ module DeployGate
     # @return [String]
     def create_error_issue_body(error)
       return <<EOF
+
+# Status
+deploygate-cli ver #{DeployGate::VERSION}
+
 # Error message
 #{error.message}
 
@@ -75,11 +80,11 @@ EOF
     # @param [String] title
     # @param [String] body
     # @param [Array] labels
-    def error_handling(title, body, labels)
+    def error_handling(title, body, labels = [])
       options = {
           :title => title,
           :body  => body,
-          :labels => labels.push("v#{DeployGate::VERSION}")
+          :labels => labels
       }
       url = GithubIssueRequest::Url.new(options).to_s
       puts ''
@@ -88,6 +93,60 @@ EOF
         system('open', url) if Commands::Deploy::Push.openable?
       end
       puts ''
+    end
+
+    # @return [void]
+    def check_update
+      current_version = DeployGate::VERSION
+
+      # check cache
+      if DeployGate::Config::CacheVersion.exist?
+        data = DeployGate::Config::CacheVersion.read
+        if Time.parse(data['check_date']) > 1.day.ago
+          # cache available
+          latest_version = data['latest_version']
+          if Gem::Version.new(latest_version) > Gem::Version.new(current_version)
+            show_update_message(latest_version)
+          end
+        else
+          request_gem_update_checker
+        end
+      else
+        request_gem_update_checker
+      end
+    end
+
+    # @return [void]
+    def request_gem_update_checker
+      gem_name = DeployGate.name.downcase
+      current_version = DeployGate::VERSION
+
+      checker = GemUpdateChecker::Client.new(gem_name, current_version)
+      if checker.update_available
+        show_update_message(checker.latest_version)
+      end
+      cache_data = {
+          :latest_version => checker.latest_version,
+          :check_date => Time.now
+      }
+      DeployGate::Config::CacheVersion.write(cache_data)
+    end
+
+    # @param [String] latest_version
+    # @return [void]
+    def show_update_message(latest_version)
+      gem_name = DeployGate.name.downcase
+      current_version = DeployGate::VERSION
+      update_message =<<EOF
+
+#################################################################
+# #{gem_name} #{latest_version} is available. You are on #{current_version}.
+# It is recommended to use the latest version.
+# Update using 'gem update #{gem_name}'.
+#################################################################
+
+EOF
+      DeployGate::Message::Warning.print(update_message)
     end
   end
 end

@@ -17,6 +17,9 @@ module DeployGate
               ios(workspaces, options)
             elsif DeployGate::Build.android?(work_dir)
               # TODO: support android build
+              print_no_target
+            else
+              print_no_target
             end
           end
 
@@ -55,6 +58,8 @@ module DeployGate
               ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
             rescue => e
               # TODO: build error handling
+              use_xcode_path = `xcode-select -p`
+              DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
               raise e
             end
 
@@ -140,6 +145,16 @@ EOF
             end
 
             DeployGate::Builds::Ios::Export.select_profile(provisioning_profiles)
+          end
+
+          def print_no_target
+            message = <<EOF
+
+No deploy target found.
+Please run on the root directory of iOS project or specify .apk/.ipa file to deploy.
+
+EOF
+            DeployGate::Message::Warning.print(message)
           end
         end
       end

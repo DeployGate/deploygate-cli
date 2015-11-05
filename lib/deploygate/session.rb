@@ -38,7 +38,7 @@ module DeployGate
           :name => name,
           :token => token
       }
-      Config.write(settings)
+      Config::Credential.write(settings)
     end
 
     # @return [void]
@@ -51,8 +51,8 @@ module DeployGate
 
     # @return [void]
     def load_setting
-      return unless Config.exist?
-      settings = Config.read
+      return unless Config::Credential.exist?
+      settings = Config::Credential.read
       @name = settings['name']
       @token = settings['token']
     end

@@ -6,7 +6,7 @@ require "deploygate"
 RSpec.configure do |config|
   config.before :each do
     # config file mock
-    allow(DeployGate::Config).to receive(:file_path).and_return(File.join(SPEC_FILE_PATH, 'test_files/.dg/credentials'))
+    allow(DeployGate::Config::Credential).to receive(:file_path).and_return(File.join(SPEC_FILE_PATH, 'test_files/.dg/credentials'))
     # config dir mock
     allow(FileUtils).to receive(:mkdir_p) {}
   end
