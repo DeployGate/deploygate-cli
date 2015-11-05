@@ -26,39 +26,33 @@ describe DeployGate::API::V1::User do
     end
   end
 
-  describe "#already_registered?" do
-    it "registerd" do
+  describe "#registered?" do
+    it "registered" do
       name = 'test'
       response = {
           :error => false,
           :because => '',
-          :results => {:name => name}
+          :results => {:registered => true}
       }
-      stub_request(:get, "#{API_ENDPOINT}/users/#{name}").
+      stub_request(:get, "#{API_ENDPOINT}/users/registered?email=&name=#{name}").
           to_return(:body => response.to_json)
 
-      results = DeployGate::API::V1::User.show(name)
-      expect(results).to eq({
-                                :error => response[:error],
-                                :message => response[:because],
-                                :name => name,
-                            })
+      result = DeployGate::API::V1::User.registered?(name, '')
+      expect(result).to be_truthy
     end
 
-    it "not registerd" do
+    it "not registered" do
       name = 'test'
       response = {
-          :error => true,
-          :because => ''
+          :error => false,
+          :because => '',
+          :results => {:registered => false}
       }
-      stub_request(:get, "#{API_ENDPOINT}/users/#{name}").
+      stub_request(:get, "#{API_ENDPOINT}/users/registered?email=&name=#{name}").
           to_return(:body => response.to_json)
 
-      results = DeployGate::API::V1::User.show(name)
-      expect(results).to eq({
-                                :error => response[:error],
-                                :message => response[:because]
-                            })
+      result = DeployGate::API::V1::User.registered?(name, '')
+      expect(result).to be_falsey
     end
   end
 end

@@ -18,7 +18,7 @@ module DeployGate
 
           puts ''
           puts 'Checking for your account...'
-          if DeployGate::User.already_registered?('', email)
+          if DeployGate::User.registered?('', email)
             puts ''
             password = input_password('Password: ')
             puts ''
@@ -74,7 +74,7 @@ module DeployGate
           user_name = ask("Username: " )
           print 'Checking for availability... '
 
-          if DeployGate::User.already_registered?(user_name, '')
+          if DeployGate::User.registered?(user_name, '')
             Message::Error.print("Bad, #{user_name} is already used. Please try again.")
             return input_new_account_name()
           else

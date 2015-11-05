@@ -32,9 +32,9 @@ module DeployGate
           # @param [String] name
           # @param [String] email
           # @return [Boolean]
-          def already_registered?(name, email)
-            res = Base.new().get("#{ENDPOINT}/check_already_registered", {:name => name, :email => email})
-            res['results']['already_registered']
+          def registered?(name, email)
+            res = Base.new().get("#{ENDPOINT}/registered", {:name => name, :email => email})
+            res['results']['registered']
           end
         end
       end

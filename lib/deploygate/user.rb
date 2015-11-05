@@ -21,8 +21,8 @@ module DeployGate
     # @param [String] name
     # @param [String] email
     # @return [Boolean]
-    def self.already_registered?(name, email)
-      DeployGate::API::V1::User.already_registered?(name, email)
+    def self.registered?(name, email)
+      DeployGate::API::V1::User.registered?(name, email)
     end
   end
 end
