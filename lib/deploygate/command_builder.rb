@@ -18,7 +18,7 @@ module DeployGate
           begin
             Commands::Init.run
           rescue => e
-            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e), ['bug', 'Init'])
+            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -36,7 +36,7 @@ module DeployGate
           begin
             Commands::Deploy.run(args, options)
           rescue => e
-            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e), ['bug', 'Deploy'])
+            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -50,7 +50,7 @@ module DeployGate
           begin
             Commands::Logout.run
           rescue => e
-            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e), ['bug', 'Logout'])
+            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -63,6 +63,10 @@ module DeployGate
     # @return [String]
     def create_error_issue_body(error)
       return <<EOF
+
+# Status
+deploygate-cli ver #{DeployGate::VERSION}
+
 # Error message
 #{error.message}
 
@@ -76,11 +80,11 @@ EOF
     # @param [String] title
     # @param [String] body
     # @param [Array] labels
-    def error_handling(title, body, labels)
+    def error_handling(title, body, labels = [])
       options = {
           :title => title,
           :body  => body,
-          :labels => labels.push("v#{DeployGate::VERSION}")
+          :labels => labels
       }
       url = GithubIssueRequest::Url.new(options).to_s
       puts ''
