@@ -14,14 +14,13 @@ module DeployGate
         def start_login_or_create_account
           puts 'Welcome to DeployGate!'
           puts ''
-          print 'Email: '
-          email = STDIN.gets.chop
+          email = ask("Email: ")
 
           puts ''
           puts 'Checking for your account...'
           if DeployGate::User.already_registered?('', email)
             puts ''
-            password = input_password()
+            password = input_password('Password: ')
             puts ''
             login(email, password)
           else
@@ -72,8 +71,7 @@ module DeployGate
 
         # @return [String]
         def input_new_account_name
-          print 'Username: '
-          user_name = STDIN.gets.chop
+          user_name = ask("Username: " )
           print 'Checking for availability... '
 
           if DeployGate::User.already_registered?(user_name, '')
@@ -87,25 +85,20 @@ module DeployGate
 
         # @return [String]
         def input_new_account_password
-          print 'Password: '
-          password = STDIN.noecho(&:gets).chop
-          puts ''
-          print 'Type the same password: '
-          secound_password = STDIN.noecho(&:gets).chop
+          password = input_password('Password: ')
+          secound_password = input_password('Type the same password: ')
 
           if password == secound_password
             return password
           else
-            puts ''
             Message::Error.print("Password Please enter the same thing.")
             return input_new_account_password()
           end
         end
 
         # @return [String]
-        def input_password
-          print 'Password: '
-          password = STDIN.noecho(&:gets).chop
+        def input_password(message)
+          ask(message) { |q| q.echo = "*" }
         end
 
         # @return [void]
