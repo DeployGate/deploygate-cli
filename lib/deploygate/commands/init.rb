@@ -19,13 +19,13 @@ module DeployGate
 
           puts ''
           puts 'Checking for your account...'
-          if DeployGate::User.find_user(email).nil?
-            create_account(email)
-          else
+          if DeployGate::User.already_registered?('', email)
             puts ''
             password = input_password()
             puts ''
             login(email, password)
+          else
+            create_account(email)
           end
         end
 
@@ -76,12 +76,12 @@ module DeployGate
           user_name = STDIN.gets.chop
           print 'Checking for availability... '
 
-          if DeployGate::User.find_user(user_name).nil?
-            Message::Success.print("Good, #{user_name} is available.")
-            return user_name
-          else
+          if DeployGate::User.already_registered?(user_name, '')
             Message::Error.print("Bad, #{user_name} is already used. Please try again.")
             return input_new_account_name()
+          else
+            Message::Success.print("Good, #{user_name} is available.")
+            return user_name
           end
         end
 

@@ -18,12 +18,11 @@ module DeployGate
       DeployGate::User.new(results[:name])
     end
 
-    # @param [String] email_or_name
-    # @return [DeployGate::User]
-    def self.find_user(email_or_name)
-      results = DeployGate::API::V1::User.show(email_or_name)
-      return if results[:error]
-      DeployGate::User.new(results[:name])
+    # @param [String] name
+    # @param [String] email
+    # @return [Boolean]
+    def self.already_registered?(name, email)
+      DeployGate::API::V1::User.already_registered?(name, email)
     end
   end
 end
