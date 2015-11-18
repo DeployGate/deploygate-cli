@@ -18,10 +18,6 @@ dg installed! To get started fast:
 
   $ dg deploy
 
-Or see the docs at:
-
- https://deploygate.com/docs/cli
-
 POST_INSTALL_MESSAGE
 
   spec.add_dependency 'json', '~> 1.8.2'
