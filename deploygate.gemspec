@@ -36,6 +36,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'gym', '~> 1.0.0'
   spec.add_dependency 'spaceship', '~> 0.12.3'
   spec.add_dependency 'sigh', '~> 1.1.0'
+  spec.add_dependency 'locale'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
