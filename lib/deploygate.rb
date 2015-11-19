@@ -12,6 +12,7 @@ require "highline"
 require "uuid"
 require "gem_update_checker"
 require "active_support/core_ext/time"
+require "locale"
 
 # ios build
 require "gym"

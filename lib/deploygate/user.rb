@@ -13,7 +13,8 @@ module DeployGate
     # @param [String] password
     # @return [DeployGate::User]
     def self.create(name, email, password)
-      results = DeployGate::API::V1::User.create(name, email, password)
+      locale = Locale.current.language
+      results = DeployGate::API::V1::User.create(name, email, password, locale)
       return if results[:error]
       DeployGate::User.new(results[:name])
     end
