@@ -13,6 +13,7 @@ module DeployGate
         # @return [void]
         def start_login_or_create_account
           puts 'Welcome to DeployGate!'
+          print_deploygate_aa()
           puts ''
           email = ask("Email: ")
 
@@ -104,6 +105,18 @@ module DeployGate
         # @return [void]
         def finish
           Message::Success.print('Enjoy development!')
+        end
+
+        def print_deploygate_aa
+          puts <<'EOF'
+         _            _                       _
+        | |          | |                     | |
+      __| | ___  ___ | | ___ _   ,____   ___ | |_ ___
+     / _` |/ _ \' _ \| |/ _ \ \ / / _ \ / _ `| __/ _ \
+    | (_| |  __/ |_) | | (_) \ v / (_| | (_| | |_' __/
+     \___, \___| .__/|_|\___/ ` / \__, |\__,_|\__\___`
+               |_|           /_/  |___/
+EOF
         end
       end
     end
