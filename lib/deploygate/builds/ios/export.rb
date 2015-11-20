@@ -50,17 +50,16 @@ module DeployGate
               certificate_str = cert.read
               certificate =  OpenSSL::X509::Certificate.new certificate_str
               id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
-              installed_identies.include?(id)
+              installed_distribution_certificate_ids.include?(id)
             end
             certs.include?(true)
           end
 
-          # @return [Array]
-          def installed_identies
-            available = `security find-identity -v -p codesigning`
+          def installed_distribution_certificate_ids
+            certificates = installed_certificates()
             ids = []
-            available.split("\n").each do |current|
-              next if current.include? "REVOKED"
+            certificates.each do |current|
+              next unless current.match(/iPhone Distribution:/)
               begin
                 (ids << current.match(/.*\) (.*) \".*/)[1])
               rescue
@@ -69,6 +68,18 @@ module DeployGate
             end
 
             ids
+          end
+
+          # @return [Array]
+          def installed_certificates
+            available = `security find-identity -v -p codesigning`
+            certificates = []
+            available.split("\n").each do |current|
+              next if current.include? "REVOKED"
+              certificates << current
+            end
+
+            certificates
           end
 
           # @param [Array] profile_paths
