@@ -75,4 +75,22 @@ describe DeployGate::Builds::Ios::Export do
       expect(ids).to eql([@distribution_certificate_id])
     end
   end
+
+  describe "#installed_distribution_conflicting_certificates" do
+    before do
+      @distribution_certificate = "  1) xxxxxxxxxx \"iPhone Distribution: DeployGate Inc.\""
+      @distribution_certificate2 = "  2) yyyyyyyyyyyy \"iPhone Distribution: DeployGate Inc.\""
+      @distribution_certificate3 = "  2) yyyyyyyyyyyy \"iPhone Distribution: DeployGate Inc2.\""
+    end
+
+    it "conflicting" do
+      allow(DeployGate::Builds::Ios::Export).to receive(:installed_certificates).and_return([@distribution_certificate, @distribution_certificate2])
+      expect(DeployGate::Builds::Ios::Export.installed_distribution_conflicting_certificates.count).to eql 2
+    end
+
+    it "not conflicting" do
+      allow(DeployGate::Builds::Ios::Export).to receive(:installed_certificates).and_return([@distribution_certificate, @distribution_certificate3])
+      expect(DeployGate::Builds::Ios::Export.installed_distribution_conflicting_certificates.count).to eql 0
+    end
+  end
 end

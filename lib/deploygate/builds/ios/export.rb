@@ -55,6 +55,7 @@ module DeployGate
             certs.include?(true)
           end
 
+          # @return [Array]
           def installed_distribution_certificate_ids
             certificates = installed_certificates()
             ids = []
@@ -68,6 +69,31 @@ module DeployGate
             end
 
             ids
+          end
+
+          # @return [Array]
+          def installed_distribution_conflicting_certificates
+            certificates = installed_certificates()
+            names = []
+            certificates.each do |current|
+              begin
+                names << current.match(/(iPhone Distribution:.*)/)[1]
+              rescue
+              end
+            end
+
+            conflicting_names = names.select{|e| names.index(e) != names.rindex(e)}.uniq
+            conflicting_certificates = []
+            certificates.each do |current|
+              begin
+                name = current.match(/(iPhone Distribution:.*)/)[1]
+                next unless conflicting_names.include?(name)
+                conflicting_certificates << current
+              rescue
+              end
+            end
+
+            conflicting_certificates
           end
 
           # @return [Array]
