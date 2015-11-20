@@ -50,17 +50,17 @@ module DeployGate
               certificate_str = cert.read
               certificate =  OpenSSL::X509::Certificate.new certificate_str
               id = OpenSSL::Digest::SHA1.new(certificate.to_der).to_s.upcase!
-              installed_identies.include?(id)
+              installed_distribution_certificate_ids.include?(id)
             end
             certs.include?(true)
           end
 
           # @return [Array]
-          def installed_identies
-            available = `security find-identity -v -p codesigning`
+          def installed_distribution_certificate_ids
+            certificates = installed_certificates()
             ids = []
-            available.split("\n").each do |current|
-              next if current.include? "REVOKED"
+            certificates.each do |current|
+              next unless current.match(/iPhone Distribution:/)
               begin
                 (ids << current.match(/.*\) (.*) \".*/)[1])
               rescue
@@ -69,6 +69,43 @@ module DeployGate
             end
 
             ids
+          end
+
+          # @return [Array]
+          def installed_distribution_conflicting_certificates
+            certificates = installed_certificates()
+            names = []
+            certificates.each do |current|
+              begin
+                names << current.match(/(iPhone Distribution:.*)/)[1]
+              rescue
+              end
+            end
+
+            conflicting_names = names.select{|e| names.index(e) != names.rindex(e)}.uniq
+            conflicting_certificates = []
+            certificates.each do |current|
+              begin
+                name = current.match(/(iPhone Distribution:.*)/)[1]
+                next unless conflicting_names.include?(name)
+                conflicting_certificates << current
+              rescue
+              end
+            end
+
+            conflicting_certificates
+          end
+
+          # @return [Array]
+          def installed_certificates
+            available = `security find-identity -v -p codesigning`
+            certificates = []
+            available.split("\n").each do |current|
+              next if current.include? "REVOKED"
+              certificates << current
+            end
+
+            certificates
           end
 
           # @param [Array] profile_paths

@@ -12,6 +12,7 @@ module DeployGate
             work_dir = args.first
 
             if DeployGate::Build.ios?(work_dir)
+              check_local_certificates()
               root_path = DeployGate::Builds::Ios.project_root_path(work_dir)
               workspaces = DeployGate::Builds::Ios.find_workspaces(root_path)
               ios(workspaces, options)
@@ -155,6 +156,38 @@ Please run on the root directory of iOS project or specify .apk/.ipa file to dep
 
 EOF
             DeployGate::Message::Warning.print(message)
+          end
+
+          def check_local_certificates
+            if DeployGate::Builds::Ios::Export.installed_distribution_certificate_ids.count == 0
+              # not local install certificate
+              DeployGate::Message::Error.print("Error: Not local install distribution certificate")
+              puts <<EOF
+
+Not local install iPhone Distribution certificates.
+Please install certificate.
+
+Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
+
+EOF
+              exit
+            end
+
+            conflicting_certificates = DeployGate::Builds::Ios::Export.installed_distribution_conflicting_certificates
+            if conflicting_certificates.count > 0
+              DeployGate::Message::Error.print("Error: Conflicting local install certificates")
+              puts <<EOF
+
+Conflicting local install certificates.
+Please uninstall certificates.
+EOF
+              conflicting_certificates.each do |certificate|
+                puts certificate
+              end
+              puts ""
+
+              exit
+            end
           end
         end
       end
