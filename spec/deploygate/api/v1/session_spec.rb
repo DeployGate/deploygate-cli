@@ -1,17 +1,42 @@
 describe DeployGate::API::V1::Session do
-  describe "#check" do
+  describe "#show" do
     it "logined" do
       token = 'token'
       name = 'test'
       response = {
           :error => false,
           :because => '',
-          :results => {:name => name}
+          :results => {'name' => name}
       }
       stub_request(:get, "#{API_ENDPOINT}/sessions/user").
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
+
+      results = DeployGate::API::V1::Session.show(token)
+      expect(results).to eql response[:results]
+    end
+
+    it "not login" do
+      token = 'token'
+      response = {
+          :error => true,
+          :because => 'error message'
+      }
+      stub_request(:get, "#{API_ENDPOINT}/sessions/user").
+          with(:headers => { 'AUTHORIZATION' => token }).
+          to_return(:body => response.to_json)
+
+      results = DeployGate::API::V1::Session.show(token)
+      expect(results).to eql response[:results]
+    end
+  end
+  describe "#check" do
+    it "logined" do
+      token = 'token'
+      name = 'test'
+      results = {'name' => name}
+      allow(DeployGate::API::V1::Session).to receive(:show).and_return(results)
 
       result = DeployGate::API::V1::Session.check(name, token)
       expect(result).to be_truthy
@@ -20,13 +45,7 @@ describe DeployGate::API::V1::Session do
     it "not login" do
       token = 'token'
       name = 'test'
-      response = {
-          :error => true,
-          :because => 'error message'
-      }
-      stub_request(:get, "#{API_ENDPOINT}/sessions/user").
-          with(:headers => { 'AUTHORIZATION' => token }).
-          to_return(:body => response.to_json)
+      allow(DeployGate::API::V1::Session).to receive(:show).and_return(nil)
 
       result = DeployGate::API::V1::Session.check(name, token)
       expect(result).to be_falsey

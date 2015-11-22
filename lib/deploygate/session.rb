@@ -17,6 +17,10 @@ module DeployGate
       @@login = @@login.nil? ? API::V1::Session.check(@name, @token) : @@login
     end
 
+    def show_login_user
+      API::V1::Session.show(@token)
+    end
+
     # @param [String] email
     # @param [String] password
     # @return [void]

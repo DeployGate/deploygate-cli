@@ -11,14 +11,14 @@ module DeployGate
       program :version,  VERSION
       program :description, 'You can control to DeployGate in your terminal.'
 
-      command :init do |c|
-        c.syntax = 'dg init'
-        c.description = 'project initial command'
+      command :login do |c|
+        c.syntax = 'dg login'
+        c.description = 'DeployGate login command'
         c.action do |args, options|
           begin
-            Commands::Init.run
+            Commands::Login.run
           rescue => e
-            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e))
+            error_handling("Commands::Login Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
@@ -51,6 +51,22 @@ module DeployGate
             Commands::Logout.run
           rescue => e
             error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e))
+            raise e
+          end
+        end
+      end
+
+      command :config do |c|
+        c.syntax = 'dg config'
+        c.description = 'dg user login config'
+        c.option '--json', 'output json format'
+        c.option '--name STRING', String, 'your DeployGate user name'
+        c.option '--token STRING', String, 'your DeployGate api token'
+        c.action do |args, options|
+          begin
+            Commands::Config.run(args, options)
+          rescue => e
+            error_handling("Commands::Config Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end

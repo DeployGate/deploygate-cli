@@ -1,13 +1,11 @@
 module DeployGate
   module Commands
-    class Init
+    class Login
       class << self
 
         # @return [void]
         def run
-          start_login_or_create_account() unless Session.new().login?
-
-          finish
+          start_login_or_create_account()
         end
 
         # @return [void]
@@ -23,7 +21,7 @@ module DeployGate
             puts ''
             password = input_password('Password: ')
             puts ''
-            login(email, password)
+            start(email, password)
           else
             create_account(email)
           end
@@ -32,7 +30,7 @@ module DeployGate
         # @param [String] email
         # @param [String] password
         # @return [void]
-        def login(email, password)
+        def start(email, password)
           begin
             Session.login(email, password)
           rescue Session::LoginError => e
@@ -66,7 +64,7 @@ module DeployGate
             raise 'User create error'
           else
             Message::Success.print('done! Your account has been set up successfully.')
-            login(email, password)
+            start(email, password)
           end
         end
 
@@ -100,11 +98,6 @@ module DeployGate
         # @return [String]
         def input_password(message)
           ask(message) { |q| q.echo = "*" }
-        end
-
-        # @return [void]
-        def finish
-          Message::Success.print('Enjoy development!')
         end
 
         def print_deploygate_aa
