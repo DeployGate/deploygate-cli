@@ -12,7 +12,7 @@ module DeployGate
           def upload(args, options)
             session = DeployGate::Session.new()
             unless session.login?
-              Init.login
+              Login.start_login_or_create_account()
               session = DeployGate::Session.new()
             end
 

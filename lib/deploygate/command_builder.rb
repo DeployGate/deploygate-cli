@@ -11,14 +11,14 @@ module DeployGate
       program :version,  VERSION
       program :description, 'You can control to DeployGate in your terminal.'
 
-      command :init do |c|
-        c.syntax = 'dg init'
-        c.description = 'project initial command'
+      command :login do |c|
+        c.syntax = 'dg login'
+        c.description = 'DeployGate login command'
         c.action do |args, options|
           begin
-            Commands::Init.run
+            Commands::Login.run
           rescue => e
-            error_handling("Commands::Init Error: #{e.class}", create_error_issue_body(e))
+            error_handling("Commands::Login Error: #{e.class}", create_error_issue_body(e))
             raise e
           end
         end
