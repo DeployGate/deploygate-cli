@@ -6,14 +6,23 @@ module DeployGate
 
         class << self
 
+          # @param [String] token
+          # @return [Hash]
+          def show(token)
+            res = Base.new(token).get(ENDPOINT + '/user', {})
+            return nil if res['error']
+
+            res['results']
+          end
+
           # @param [String] name
           # @param [String] token
           # @return [Boolean]
           def check(name, token)
-            res = Base.new(token).get(ENDPOINT + '/user', {})
-            return false if res['error']
+            results = show(token)
+            return false if results.nil?
 
-            name == res['results']['name']
+            name == results['name']
           end
 
           # @param [String] email
