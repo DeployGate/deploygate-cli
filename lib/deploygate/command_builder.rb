@@ -56,6 +56,22 @@ module DeployGate
         end
       end
 
+      command :config do |c|
+        c.syntax = 'dg config'
+        c.description = 'dg user login config'
+        c.option '--json', 'output json format'
+        c.option '--name STRING', String, 'your DeployGate user name'
+        c.option '--token STRING', String, 'your DeployGate api token'
+        c.action do |args, options|
+          begin
+            Commands::Config.run(args, options)
+          rescue => e
+            error_handling("Commands::Config Error: #{e.class}", create_error_issue_body(e))
+            raise e
+          end
+        end
+      end
+
       run!
     end
 
