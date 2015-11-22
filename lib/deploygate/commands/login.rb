@@ -5,9 +5,7 @@ module DeployGate
 
         # @return [void]
         def run
-          start_login_or_create_account() unless Session.new().login?
-
-          finish
+          start_login_or_create_account()
         end
 
         # @return [void]
@@ -100,11 +98,6 @@ module DeployGate
         # @return [String]
         def input_password(message)
           ask(message) { |q| q.echo = "*" }
-        end
-
-        # @return [void]
-        def finish
-          Message::Success.print('Enjoy development!')
         end
 
         def print_deploygate_aa
