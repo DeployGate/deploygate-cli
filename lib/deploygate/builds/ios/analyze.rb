@@ -28,6 +28,7 @@ module DeployGate
           @scheme = project.options[:scheme]
         end
 
+        # Support Xcode7 more
         # @return [String]
         def target_bundle_identifier
           product_name = target_product_name
