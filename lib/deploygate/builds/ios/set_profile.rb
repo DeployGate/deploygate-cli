@@ -10,11 +10,9 @@ module DeployGate
         # @param [String] username
         # @param [String] identifier
         # @return [DeployGate::Builds::Ios::SetProfile]
-        def initialize(username, identifier)
-          @username = username
+        def initialize(identifier)
+          @username = DeployGate::Fastlane::Spaceship.instance.email
           @identifier = identifier
-          Spaceship.login(username)
-          Spaceship.select_team
           if Spaceship.client.in_house?
             @method = Export::ENTERPRISE
           else
