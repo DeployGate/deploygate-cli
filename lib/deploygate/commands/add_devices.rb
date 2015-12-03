@@ -32,6 +32,7 @@ module DeployGate
               success_registered_device(device)
             end
             DeployGate::AppleDeveloper.instance.create_provisioning_profile!(package_name)
+            # TODO: resign or build
           end
         end
 

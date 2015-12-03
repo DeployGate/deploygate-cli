@@ -26,6 +26,8 @@ module DeployGate
       !Spaceship::Device.find_by_udid(device.udid).nil?
     end
 
+    # @param [String] uuid
+    # @return [Boolean]
     def created_app_id?(uuid)
       Spaceship.app.all.collect do |app|
         return true if app.bundle_id == uuid
@@ -34,6 +36,7 @@ module DeployGate
       false
     end
 
+    # @param [String] uuid
     def app_id_create!(uuid)
       Spaceship.app.create!(:bundle_id => uuid, :name => "#{uuid.split('.').join(' ')}")
     end
