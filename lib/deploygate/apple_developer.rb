@@ -13,8 +13,8 @@ module DeployGate
     end
 
     # @param [DeployGate::Devices::Ios] device
-    def device_register!(device, name)
-      Spaceship::Device.create!(name: name, udid: device.udid)
+    def device_register!(device)
+      Spaceship::Device.create!(name: device.register_name, udid: device.udid)
     end
 
     # @param [DeployGate::Devices::Ios] device
