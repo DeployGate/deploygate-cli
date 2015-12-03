@@ -31,6 +31,7 @@ module DeployGate
               device.register!
               success_registered_device(device)
             end
+            DeployGate::AppleDeveloper.instance.create_provisioning_profile!(package_name)
           end
         end
 

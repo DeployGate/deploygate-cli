@@ -31,12 +31,12 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'uuid', '~> 2.3.8'
   spec.add_dependency 'gem_update_checker', '~> 0.2.0'
   spec.add_dependency 'activesupport', '~> 4.2.4'
+  spec.add_dependency 'locale'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.0.0'
-  spec.add_dependency 'spaceship', '~> 0.12.3'
-  spec.add_dependency 'sigh', '~> 1.1.0'
-  spec.add_dependency 'locale'
+  spec.add_dependency 'gym'
+  spec.add_dependency 'spaceship'
+  spec.add_dependency 'sigh'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
