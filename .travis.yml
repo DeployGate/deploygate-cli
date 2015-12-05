@@ -1,3 +1,20 @@
 language: ruby
 rvm:
 - 2.0.0
+env:
+  global:
+    secure: UgL0hN1cNhpG6L6JDAAmHlgqeIU1gWQ77bYb9X5qgLBPKYGd56lCObDO+Gtszqm+jNV5TWJhXsqgs4hy4DPfKhJeL65S1fLO5ECdu0JhqX86/lPKv1t3V31iPmq7YvT9++BG5Xx+iTzip1n/THBloF3zNre/tECkP6hMtiF52Gc=
+script:
+- bundle exec rake
+deploy:
+  provider: rubygems
+  api_key:
+    secure: LhpIAY7sQUpo+QB417fpRtrgQJYjehDXBw+Bkd8+mYE5Ud87R3zhOC/aifx84tarPYBum9RZ5T4TZCGos2CdYNBjnnY+8WOLeF+ZAF63O7aFCtsFmCM8HxRGjgpFgnWQbdgPafUBDsSwNT5hpQjGul5V88Cvo8+dO4zwfZIuSZM=
+  gem: deploygate
+  on:
+    tags: true
+    repo: DeployGate/deploygate-cli
+after_deploy:
+- 'curl -X POST --data-urlencode "payload={\"channel\": \"#devs\", \"username\": \"DG-RELEASE-CLI\",
+  \"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate|RubyGems>!\",
+  \"icon_emoji\": \":tada:\"}" $SLACK_URL'
