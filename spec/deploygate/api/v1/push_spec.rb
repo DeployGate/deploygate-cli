@@ -21,7 +21,7 @@ describe DeployGate::API::V1::Push do
           to_return(:body => response.to_json)
 
       call_process_block = false
-      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message)
+      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message, '')
       expect(results).to eq ({
                                 :error => response[:error],
                                 :message => response[:because],
@@ -46,7 +46,7 @@ describe DeployGate::API::V1::Push do
           with(:headers => { 'AUTHORIZATION' => token }).
           to_return(:body => response.to_json)
 
-      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message)
+      results = DeployGate::API::V1::Push.upload(test_file_path, target_user, token, message, '')
       expect(results).to eq ({:error => response[:error], :message => response[:because]})
     end
   end
