@@ -3,16 +3,17 @@ rvm:
 - 2.0.0
 env:
   global:
-    secure: UgL0hN1cNhpG6L6JDAAmHlgqeIU1gWQ77bYb9X5qgLBPKYGd56lCObDO+Gtszqm+jNV5TWJhXsqgs4hy4DPfKhJeL65S1fLO5ECdu0JhqX86/lPKv1t3V31iPmq7YvT9++BG5Xx+iTzip1n/THBloF3zNre/tECkP6hMtiF52Gc=
+    secure: IpGM1CW5bsn8DGgcKGMf5jmlJMMVYVZ3c55d8MpGALgxbBHu2GLdOpA/msG1Ura1jR7sNZkrn1SlwQZ2Quo311RPb3UpgPQOlzphVPd6PzYbrNSccEeiD5cemm+J4zUUc6vSFLVwfDE4lV8Ge4Zbt+TclgBgJ4mw42/YB7N/Dmg=
 script:
 - bundle exec rake
 deploy:
   provider: rubygems
   api_key:
-    secure: LhpIAY7sQUpo+QB417fpRtrgQJYjehDXBw+Bkd8+mYE5Ud87R3zhOC/aifx84tarPYBum9RZ5T4TZCGos2CdYNBjnnY+8WOLeF+ZAF63O7aFCtsFmCM8HxRGjgpFgnWQbdgPafUBDsSwNT5hpQjGul5V88Cvo8+dO4zwfZIuSZM=
+    secure: GMEt+VCHGTvSIx/Z6iCTXE3eAbtNt6WB5Qr8AgMDOLjhuDcKCeGm6QEzcmBljnrtZmJhU1BIapzez5tS40H8wy/aRPknSsAOU+kt+BUIMfoQIv0KlVtWxI45R61+bytOfnrGqqLZKVC9mi/nI+qyHkLYuBa3FTEe9u4iyF8Ul/E=
   gem: deploygate
   on:
     tags: true
     repo: DeployGate/deploygate-cli
 after_deploy:
-- 'curl -X POST --data-urlencode "payload={\"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate|RubyGems>!\"}" $SLACK_URL'
+- 'curl -X POST --data-urlencode "payload={\"text\": \"Released a deploygate gem in
+  <https://rubygems.org/gems/deploygate/|RubyGems>\"}" $SLACK_URL'
