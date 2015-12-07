@@ -16,16 +16,17 @@ module DeployGate
               session = DeployGate::Session.new()
             end
 
-            message        = options.message
-            owner          = options.user || session.name
-            open           = options.open
-            disable_notify = options.disable_notify
-            file_path      = args.first
+            message          = options.message
+            owner            = options.user || session.name
+            distribution_key = options.distribution_key
+            open             = options.open
+            disable_notify   = options.disable_notify
+            file_path        = args.first
 
             data = nil
             print "Uploading to #{owner}.."
             begin
-              data = DeployGate::Deploy.push(file_path, owner, message, disable_notify) {
+              data = DeployGate::Deploy.push(file_path, owner, message, distribution_key, disable_notify) {
                 print '.'
                 sleep 0.2
               }

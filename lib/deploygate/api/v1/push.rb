@@ -10,15 +10,16 @@ module DeployGate
           # @param [String] target_user
           # @param [String] token
           # @param [String] message
+          # @param [String] distribution_key
           # @param [Boolean] disable_notify
           # @yield Upload process block
           # @return [Hash]
-          def upload(file_path, target_user, token, message, disable_notify = false, &process_block)
+          def upload(file_path, target_user, token, message, distribution_key, disable_notify = false, &process_block)
             res = nil
             open(file_path) do |file|
               res = Base.new(token).post(
                 sprintf(ENDPOINT, target_user),
-                { :file => file , :message => message, :disable_notify => disable_notify ? 'yes' : 'no' }) { process_block.call unless process_block.nil? }
+                { :file => file , :message => message, :distribution_key => distribution_key, :disable_notify => disable_notify ? 'yes' : 'no' }) { process_block.call unless process_block.nil? }
             end
 
             upload_results = {

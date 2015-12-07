@@ -29,6 +29,7 @@ module DeployGate
         c.description = 'upload to deploygate'
         c.option '--message STRING', String, 'release message'
         c.option '--user STRING', String, 'owner name or group name'
+        c.option '--distribution-key STRING', String, 'update distribution key'
         c.option '--open', 'open browser (OSX only)'
         c.option '--disable_notify', 'disable notify via email (iOS app only)'
         c.action do |args, options|
