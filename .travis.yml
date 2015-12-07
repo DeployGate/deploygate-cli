@@ -3,13 +3,13 @@ rvm:
 - 2.0.0
 env:
   global:
-    secure: IpGM1CW5bsn8DGgcKGMf5jmlJMMVYVZ3c55d8MpGALgxbBHu2GLdOpA/msG1Ura1jR7sNZkrn1SlwQZ2Quo311RPb3UpgPQOlzphVPd6PzYbrNSccEeiD5cemm+J4zUUc6vSFLVwfDE4lV8Ge4Zbt+TclgBgJ4mw42/YB7N/Dmg=
+  - secure: IpGM1CW5bsn8DGgcKGMf5jmlJMMVYVZ3c55d8MpGALgxbBHu2GLdOpA/msG1Ura1jR7sNZkrn1SlwQZ2Quo311RPb3UpgPQOlzphVPd6PzYbrNSccEeiD5cemm+J4zUUc6vSFLVwfDE4lV8Ge4Zbt+TclgBgJ4mw42/YB7N/Dmg=
+  - secure: USgyoGyai6QdUMKjqO3UPIAFYT6Qy9GaL7dApTwSFWgS7hxYe+WnW5/NCP5YHoDzbKaMhBI7FUcLyROirNw5Ar2RxO/WS8YZ1msmmhgouV44fXcDz/K+oRX+8bKIP1p58T6lvkKtf/ywZ1wRLil0fxi6w7Xjnt2oYLRMzm0kt00=
 script:
 - bundle exec rake
 deploy:
   provider: rubygems
-  api_key:
-    secure: GMEt+VCHGTvSIx/Z6iCTXE3eAbtNt6WB5Qr8AgMDOLjhuDcKCeGm6QEzcmBljnrtZmJhU1BIapzez5tS40H8wy/aRPknSsAOU+kt+BUIMfoQIv0KlVtWxI45R61+bytOfnrGqqLZKVC9mi/nI+qyHkLYuBa3FTEe9u4iyF8Ul/E=
+  api_key: $RUBYGEMS_API_KEY
   gem: deploygate
   on:
     tags: true
