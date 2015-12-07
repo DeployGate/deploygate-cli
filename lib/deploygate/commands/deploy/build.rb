@@ -108,22 +108,8 @@ module DeployGate
           # @param [String] uuid
           # @return [String]
           def create_provisioning(identifier, uuid)
-            puts <<EOF
-
-No suitable provisioning profile found to export the app.
-
-Please enter your email and password for Apple Developer Center
-to set up/download provisioning profile automatically so you can
-export the app without any extra steps.
-
-Note: Your password will be stored to Keychain and never be sent to DeployGate.
-
-EOF
-            print 'Email: '
-            username = STDIN.gets.chop
-
             begin
-              set_profile = DeployGate::Builds::Ios::SetProfile.new(username, identifier)
+              set_profile = DeployGate::Builds::Ios::SetProfile.new(identifier)
             rescue => e
               DeployGate::Message::Error.print("Error: Please try login again")
               raise e
