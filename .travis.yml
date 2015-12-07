@@ -15,6 +15,4 @@ deploy:
     tags: true
     repo: DeployGate/deploygate-cli
 after_deploy:
-- 'curl -X POST --data-urlencode "payload={\"channel\": \"#devs\", \"username\": \"DG-RELEASE-CLI\",
-  \"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate|RubyGems>!\",
-  \"icon_emoji\": \":tada:\"}" $SLACK_URL'
+- 'curl -X POST --data-urlencode "payload={\"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate|RubyGems>!\"}" $SLACK_URL'
