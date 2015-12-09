@@ -4,13 +4,31 @@ module DeployGate
   module Xcode
     class MemberCenter
       include Singleton
+      attr_reader :email, :method
 
-      attr_reader :email
+      AD_HOC = 'ad-hoc'
+      ENTERPRISE = 'enterprise'
 
       def initialize
         @email = input_email
         Spaceship.login @email
         Spaceship.select_team
+
+        if Spaceship.client.in_house?
+          @method = ENTERPRISE
+        else
+          @method = AD_HOC
+        end
+      end
+
+      # @return [Boolean]
+      def adhoc?
+        @method == AD_HOC
+      end
+
+      # @return [Boolean]
+      def in_house?
+        @method == ENTERPRISE
       end
 
       private

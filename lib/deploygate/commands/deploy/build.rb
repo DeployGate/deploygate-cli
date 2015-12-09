@@ -108,17 +108,12 @@ module DeployGate
           # @param [String] uuid
           # @return [String]
           def create_provisioning(identifier, uuid)
-            member_center = DeployGate::Xcode::MemberCenter.instance
+            app = DeployGate::Xcode::MemberCenters::App.new(identifier)
+            provisioning_prifile = DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(identifier)
 
             begin
-              set_profile = DeployGate::Builds::Ios::SetProfile.new(member_center.email, identifier)
-            rescue => e
-              DeployGate::Message::Error.print("Error: Please try login again")
-              raise e
-            end
-
-            begin
-              if set_profile.app_id_create
+              unless app.created?
+                app.create!
                 puts "App ID #{identifier} was created"
               end
             rescue => e
@@ -127,7 +122,7 @@ module DeployGate
             end
 
             begin
-              provisioning_profiles = set_profile.create_provisioning(uuid)
+              provisioning_profiles = provisioning_prifile.create!(uuid)
             rescue => e
               DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
               raise e
