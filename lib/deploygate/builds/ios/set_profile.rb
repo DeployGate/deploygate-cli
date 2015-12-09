@@ -13,8 +13,6 @@ module DeployGate
         def initialize(username, identifier)
           @username = username
           @identifier = identifier
-          Spaceship.login(username)
-          Spaceship.select_team
           if Spaceship.client.in_house?
             @method = Export::ENTERPRISE
           else
@@ -24,19 +22,11 @@ module DeployGate
 
         # @return [Boolean]
         def app_id_create
-          app_created = false
-          Spaceship.app.all.collect do |app|
-            if app.bundle_id == @identifier
-              app_created = true
-              break
-            end
-          end
-          unless app_created
-            Spaceship.app.create!(:bundle_id => @identifier, :name => "#{@identifier.split('.').join(' ')}")
-            return true
-          end
+          app = DeployGate::Xcode::MemberCenters::App.new(@identifier)
+          return false if app.created?
 
-          false
+          app.create!
+          true
         end
 
         # @param [String] uuid
