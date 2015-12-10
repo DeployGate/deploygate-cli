@@ -6,29 +6,26 @@ module DeployGate
       include Singleton
       attr_reader :email, :method
 
-      AD_HOC = 'ad-hoc'
-      ENTERPRISE = 'enterprise'
-
       def initialize
         @email = input_email
         Spaceship.login @email
         Spaceship.select_team
 
         if Spaceship.client.in_house?
-          @method = ENTERPRISE
+          @method = Export::ENTERPRISE
         else
-          @method = AD_HOC
+          @method = Export::AD_HOC
         end
       end
 
       # @return [Boolean]
       def adhoc?
-        @method == AD_HOC
+        @method == Export::AD_HOC
       end
 
       # @return [Boolean]
       def in_house?
-        @method == ENTERPRISE
+        @method == Export::ENTERPRISE
       end
 
       private

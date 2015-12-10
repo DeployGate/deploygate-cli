@@ -40,7 +40,7 @@ module DeployGate
             end
             uuid = analyze.target_xcode_setting_provisioning_profile_uuid
 
-            data = DeployGate::Builds::Ios::Export.find_local_data(identifier, uuid)
+            data = DeployGate::Xcode::Export.find_local_data(identifier, uuid)
             profiles = data[:profiles]
             teams = data[:teams]
 
@@ -48,12 +48,12 @@ module DeployGate
             if teams.empty?
               target_provisioning_profile = create_provisioning(identifier, uuid)
             elsif teams.count == 1
-              target_provisioning_profile = DeployGate::Builds::Ios::Export.select_profile(profiles[teams.keys.first])
+              target_provisioning_profile = DeployGate::Xcode::Export.select_profile(profiles[teams.keys.first])
             elsif teams.count >= 2
               target_provisioning_profile = select_teams(teams, profiles)
             end
-            method = DeployGate::Builds::Ios::Export.method(target_provisioning_profile)
-            codesigning_identity = DeployGate::Builds::Ios::Export.codesigning_identity(target_provisioning_profile)
+            method = DeployGate::Xcode::Export.method(target_provisioning_profile)
+            codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
 
             begin
               ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
@@ -95,7 +95,7 @@ module DeployGate
               team_profiles = profiles[team].first
               raise 'not select' if team_profiles.nil?
 
-              result = DeployGate::Builds::Ios::Export.select_profile(profiles[team])
+              result = DeployGate::Xcode::Export.select_profile(profiles[team])
             rescue => e
               puts 'Please select team number'
               return select_teams(teams, profiles)
@@ -128,7 +128,7 @@ module DeployGate
               raise e
             end
 
-            DeployGate::Builds::Ios::Export.select_profile(provisioning_profiles)
+            DeployGate::Xcode::Export.select_profile(provisioning_profiles)
           end
 
           def print_no_target
@@ -142,7 +142,7 @@ EOF
           end
 
           def check_local_certificates
-            if DeployGate::Builds::Ios::Export.installed_distribution_certificate_ids.count == 0
+            if DeployGate::Xcode::Export.installed_distribution_certificate_ids.count == 0
               # not local install certificate
               DeployGate::Message::Error.print("Error: Not local install distribution certificate")
               puts <<EOF
@@ -156,7 +156,7 @@ EOF
               exit
             end
 
-            conflicting_certificates = DeployGate::Builds::Ios::Export.installed_distribution_conflicting_certificates
+            conflicting_certificates = DeployGate::Xcode::Export.installed_distribution_conflicting_certificates
             if conflicting_certificates.count > 0
               DeployGate::Message::Error.print("Error: Conflicting local install certificates")
               puts <<EOF
