@@ -19,7 +19,7 @@ module DeployGate
           values = {
               :export_method => export_method,
               :workspace => ios_analyze.build_workspace,
-              :configuration => Analyze::BUILD_CONFIGRATION,
+              :configuration => DeployGate::Xcode::Analyze::BUILD_CONFIGRATION,
               :scheme => target_scheme,
               :codesigning_identity => codesigning_identity
           }
