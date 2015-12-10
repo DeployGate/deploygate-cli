@@ -1,5 +1,5 @@
 module DeployGate
-  module Builds
+  module Xcode
     module Ios
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'

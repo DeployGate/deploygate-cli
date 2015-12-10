@@ -10,7 +10,7 @@ module DeployGate
       BUILD_CONFIGRATION = 'Release'
 
       # @param [Array] workspaces
-      # @return [DeployGate::Builds::Ios::Analyze]
+      # @return [DeployGate::Xcode::Analyze]
       def initialize(workspaces)
         @workspaces = workspaces
         @scheme_workspace = find_scheme_workspace(workspaces)

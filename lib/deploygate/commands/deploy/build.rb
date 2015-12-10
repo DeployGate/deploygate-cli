@@ -13,8 +13,8 @@ module DeployGate
 
             if DeployGate::Build.ios?(work_dir)
               check_local_certificates()
-              root_path = DeployGate::Builds::Ios.project_root_path(work_dir)
-              workspaces = DeployGate::Builds::Ios.find_workspaces(root_path)
+              root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
+              workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
               ios(workspaces, options)
             elsif DeployGate::Build.android?(work_dir)
               # TODO: support android build
@@ -28,7 +28,7 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
-            analyze = DeployGate::Builds::Ios::Analyze.new(workspaces)
+            analyze = DeployGate::Xcode::Analyze.new(workspaces)
             target_scheme = analyze.scheme
             begin
               identifier = analyze.target_bundle_identifier
@@ -56,7 +56,7 @@ module DeployGate
             codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
 
             begin
-              ipa_path = DeployGate::Builds::Ios.build(analyze, target_scheme, codesigning_identity, method)
+              ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, method)
             rescue => e
               # TODO: build error handling
               use_xcode_path = `xcode-select -p`
