@@ -24,7 +24,15 @@ module DeployGate
               :codesigning_identity => codesigning_identity
           }
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
-          absolute_ipa_path = File.expand_path(Gym::Manager.new.work(v))
+
+          begin
+            absolute_ipa_path = File.expand_path(Gym::Manager.new.work(v))
+          rescue => e
+            # TODO: build error handling
+            use_xcode_path = `xcode-select -p`
+            DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
+            raise e
+          end
           absolute_dsym_path = absolute_ipa_path.gsub(".ipa", ".app.dSYM.zip") # TODO: upload to deploygate
 
           absolute_ipa_path

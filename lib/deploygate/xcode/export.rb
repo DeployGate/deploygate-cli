@@ -7,6 +7,27 @@ module DeployGate
       PROFILE_EXTNAME = '.mobileprovision'
 
       class << self
+
+        # @param [String] bundle_identifier
+        # @param [String] uuid
+        # @return [String]
+        def provisioning_profile(bundle_identifier, uuid = nil)
+          data = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid)
+          profiles = data[:profiles]
+          teams = data[:teams]
+
+          target_provisioning_profile = nil
+          if teams.empty?
+            target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
+          elsif teams.count == 1
+            target_provisioning_profile = select_profile(profiles[teams.keys.first])
+          elsif teams.count >= 2
+            target_provisioning_profile = select_teams(teams, profiles)
+          end
+
+          target_provisioning_profile
+        end
+
         # @param [String] bundle_identifier
         # @param [String] uuid
         # @return [Hash]
@@ -178,6 +199,80 @@ module DeployGate
             plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
             plist['Path'] = profile_path
             return plist
+          end
+        end
+
+        def create_provisioning(identifier, uuid)
+          app = MemberCenters::App.new(identifier)
+          provisioning_prifile = MemberCenters::ProvisioningProfile.new(identifier)
+
+          begin
+            unless app.created?
+              app.create!
+              puts "App ID #{identifier} was created"
+            end
+          rescue => e
+            DeployGate::Message::Error.print("Error: Failed to create App ID")
+            raise e
+          end
+
+          begin
+            provisioning_profiles = provisioning_prifile.create!(uuid)
+          rescue => e
+            DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
+            raise e
+          end
+
+          select_profile(provisioning_profiles)
+        end
+
+        # @param [Hash] teams
+        # @param [Hash] profiles
+        # @return [String]
+        def select_teams(teams, profiles)
+          result = nil
+          cli = HighLine.new
+          cli.choose do |menu|
+            menu.prompt = 'Please select team'
+            teams.each_with_index do |team, index|
+              menu.choice("#{team[1]} #{team[0]}") {
+                result = DeployGate::Xcode::Export.select_profile(profiles[team])
+              }
+            end
+          end
+
+          result
+        end
+
+        def check_local_certificates
+          if installed_distribution_certificate_ids.count == 0
+            # not local install certificate
+            DeployGate::Message::Error.print("Error: Not local install distribution certificate")
+            puts <<EOF
+
+Not local install iPhone Distribution certificates.
+Please install certificate.
+
+Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
+
+EOF
+            exit
+          end
+
+          conflicting_certificates = installed_distribution_conflicting_certificates
+          if conflicting_certificates.count > 0
+            DeployGate::Message::Error.print("Error: Conflicting local install certificates")
+            puts <<EOF
+
+Conflicting local install certificates.
+Please uninstall certificates.
+EOF
+            conflicting_certificates.each do |certificate|
+              puts certificate
+            end
+            puts ""
+
+            exit
           end
         end
       end

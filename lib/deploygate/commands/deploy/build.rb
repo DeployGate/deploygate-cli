@@ -12,7 +12,6 @@ module DeployGate
             work_dir = args.first
 
             if DeployGate::Build.ios?(work_dir)
-              check_local_certificates()
               root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
               workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
               ios(workspaces, options)
@@ -28,107 +27,19 @@ module DeployGate
           # @param [Hash] options
           # @return [void]
           def ios(workspaces, options)
+            DeployGate::Xcode::Export.check_local_certificates
+
             analyze = DeployGate::Xcode::Analyze.new(workspaces)
             target_scheme = analyze.scheme
-            begin
-              identifier = analyze.target_bundle_identifier
-            rescue
-              # not found bundle identifier
-              puts 'Please input bundle identifier'
-              puts 'Example: com.example.ios'
-              identifier = input_bundle_identifier
-            end
-            uuid = analyze.target_xcode_setting_provisioning_profile_uuid
+            bundle_identifier = analyze.target_bundle_identifier
+            xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
 
-            data = DeployGate::Xcode::Export.find_local_data(identifier, uuid)
-            profiles = data[:profiles]
-            teams = data[:teams]
-
-            target_provisioning_profile = nil
-            if teams.empty?
-              target_provisioning_profile = create_provisioning(identifier, uuid)
-            elsif teams.count == 1
-              target_provisioning_profile = DeployGate::Xcode::Export.select_profile(profiles[teams.keys.first])
-            elsif teams.count >= 2
-              target_provisioning_profile = select_teams(teams, profiles)
-            end
+            target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(bundle_identifier, xcode_provisioning_profile_uuid)
             method = DeployGate::Xcode::Export.method(target_provisioning_profile)
             codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
 
-            begin
-              ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, method)
-            rescue => e
-              # TODO: build error handling
-              use_xcode_path = `xcode-select -p`
-              DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
-              raise e
-            end
-
+            ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, method)
             Push.upload([ipa_path], options)
-          end
-
-          def input_bundle_identifier
-            print 'bundle identifier: '
-            identifier = STDIN.gets.chop
-
-            if identifier == '' || identifier.nil?
-              puts 'You must input bundle identifier'
-              return input_bundle_identifier
-            end
-
-            identifier
-          end
-
-          # @param [Hash] teams
-          # @param [Hash] profiles
-          # @return [String]
-          def select_teams(teams, profiles)
-            result = nil
-            puts 'Select team:'
-            teams.each_with_index do |team, index|
-              puts "#{index + 1}. #{team[1]} (#{team[0]})"
-            end
-            print '? '
-            select = STDIN.gets.chop
-            begin
-              team = teams.keys[Integer(select) - 1]
-              team_profiles = profiles[team].first
-              raise 'not select' if team_profiles.nil?
-
-              result = DeployGate::Xcode::Export.select_profile(profiles[team])
-            rescue => e
-              puts 'Please select team number'
-              return select_teams(teams, profiles)
-            end
-
-            result
-          end
-
-          # @param [String] identifier
-          # @param [String] uuid
-          # @return [String]
-          def create_provisioning(identifier, uuid)
-            app = DeployGate::Xcode::MemberCenters::App.new(identifier)
-            provisioning_prifile = DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(identifier)
-
-            begin
-              unless app.created?
-                app.create!
-                puts "App ID #{identifier} was created"
-              end
-            rescue => e
-              DeployGate::Message::Error.print("Error: Failed to create App ID")
-              raise e
-            end
-
-            begin
-              provisioning_profiles = provisioning_prifile.create!(uuid)
-            rescue => e
-              DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
-              raise e
-            end
-
-            DeployGate::Xcode::Export.select_profile(provisioning_profiles)
           end
 
           def print_no_target
@@ -139,38 +50,6 @@ Please run on the root directory of iOS project or specify .apk/.ipa file to dep
 
 EOF
             DeployGate::Message::Warning.print(message)
-          end
-
-          def check_local_certificates
-            if DeployGate::Xcode::Export.installed_distribution_certificate_ids.count == 0
-              # not local install certificate
-              DeployGate::Message::Error.print("Error: Not local install distribution certificate")
-              puts <<EOF
-
-Not local install iPhone Distribution certificates.
-Please install certificate.
-
-Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
-
-EOF
-              exit
-            end
-
-            conflicting_certificates = DeployGate::Xcode::Export.installed_distribution_conflicting_certificates
-            if conflicting_certificates.count > 0
-              DeployGate::Message::Error.print("Error: Conflicting local install certificates")
-              puts <<EOF
-
-Conflicting local install certificates.
-Please uninstall certificates.
-EOF
-              conflicting_certificates.each do |certificate|
-                puts certificate
-              end
-              puts ""
-
-              exit
-            end
           end
         end
       end

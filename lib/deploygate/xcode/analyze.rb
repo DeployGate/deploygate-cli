@@ -30,9 +30,16 @@ module DeployGate
       # Support Xcode7 more
       # @return [String]
       def target_bundle_identifier
-        product_name = target_product_name
-        identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
-        identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
+        begin
+          product_name = target_product_name
+          identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
+          identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
+        rescue
+          cli = HighLine.new
+          cli.say('Please input bundle identifier')
+          cli.say('Example: com.example.ios')
+          identifier = cli.ask('Enter your bundle identifier: ') { |q| p q.validate = /^(\w+)\.(\w+).*\w$/ }
+        end
 
         identifier
       end
