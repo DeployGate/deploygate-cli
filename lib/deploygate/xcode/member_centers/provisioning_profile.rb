@@ -88,8 +88,8 @@ module DeployGate
               output_path: OUTPUT_PATH,
               team_id: Spaceship.client.team_id
           }
-          values.merget!({provisioning_name: provisioning_name}) unless provisioning_name.nil?
-          values.merget!({cert_id: cert_id}) unless cert_id.nil?
+          values.merge!({provisioning_name: provisioning_name}) unless provisioning_name.nil?
+          values.merge!({cert_id: cert_id}) unless cert_id.nil?
 
           values
         end
