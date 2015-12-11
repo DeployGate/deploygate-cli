@@ -1,5 +1,5 @@
 module DeployGate
-  class Build
+  class Project
     class << self
 
       # @param [String] path

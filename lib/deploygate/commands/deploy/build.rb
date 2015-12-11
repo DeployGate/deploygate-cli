@@ -11,11 +11,11 @@ module DeployGate
             # android/ios build
             work_dir = args.first
 
-            if DeployGate::Build.ios?(work_dir)
+            if DeployGate::Project.ios?(work_dir)
               root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
               workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
               ios(workspaces, options)
-            elsif DeployGate::Build.android?(work_dir)
+            elsif DeployGate::Project.android?(work_dir)
               # TODO: support android build
               print_no_target
             else
