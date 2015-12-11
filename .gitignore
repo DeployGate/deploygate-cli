@@ -22,3 +22,7 @@ deploygate-cli.iml
 
 # test file
 spec/test_files/.dg
+
+# binary files
+*.app.dSYM.zip
+*.ipa

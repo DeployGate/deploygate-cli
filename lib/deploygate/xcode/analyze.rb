@@ -38,7 +38,7 @@ module DeployGate
           cli = HighLine.new
           cli.say('Please input bundle identifier')
           cli.say('Example: com.example.ios')
-          identifier = cli.ask('Enter your bundle identifier: ') { |q| p q.validate = /^(\w+)\.(\w+).*\w$/ }
+          identifier = cli.ask('Enter your bundle identifier: ') { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
         end
 
         identifier
