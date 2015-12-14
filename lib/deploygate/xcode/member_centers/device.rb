@@ -10,7 +10,6 @@ module DeployGate
         # @param [String] device_name
         # @return [DeployGate::Devices::Ios]
         def initialize(udid, user_name, device_name)
-          @member_center = DeployGate::Xcode::MemberCenter.instance
           @udid = udid
           @user_name = user_name
           @device_name = device_name
@@ -18,11 +17,13 @@ module DeployGate
         end
 
         def registered?
+          DeployGate::Xcode::MemberCenter.instance
           !Spaceship::Device.find_by_udid(@udid).nil?
         end
 
         # @return [void]
         def register!
+          DeployGate::Xcode::MemberCenter.instance
           return if registered?
 
           Spaceship::Device.create!(name: @register_name, udid: @udid)

@@ -6,18 +6,28 @@ module DeployGate
         # @param [Array] args
         # @param [Commander::Command::Options] options
         def run(args, options)
+          work_dir = args.empty? ? Dir.pwd : args.first
+          unless DeployGate::Project.ios?(work_dir)
+            ios_only_command
+            exit
+          end
+
           session = DeployGate::Session.new
           unless session.login?
             Login.start_login_or_create_account()
             session = DeployGate::Session.new()
           end
 
-          bundle_id    = options.bundle_id
-          owner        = options.user
+          owner = options.user || session.name
+
+          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
+          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
+          analyze = DeployGate::Xcode::Analyze.new(workspaces)
+          bundle_id = analyze.target_bundle_identifier
 
           puts 'Not provisoned udids fetch...'
           puts ''
-          res = DeployGate::API::V1::Users::App.not_provisioned_udids(session.token, owner || session.name, package_name)
+          res = DeployGate::API::V1::Users::App.not_provisioned_udids(session.token, owner, bundle_id)
           return if res[:error] # TODO: Error handling
 
           results = res[:results]
@@ -64,6 +74,11 @@ module DeployGate
         # @return [void]
         def not_device
           DeployGate::Message::Warning.print('Not add devices')
+        end
+
+        # @return [void]
+        def ios_only_command
+          DeployGate::Message::Warning.print('This command is iOS project only command')
         end
       end
     end

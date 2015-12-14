@@ -46,9 +46,8 @@ module DeployGate
 
       command 'add-devices' do |c|
         c.syntax = 'dg add-devices'
-        c.description = 'add ios devices'
+        c.description = 'add ios devices(iOS only)'
         c.option '--user STRING', String, 'owner name or group name'
-        c.option '--bundle-id STRING', String, 'app bundle identifier'
         c.action do |args, options|
           options.default :user => nil
           begin
