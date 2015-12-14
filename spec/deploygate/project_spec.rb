@@ -29,9 +29,11 @@ describe DeployGate::Project do
   end
 
   describe "#android?" do
-    it "android not support" do
+    it "android project" do
+      allow(DeployGate::Android::GradleProject).to receive(:root_dir?).and_return(true)
+
       result = DeployGate::Project.android?('path')
-      expect(result).to be_falsey
+      expect(result).to be_truthy
     end
   end
 end
