@@ -1,11 +1,11 @@
 module DeployGate
-  class Build
+  class Project
     class << self
 
       # @param [String] path
       # @return [Boolean]
       def ios?(path)
-        DeployGate::Builds::Ios.workspace?(path) || DeployGate::Builds::Ios.project?(path) || DeployGate::Builds::Ios.ios_root?(path)
+        DeployGate::Xcode::Ios.workspace?(path) || DeployGate::Xcode::Ios.project?(path) || DeployGate::Xcode::Ios.ios_root?(path)
       end
 
       # @param [String] path
