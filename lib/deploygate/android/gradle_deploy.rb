@@ -1,13 +1,19 @@
 module DeployGate
   module Android
     class GradleDeploy
-      def initialize (dir = nil)
-        @dir = dir || Dir.pwd
+
+      GRADLE_DEPLOY_USER_NAME_ENV = 'DEPLOYGATE_USER_NAME'
+      GRADLE_DEPLOY_MESSAGE_ENV = 'DEPLOYGATE_MESSAGE'
+      GRADLE_DEPLOY_DISTRIBUTION_KEY_ENV = 'DEPLOYGATE_DISTRIBUTION_KEY'
+
+      def initialize (dir, options)
+        @dir = dir
         @cli = HighLine.new
 
         GradleProject.root_dir?(@dir)     or raise "#{@dir} is not the root directory of Android project"
         Dir.chdir(@dir)                   or raise "Cannot chdir to #{@dir}"
         @gradle = find_gradle_executable  or raise 'Gradle executable not found.'
+        @deploy_env = env(options)
       end
 
       def deploy
@@ -54,7 +60,7 @@ module DeployGate
       end
 
       def run_task(task)
-        command = "#{@gradle} #{task}"
+        command = "#{@deploy_env} #{@gradle} #{task} "
         @cli.say "Running <%= color(\"#{command}\", BOLD) %>"
         system command
       end
@@ -65,6 +71,24 @@ module DeployGate
             grep(/uploadDeployGate(?!.*signingConfig).+$/).
             map { |line| line.split(/\s/, 2).first }.
             sort
+      end
+
+      # @param [Hash] options
+      # @return [String]
+      def env(options)
+        result = ''
+
+        owner            = options.user
+        message          = options.message
+        distribution_key = options.distribution_key
+        open             = options.open
+
+        result += "#{GRADLE_DEPLOY_USER_NAME_ENV}=#{owner} " if owner
+        result += "#{GRADLE_DEPLOY_MESSAGE_ENV}=#{message} " if message != nil && message != ''
+        result += "#{GRADLE_DEPLOY_DISTRIBUTION_KEY_ENV}=#{distribution_key} " if distribution_key
+        puts @cli.color('Not supported browser open', HighLine::YELLOW) if open
+
+        result
       end
     end
   end

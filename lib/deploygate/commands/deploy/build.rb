@@ -16,7 +16,7 @@ module DeployGate
               workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
               ios(workspaces, options)
             elsif DeployGate::Project.android?(work_dir)
-              DeployGate::Android::GradleDeploy.new(work_dir).deploy
+              DeployGate::Android::GradleDeploy.new(work_dir, options).deploy
             else
               print_no_target
             end
