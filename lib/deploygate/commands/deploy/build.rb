@@ -16,8 +16,7 @@ module DeployGate
               workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
               ios(workspaces, options)
             elsif DeployGate::Project.android?(work_dir)
-              # TODO: support android build
-              print_no_target
+              DeployGate::Android::GradleDeploy.new(work_dir, options).deploy
             else
               print_no_target
             end
@@ -46,7 +45,7 @@ module DeployGate
             message = <<EOF
 
 No deploy target found.
-Please run on the root directory of iOS project or specify .apk/.ipa file to deploy.
+Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
 
 EOF
             DeployGate::Message::Warning.print(message)

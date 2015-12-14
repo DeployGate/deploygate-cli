@@ -11,7 +11,7 @@ module DeployGate
       # @param [String] path
       # @return [Boolean]
       def android?(path)
-        false # TODO: support android build
+        DeployGate::Android::GradleProject.root_dir?(path)
       end
     end
   end

@@ -31,13 +31,13 @@ $ gem install deploygate
 ### Upload apps
 
 ```
-$ dg deploy [package file path]
+$ dg deploy [apk/ipa file path]
 ```
 
-### iOS build and upload
+### Android/iOS build and upload
 
 ```
-$ dg deploy [ios project path]
+$ dg deploy [Android/iOS project path]
 ```
 
 ## License
