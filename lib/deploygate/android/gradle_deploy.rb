@@ -60,7 +60,7 @@ module DeployGate
       end
 
       def run_task(task)
-        command = "#{@deploy_env} #{@gradle} #{task} "
+        command = "#{@deploy_env} #{@gradle} #{task}"
         @cli.say "Running <%= color(\"#{command}\", BOLD) %>"
         system command
       end
