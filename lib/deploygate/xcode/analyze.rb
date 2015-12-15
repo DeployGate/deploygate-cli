@@ -36,9 +36,8 @@ module DeployGate
           identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
         rescue
           cli = HighLine.new
-          cli.say('Please input bundle identifier')
-          cli.say('Example: com.example.ios')
-          identifier = cli.ask('Enter your bundle identifier: ') { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
+          puts I18n.t('xcode.analyze.target_bundle_identifier.prompt')
+          identifier = cli.ask(I18n.t('xcode.analyze.target_bundle_identifier.ask')) { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
         end
 
         identifier

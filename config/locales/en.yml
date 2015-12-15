@@ -28,3 +28,9 @@ en:
         start: 'Clean local Provisioning Profiles...'
         delete: 'Delete %{path}'
         finish: 'Finish clean local Provisionig Profiles'
+    analyze:
+      target_bundle_identifier:
+        prompt: |
+          Please input bundle identifier
+          Example: com.example.ios
+        ask: 'Enter your bundle identifier: '
