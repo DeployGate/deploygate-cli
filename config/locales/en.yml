@@ -1,5 +1,43 @@
 ---
 en:
+  command_builder:
+    name: 'dg'
+    description: 'You can control to DeployGate in your terminal.'
+    login:
+      description: 'DeployGate login command'
+      error: 'Commands::Login Error: %{e}'
+    deploy:
+      description: 'upload to deploygate'
+      message: 'release message'
+      user: 'owner name or group name'
+      distribution_key: 'update distribution key'
+      open: 'open browser (OSX only)'
+      disable_notify: 'disable notify via email (iOS app only)'
+      error: 'Commands::Deploy Error: %{e}'
+    add_devices:
+      description: 'add ios devices(iOS only)'
+      user: 'owner name or group name'
+      udid: 'add device udid'
+      device_name: 'add device name'
+      error: 'Commands::AddDevices Error: %{e}'
+    logout:
+      description: 'logout'
+      error: 'Commands::Logout Error: %{e}'
+    config:
+      description: 'dg user login config'
+      json: 'output json format'
+      name: 'your DeployGate user name'
+      token: 'your DeployGate api token'
+      error: 'Commands::Config Error: %{e}'
+    error_handling:
+      agree: 'Do you want to report this issue on GitHub? (y/n) '
+      please_open: 'Please open github issue: %{url}'
+    show_update_message: |
+      #################################################################
+      # %{gem_name} %{latest_version} is available. You are on %{current_version}.
+      # It is recommended to use the latest version.
+      # Update using 'gem update %{gem_name}'.
+      #################################################################
   commands:
     deploy:
       build:
