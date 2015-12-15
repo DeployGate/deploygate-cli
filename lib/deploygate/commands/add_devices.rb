@@ -84,7 +84,6 @@ module DeployGate
               menu.choice(device.to_s) { select.push(device) }
             end
             menu.choice('All select') { select = devices }
-            menu.choice('Not select') { }
           end
 
           select
