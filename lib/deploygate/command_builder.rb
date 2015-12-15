@@ -4,6 +4,11 @@ module DeployGate
     attr_reader :arguments
 
     def run
+      Signal.trap(:INT){
+        puts ''
+        exit 0
+      }
+
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
 
@@ -43,6 +48,23 @@ module DeployGate
         end
       end
       alias_command :'push', :deploy
+
+      command 'add-devices' do |c|
+        c.syntax = 'dg add-devices'
+        c.description = 'add ios devices(iOS only)'
+        c.option '--user STRING', String, 'owner name or group name'
+        c.option '--udid STRING', String, 'add device udid'
+        c.option '--device-name STRING', String, 'add device name'
+        c.action do |args, options|
+          options.default :user => nil
+          begin
+            Commands::AddDevices.run(args, options)
+          rescue => e
+            error_handling("Commands::AddDevices Error: #{e.class}", create_error_issue_body(e))
+            raise e
+          end
+        end
+      end
 
       command :logout do |c|
         c.syntax = 'dg logout'

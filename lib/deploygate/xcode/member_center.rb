@@ -4,12 +4,12 @@ module DeployGate
   module Xcode
     class MemberCenter
       include Singleton
-      attr_reader :email, :method
+      attr_reader :email, :method, :team
 
       def initialize
         @email = input_email
         Spaceship.login @email
-        Spaceship.select_team
+        @team = Spaceship.select_team
 
         if Spaceship.client.in_house?
           @method = Export::ENTERPRISE
@@ -33,8 +33,6 @@ module DeployGate
       # @return [String]
       def input_email
         puts <<EOF
-
-No suitable provisioning profile found to export the app.
 
 Please enter your email and password for Apple Developer Center
 to set up/download provisioning profile automatically so you can
