@@ -4,6 +4,11 @@ module DeployGate
     attr_reader :arguments
 
     def run
+      Signal.trap(:INT){
+        puts ''
+        exit 0
+      }
+
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
 
