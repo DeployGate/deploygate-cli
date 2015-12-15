@@ -48,6 +48,8 @@ module DeployGate
         c.syntax = 'dg add-devices'
         c.description = 'add ios devices(iOS only)'
         c.option '--user STRING', String, 'owner name or group name'
+        c.option '--udid STRING', String, 'add device udid'
+        c.option '--device-name STRING', String, 'add device name'
         c.action do |args, options|
           options.default :user => nil
           begin

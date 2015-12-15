@@ -7,10 +7,7 @@ module DeployGate
         # @param [Commander::Command::Options] options
         def run(args, options)
           work_dir = args.empty? ? Dir.pwd : args.first
-          unless DeployGate::Project.ios?(work_dir)
-            ios_only_command
-            exit
-          end
+          ios_only_command unless DeployGate::Project.ios?(work_dir)
 
           session = DeployGate::Session.new
           unless session.login?
@@ -18,32 +15,58 @@ module DeployGate
             session = DeployGate::Session.new()
           end
 
-          owner = options.user || session.name
+          owner       = options.user || session.name
+          udid        = options.udid
+          device_name = options.device_name
 
-          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
-          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
-          analyze = DeployGate::Xcode::Analyze.new(workspaces)
-          bundle_id = analyze.target_bundle_identifier
+          bundle_id = bundle_id(work_dir)
 
+          if udid.nil? && device_name.nil?
+            devices = fetch_devices(session.token, owner, bundle_id)
+            select_devices = select_devices(devices)
+            not_device if select_devices.empty?
+
+            select_devices.each do |device|
+              device.register!
+              success_registered_device(device)
+            end
+          else
+            register_udid = udid || HighLine.ask('Input UDID: ')
+            register_device_name = device_name || HighLine.ask('Input Device Name: ')
+            device = DeployGate::Xcode::MemberCenters::Device.new(register_udid, '', register_device_name)
+
+            puts device.to_s
+            if HighLine.agree('It will register with the contents of the above. Is it OK? (y/n) ') {|q| q.default = "y"}
+              device.register!
+              success_registered_device(device)
+            else
+              not_device
+            end
+          end
+
+          DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id)
+          # TODO: resign or build
+        end
+
+        def fetch_devices(token, owner, bundle_id)
           puts 'Not provisoned udids fetch...'
           puts ''
-          res = DeployGate::API::V1::Users::App.not_provisioned_udids(session.token, owner, bundle_id)
+          res = DeployGate::API::V1::Users::App.not_provisioned_udids(token, owner, bundle_id)
           return if res[:error] # TODO: Error handling
 
           results = res[:results]
           devices = results.map{|r| DeployGate::Xcode::MemberCenters::Device.new(r[:udid], r[:user_name], r[:device_name])}
 
-          select_devices = select_devices(devices)
-          if select_devices.empty?
-            not_device
-          else
-            select_devices.each do |device|
-              device.register!
-              success_registered_device(device)
-            end
-            DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id)
-            # TODO: resign or build
-          end
+          devices
+        end
+
+        # @param [String] work_dir
+        # @return [String]
+        def bundle_id(work_dir)
+          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
+          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
+          analyze = DeployGate::Xcode::Analyze.new(workspaces)
+          analyze.target_bundle_identifier
         end
 
         # @param [Array]
@@ -55,10 +78,10 @@ module DeployGate
           cli = HighLine.new
           cli.choose do |menu|
             menu.prompt = 'Please select add device: '
-            menu.choice('All select') { select = devices }
             devices.each do |device|
               menu.choice(device.to_s) { select.push(device) }
             end
+            menu.choice('All select') { select = devices }
             menu.choice('Not select') { }
           end
 
@@ -74,11 +97,13 @@ module DeployGate
         # @return [void]
         def not_device
           DeployGate::Message::Warning.print('Not add devices')
+          exit
         end
 
         # @return [void]
         def ios_only_command
           DeployGate::Message::Warning.print('This command is iOS project only command')
+          exit
         end
       end
     end
