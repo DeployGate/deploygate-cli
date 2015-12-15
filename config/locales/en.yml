@@ -18,6 +18,16 @@ en:
             Package: \t %{package_name}
             Revision: \t %{revision}
             URL: \t\t %{web_url}
+    add_devices:
+      input_udid: 'Input UDID: '
+      input_device_name: 'Input Device Name: '
+      device_register_confirm: 'It will register with the contents of the above. Is it OK? (y/n) '
+      select_devices:
+        device_info: 'Device [%{device}]'
+        agree: 'Would you like to add this device? (y/n) '
+      success_registered_device: 'Registered %{device}'
+      not_device: 'Not add devices'
+      ios_only_command: 'This command is iOS project only command'
   xcode:
     export:
       create_provisioning:

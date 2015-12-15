@@ -31,12 +31,12 @@ module DeployGate
               success_registered_device(device)
             end
           else
-            register_udid = udid || HighLine.ask('Input UDID: ')
-            register_device_name = device_name || HighLine.ask('Input Device Name: ')
+            register_udid = udid || HighLine.ask(I18n.t('commands.add_devices.input_udid'))
+            register_device_name = device_name || HighLine.ask(I18n.t('commands.add_devices.input_device_name'))
             device = DeployGate::Xcode::MemberCenters::Device.new(register_udid, '', register_device_name)
 
             puts device.to_s
-            if HighLine.agree('It will register with the contents of the above. Is it OK? (y/n) ') {|q| q.default = "y"}
+            if HighLine.agree(I18n.t('commands.add_devices.device_register_confirm')) {|q| q.default = "y"}
               device.register!
               success_registered_device(device)
             else
@@ -78,8 +78,8 @@ module DeployGate
           cli = HighLine.new
           devices.each do |device|
             puts ''
-            puts "Device [#{device.to_s}]"
-            select.push(device) if cli.agree("Would you like to add this device? (y/n) ") {|q| q.default = "y"}
+            puts I18n.t('commands.add_devices.select_devices.device_info', device: device.to_s)
+            select.push(device) if cli.agree(I18n.t('commands.add_devices.select_devices.agree')) {|q| q.default = "y"}
           end
 
           select
@@ -88,18 +88,18 @@ module DeployGate
         # @param [Device] device
         # @return [void]
         def success_registered_device(device)
-          DeployGate::Message::Success.print("Registered #{device.to_s}")
+          DeployGate::Message::Success.print(I18n.t('commands.add_devices.success_registered_device', device: device.to_s))
         end
 
         # @return [void]
         def not_device
-          DeployGate::Message::Warning.print('Not add devices')
+          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.not_device'))
           exit
         end
 
         # @return [void]
         def ios_only_command
-          DeployGate::Message::Warning.print('This command is iOS project only command')
+          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.ios_only_command'))
           exit
         end
       end
