@@ -1,5 +1,11 @@
 ---
 en:
+  commands:
+    deploy:
+      build:
+        print_no_target: |
+          No deploy target found.
+          Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
   xcode:
     export:
       create_provisioning:
