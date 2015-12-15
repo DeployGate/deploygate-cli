@@ -65,6 +65,10 @@ en:
         input_password: 'Password: '
         input_same_password: 'Type the same password: '
         error: 'Password Please enter the same thing.'
+    logout:
+      success: |
+        Logout success!
+        Goodbye! :)
   xcode:
     export:
       create_provisioning:
