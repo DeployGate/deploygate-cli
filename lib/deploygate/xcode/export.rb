@@ -275,6 +275,46 @@ EOF
             exit
           end
         end
+
+        # @param [String] bundle_identifier
+        # @return [void]
+        def clean_provisioning_profiles(bundle_identifier, team)
+          puts "Clean local Provisioning Profiles..."
+          puts ''
+
+          profile_paths = []
+          profile_paths = load_profile_paths
+          profiles = profile_paths.map{|p| profile_to_plist(p)}
+
+          profiles.each do |profile|
+            entities = profile['Entitlements']
+            unless entities['get-task-allow']
+              team = entities['com.apple.developer.team-identifier']
+              application_id = entities['application-identifier']
+              if "#{team}.#{bundle_identifier}" == application_id &&
+                  DateTime.now < profile['ExpirationDate'] &&
+                  installed_certificate?(profile['Path'])
+
+                profile_paths.push(profile['Path'])
+              end
+            end
+          end
+
+          most_new_profile_path = profile_paths.first
+          profile_paths.each do |path|
+            most_new_profile_path = path if File.ctime(path) > File.ctime(most_new_profile_path)
+          end
+
+          profile_paths.delete(most_new_profile_path)
+          profile_paths.each do |path|
+            next unless File.exist?(path)
+            File.delete(path)
+            puts "Delete #{path}"
+          end
+
+          puts ''
+          puts "Finish clean local Provisionig Profiles"
+        end
       end
     end
   end
