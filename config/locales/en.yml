@@ -107,3 +107,12 @@ en:
       build:
         error:
           use_xcode: 'Current Xcode used to build: %{use_xcode_path} (via xcode-select)'
+    member_center:
+      input_email:
+        prompt: |
+          Please enter your email and password for Apple Developer Center
+          to set up/download provisioning profile automatically so you can
+          export the app without any extra steps.
+
+          Note: Your password will be stored to Keychain and never be sent to DeployGate.
+        email: 'Email: '
