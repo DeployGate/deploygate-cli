@@ -38,6 +38,33 @@ en:
           Please login to dg command.
           $ dg login
       print_login_user: 'User name: %{name}'
+    login:
+      start_login_or_create_account:
+        welcome: 'Welcome to DeployGate!'
+        email: 'Email: '
+        check_account: 'Checking for your account...'
+        input_password: 'Password: '
+      start:
+        login_error: |
+          Login failed...
+          Please try again
+        success: 'Hello %{name}!'
+      create_account:
+        prompt: "Looks new to DeployGate. Let's set up your account, just choose your username and password."
+        creating: 'Creating your account... '
+        error: |
+          User create error
+          Please try again
+        success: 'done! Your account has been set up successfully.'
+      input_new_account_name:
+        input_user_name: 'Username: '
+        checking: 'Checking for availability... '
+        already_used_user_name: 'Bad, %{user_name} is already used. Please try again.'
+        success: 'Good, %{user_name} is available.'
+      input_new_account_password:
+        input_password: 'Password: '
+        input_same_password: 'Type the same password: '
+        error: 'Password Please enter the same thing.'
   xcode:
     export:
       create_provisioning:
