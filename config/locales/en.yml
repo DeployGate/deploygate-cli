@@ -6,6 +6,18 @@ en:
         print_no_target: |
           No deploy target found.
           Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
+      push:
+        upload:
+          loading: 'Uploading to %{owner}..'
+        upload_error: 'failed'
+        upload_success:
+          done: 'done'
+          data_message: |
+            Name: \t\t %{application_name}
+            Owner: \t\t %{owner_name}
+            Package: \t %{package_name}
+            Revision: \t %{revision}
+            URL: \t\t %{web_url}
   xcode:
     export:
       create_provisioning:

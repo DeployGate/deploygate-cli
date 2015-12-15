@@ -24,7 +24,7 @@ module DeployGate
             file_path        = args.first
 
             data = nil
-            print "Uploading to #{owner}.."
+            print I18n.t('commands.deploy.push.upload.loading', owner: owner)
             begin
               data = DeployGate::Deploy.push(file_path, owner, message, distribution_key, disable_notify) {
                 print '.'
@@ -46,15 +46,13 @@ module DeployGate
           # @param [Boolean] open
           # @return [void]
           def upload_success(data, open)
-            Message::Success.print('done')
-            data_message = <<EOS
-Name: \t\t #{data[:application_name]}
-Owner: \t\t #{data[:owner_name]}
-Package: \t #{data[:package_name]}
-Revision: \t #{data[:revision]}
-URL: \t\t #{data[:web_url]}
-EOS
-            puts(data_message)
+            Message::Success.print(I18n.t('commands.deploy.push.upload_success.done'))
+            puts I18n.t('commands.deploy.push.upload_success.data_message',
+                        application_name: data[:application_name],
+                        owner_name: data[:owner_name],
+                        package_name: data[:package_name],
+                        revision: data[:revision],
+                        web_url: data[:web_url])
             if((open || data[:revision] == 1) && openable?)
               system "open #{data[:web_url]}"
             end
@@ -63,7 +61,7 @@ EOS
           # @param [StandardError] error
           # @return [void]
           def upload_error(error)
-            Message::Error.print('failed')
+            Message::Error.print(I18n.t('commands.deploy.push.upload_error'))
             raise error
           end
         end
