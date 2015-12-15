@@ -51,8 +51,6 @@ module DeployGate
         end
 
         def fetch_devices(token, owner, bundle_id)
-          puts 'Not provisoned udids fetch...'
-          puts ''
           res = DeployGate::API::V1::Users::App.not_provisioned_udids(token, owner, bundle_id)
           return if res[:error] # TODO: Error handling
 
@@ -78,12 +76,10 @@ module DeployGate
 
           select = []
           cli = HighLine.new
-          cli.choose do |menu|
-            menu.prompt = 'Please select add device: '
-            devices.each do |device|
-              menu.choice(device.to_s) { select.push(device) }
-            end
-            menu.choice('All select') { select = devices }
+          devices.each do |device|
+            puts ''
+            puts "Device [#{device.to_s}]"
+            select.push(device) if cli.agree("Would you like to add this device? (y/n) ") {|q| q.default = "y"}
           end
 
           select
