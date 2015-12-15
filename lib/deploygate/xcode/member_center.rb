@@ -34,8 +34,6 @@ module DeployGate
       def input_email
         puts <<EOF
 
-No suitable provisioning profile found to export the app.
-
 Please enter your email and password for Apple Developer Center
 to set up/download provisioning profile automatically so you can
 export the app without any extra steps.
