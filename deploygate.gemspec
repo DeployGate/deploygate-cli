@@ -31,6 +31,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'uuid', '~> 2.3.8'
   spec.add_dependency 'gem_update_checker', '~> 0.2.0'
   spec.add_dependency 'activesupport', '~> 4.2.4'
+  spec.add_dependency 'i18n'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'
@@ -42,6 +43,7 @@ POST_INSTALL_MESSAGE
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.3.0"
   spec.add_development_dependency "webmock", "~> 1.21.0"
+  spec.add_development_dependency "i18n-tasks"
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }

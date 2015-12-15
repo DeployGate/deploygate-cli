@@ -209,17 +209,17 @@ module DeployGate
           begin
             unless app.created?
               app.create!
-              puts "App ID #{identifier} was created"
+              puts I18n.t('xcode.export.create_provisioning.created', identifier: identifier)
             end
           rescue => e
-            DeployGate::Message::Error.print("Error: Failed to create App ID")
+            DeployGate::Message::Error.print(I18n.t('xcode.export.create_provisioning.error.failed_to_create.app_id'))
             raise e
           end
 
           begin
             provisioning_profiles = provisioning_prifile.create!(uuid)
           rescue => e
-            DeployGate::Message::Error.print("Error: Failed to create provisioning profile")
+            DeployGate::Message::Error.print(I18n.t('xcode.export.create_provisioning.error.failed_to_create.provisioning_profile'))
             raise e
           end
 
@@ -233,9 +233,9 @@ module DeployGate
           result = nil
           cli = HighLine.new
           cli.choose do |menu|
-            menu.prompt = 'Please select team'
+            menu.prompt = I18n.t('xcode.export.select_teams.prompt')
             teams.each_with_index do |team, index|
-              menu.choice("#{team[1]} #{team[0]}") {
+              menu.choice(I18n.t('xcode.export.select_teams.choice', team_id: team[1], team_name: team[0])) {
                 result = DeployGate::Xcode::Export.select_profile(profiles[team])
               }
             end
@@ -247,26 +247,18 @@ module DeployGate
         def check_local_certificates
           if installed_distribution_certificate_ids.count == 0
             # not local install certificate
-            DeployGate::Message::Error.print("Error: Not local install distribution certificate")
-            puts <<EOF
-
-Not local install iPhone Distribution certificates.
-Please install certificate.
-
-Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
-
-EOF
+            DeployGate::Message::Error.print(I18n.t('xcode.export.check_local_certificates.not_local_install_certificate.error_message'))
+            puts ''
+            puts I18n.t('xcode.export.check_local_certificates.not_local_install_certificate.note')
+            puts ''
             exit
           end
 
           conflicting_certificates = installed_distribution_conflicting_certificates
           if conflicting_certificates.count > 0
-            DeployGate::Message::Error.print("Error: Conflicting local install certificates")
-            puts <<EOF
-
-Conflicting local install certificates.
-Please uninstall certificates.
-EOF
+            DeployGate::Message::Error.print(I18n.t('xcode.export.check_local_certificates.conflict_certificate.error_message'))
+            puts ''
+            puts I18n.t('xcode.export.check_local_certificates.conflict_certificate.note')
             conflicting_certificates.each do |certificate|
               puts certificate
             end
@@ -279,7 +271,7 @@ EOF
         # @param [String] bundle_identifier
         # @return [void]
         def clean_provisioning_profiles(bundle_identifier, team)
-          puts "Clean local Provisioning Profiles..."
+          puts I18n.t('xcode.export.clean_provisioning_profiles.start')
           puts ''
 
           profile_paths = []
@@ -309,11 +301,11 @@ EOF
           profile_paths.each do |path|
             next unless File.exist?(path)
             File.delete(path)
-            puts "Delete #{path}"
+            puts I18n.t('xcode.export.clean_provisioning_profiles.delete', path: path)
           end
 
           puts ''
-          puts "Finish clean local Provisionig Profiles"
+          puts I18n.t('xcode.export.clean_provisioning_profiles.finish')
         end
       end
     end

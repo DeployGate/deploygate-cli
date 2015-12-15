@@ -18,6 +18,9 @@ require "open3"
 require "open-uri"
 require "rexml/document"
 
+require "i18n"
+I18n.load_path = Dir[File.join(File.dirname(__FILE__), '../config/locales/*.yml')]
+
 # ios build
 require "gym"
 require "spaceship"

@@ -1,0 +1,30 @@
+---
+en:
+  xcode:
+    export:
+      create_provisioning:
+        created: 'App ID %{identifier} was created'
+        error:
+          failed_to_create:
+            app_id: 'Error: Failed to create App ID'
+            provisioning_profile: 'Error: Failed to create provisioning profile'
+      select_teams:
+        prompt: 'Please select team'
+        choice: '%{team_id} %{team_name}'
+      check_local_certificates:
+        not_local_install_certificate:
+          error_message: 'Error: Not local install distribution certificate'
+          note: |
+            Not local install iPhone Distribution certificates.
+            Please install certificate.
+
+            Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
+        conflict_certificate:
+          error_message: 'Error: Conflicting local install certificates'
+          note: |
+            Conflicting local install certificates.
+            Please uninstall certificates.
+      clean_provisioning_profiles:
+        start: 'Clean local Provisioning Profiles...'
+        delete: 'Delete %{path}'
+        finish: 'Finish clean local Provisionig Profiles'
