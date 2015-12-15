@@ -28,6 +28,16 @@ en:
       success_registered_device: 'Registered %{device}'
       not_device: 'Not add devices'
       ios_only_command: 'This command is iOS project only command'
+    config:
+      print_login_failed:
+        message: 'Login failed'
+        note: 'Please check your name and api token.'
+      print_not_login:
+        message: 'Not user login'
+        note: |
+          Please login to dg command.
+          $ dg login
+      print_login_user: 'User name: %{name}'
   xcode:
     export:
       create_provisioning:
