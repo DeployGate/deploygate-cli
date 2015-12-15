@@ -34,3 +34,7 @@ en:
           Please input bundle identifier
           Example: com.example.ios
         ask: 'Enter your bundle identifier: '
+    ios:
+      build:
+        error:
+          use_xcode: 'Current Xcode used to build: %{use_xcode_path} (via xcode-select)'
