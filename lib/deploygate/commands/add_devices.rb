@@ -52,7 +52,16 @@ module DeployGate
 
         def fetch_devices(token, owner, bundle_id)
           res = DeployGate::API::V1::Users::App.not_provisioned_udids(token, owner, bundle_id)
-          return if res[:error] # TODO: Error handling
+          if res[:error]
+            case res[:message]
+              when 'unknown app'
+                not_application(owner, bundle_id)
+              when 'unknown user'
+                unknown_user
+              else
+                raise res[:message]
+            end
+          end
 
           results = res[:results]
           devices = results.map{|r| DeployGate::Xcode::MemberCenters::Device.new(r[:udid], r[:user_name], r[:device_name])}
@@ -88,18 +97,34 @@ module DeployGate
         # @param [Device] device
         # @return [void]
         def success_registered_device(device)
-          DeployGate::Message::Success.print(I18n.t('commands.add_devices.success_registered_device', device: device.to_s))
+          puts HighLine.color(I18n.t('commands.add_devices.success_registered_device', device: device.to_s), HighLine::GREEN)
         end
 
         # @return [void]
         def not_device
-          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.not_device'))
+          puts HighLine.color(I18n.t('commands.add_devices.not_device'), HighLine::YELLOW)
           exit
         end
 
         # @return [void]
         def ios_only_command
-          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.ios_only_command'))
+          puts HighLine.color(I18n.t('commands.add_devices.ios_only_command'), HighLine::YELLOW)
+          exit
+        end
+
+        # @param [String] owner
+        # @param [String] bundle_id
+        # @return [void]
+        def not_application(owner, bundle_id)
+          puts ''
+          puts I18n.t('commands.add_devices.unknown_application.data', owner: owner, bundle_id: bundle_id)
+          puts HighLine.color(I18n.t('commands.add_devices.unknown_application.message'), HighLine::YELLOW)
+          exit
+        end
+
+        def unknown_user
+          puts ''
+          puts HighLine.color(I18n.t('commands.add_devices.unknown_user'), HighLine::RED)
           exit
         end
       end

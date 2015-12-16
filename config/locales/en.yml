@@ -66,6 +66,12 @@ en:
       success_registered_device: 'Registered %{device}'
       not_device: 'Not add devices'
       ios_only_command: 'This command is iOS project only command'
+      unknown_application:
+        data: |
+          Owner: %{owner}
+          Bundle identifier: %{bundle_id}
+        message: 'Application is not registered on DeployGate'
+      unknown_user: 'The specified user does not exist on DeployGate.'
     config:
       print_login_failed:
         message: 'Login failed'

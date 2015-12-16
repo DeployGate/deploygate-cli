@@ -7,7 +7,7 @@ module DeployGate
         def run
           DeployGate::Session.delete
 
-          Message::Success.print(I18n.t('commands.logout.success'))
+          puts HighLine.color(I18n.t('commands.logout.success'), HighLine::GREEN)
         end
       end
     end

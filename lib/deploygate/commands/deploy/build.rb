@@ -43,7 +43,7 @@ module DeployGate
 
           def print_no_target
             puts ''
-            DeployGate::Message::Warning.print(I18n.t('commands.deploy.build.print_no_target'))
+            puts HighLine.color(I18n.t('commands.deploy.build.print_no_target'), HighLine::YELLOW)
             puts ''
           end
         end

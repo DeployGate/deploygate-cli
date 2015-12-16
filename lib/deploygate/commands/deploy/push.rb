@@ -46,7 +46,7 @@ module DeployGate
           # @param [Boolean] open
           # @return [void]
           def upload_success(data, open)
-            Message::Success.print(I18n.t('commands.deploy.push.upload_success.done'))
+            puts HighLine.color(I18n.t('commands.deploy.push.upload_success.done'), HighLine::GREEN)
             puts I18n.t('commands.deploy.push.upload_success.data_message',
                         application_name: data[:application_name],
                         owner_name: data[:owner_name],
@@ -61,7 +61,7 @@ module DeployGate
           # @param [StandardError] error
           # @return [void]
           def upload_error(error)
-            Message::Error.print(I18n.t('commands.deploy.push.upload_error'))
+            puts HighLine.color(I18n.t('commands.deploy.push.upload_error'), HighLine::RED)
             raise error
           end
         end

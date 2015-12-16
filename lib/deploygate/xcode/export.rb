@@ -212,14 +212,14 @@ module DeployGate
               puts I18n.t('xcode.export.create_provisioning.created', identifier: identifier)
             end
           rescue => e
-            DeployGate::Message::Error.print(I18n.t('xcode.export.create_provisioning.error.failed_to_create.app_id'))
+            puts HighLine.color(I18n.t('xcode.export.create_provisioning.error.failed_to_create.app_id'), HighLine::RED)
             raise e
           end
 
           begin
             provisioning_profiles = provisioning_prifile.create!(uuid)
           rescue => e
-            DeployGate::Message::Error.print(I18n.t('xcode.export.create_provisioning.error.failed_to_create.provisioning_profile'))
+            puts HighLine.color(I18n.t('xcode.export.create_provisioning.error.failed_to_create.provisioning_profile'), HighLine::RED)
             raise e
           end
 
@@ -247,7 +247,7 @@ module DeployGate
         def check_local_certificates
           if installed_distribution_certificate_ids.count == 0
             # not local install certificate
-            DeployGate::Message::Error.print(I18n.t('xcode.export.check_local_certificates.not_local_install_certificate.error_message'))
+            puts HighLine.color(I18n.t('xcode.export.check_local_certificates.not_local_install_certificate.error_message'), HighLine::RED)
             puts ''
             puts I18n.t('xcode.export.check_local_certificates.not_local_install_certificate.note')
             puts ''
@@ -256,7 +256,7 @@ module DeployGate
 
           conflicting_certificates = installed_distribution_conflicting_certificates
           if conflicting_certificates.count > 0
-            DeployGate::Message::Error.print(I18n.t('xcode.export.check_local_certificates.conflict_certificate.error_message'))
+            puts HighLine.color(I18n.t('xcode.export.check_local_certificates.conflict_certificate.error_message'), HighLine::RED)
             puts ''
             puts I18n.t('xcode.export.check_local_certificates.conflict_certificate.note')
             conflicting_certificates.each do |certificate|
