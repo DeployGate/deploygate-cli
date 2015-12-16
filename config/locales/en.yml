@@ -71,8 +71,7 @@ en:
           Owner: %{owner}
           Bundle identifier: %{bundle_id}
         message: 'Application is not registered in DeployGate'
-      unknown_user: |
-        The specified user does not exist in DeployGate.
+      unknown_user: 'The specified user does not exist in DeployGate.'
     config:
       print_login_failed:
         message: 'Login failed'
