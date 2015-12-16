@@ -120,7 +120,7 @@ en:
         choice: '%{team_id} %{team_name}'
       check_local_certificates:
         not_local_install_certificate:
-          error_message: 'Error: Not local install distribution certificate'
+          error_message: 'Error: Not local iPhone Distribution certificates installed.'
           note: |
             Not local install iPhone Distribution certificates.
             Please install certificate.
