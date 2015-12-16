@@ -176,9 +176,9 @@ EOF
     def show_update_message(latest_version)
       gem_name = DeployGate.name.downcase
       current_version = DeployGate::VERSION
-      puts ''
-      puts HighLine.color(I18n.t('command_builder.show_update_message', gem_name: gem_name, latest_version: latest_version, current_version: current_version), HighLine::YELLOW)
-      puts ''
+      STDERR.puts ''
+      STDERR.puts HighLine.color(I18n.t('command_builder.show_update_message', gem_name: gem_name, latest_version: latest_version, current_version: current_version), HighLine::YELLOW)
+      STDERR.puts ''
     end
   end
 end
