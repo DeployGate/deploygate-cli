@@ -1,0 +1,156 @@
+---
+en:
+  command_builder:
+    name: 'dg'
+    description: 'You can control to DeployGate in your terminal.'
+    login:
+      description: 'DeployGate login command'
+      error: 'Commands::Login Error: %{e}'
+    deploy:
+      description: 'upload to deploygate'
+      message: 'release message'
+      user: 'owner name or group name'
+      distribution_key: 'update distribution key'
+      open: 'open browser (OSX only)'
+      disable_notify: 'disable notify via email (iOS app only)'
+      error: 'Commands::Deploy Error: %{e}'
+    add_devices:
+      description: 'add ios devices(iOS only)'
+      user: 'owner name or group name'
+      udid: 'add device udid'
+      device_name: 'add device name'
+      error: 'Commands::AddDevices Error: %{e}'
+    logout:
+      description: 'logout'
+      error: 'Commands::Logout Error: %{e}'
+    config:
+      description: 'dg user login config'
+      json: 'output json format'
+      name: 'your DeployGate user name'
+      token: 'your DeployGate api token'
+      error: 'Commands::Config Error: %{e}'
+    error_handling:
+      agree: 'Do you want to report this issue on GitHub? (y/n) '
+      please_open: 'Please open github issue: %{url}'
+    show_update_message: |
+      #################################################################
+      # %{gem_name} %{latest_version} is available. You are on %{current_version}.
+      # It is recommended to use the latest version.
+      # Update using 'gem update %{gem_name}'.
+      #################################################################
+  commands:
+    deploy:
+      build:
+        print_no_target: |
+          No deploy target found.
+          Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
+      push:
+        upload:
+          loading: 'Uploading to %{owner}..'
+        upload_error: 'failed'
+        upload_success:
+          done: 'done'
+          data_message: |
+            Name: \t\t %{application_name}
+            Owner: \t\t %{owner_name}
+            Package: \t %{package_name}
+            Revision: \t %{revision}
+            URL: \t\t %{web_url}
+    add_devices:
+      input_udid: 'Input UDID: '
+      input_device_name: 'Input Device Name: '
+      device_register_confirm: 'It will register with the contents of the above. Is it OK? (y/n) '
+      select_devices:
+        device_info: 'Device [%{device}]'
+        agree: 'Would you like to add this device? (y/n) '
+      success_registered_device: 'Registered %{device}'
+      not_device: 'Not add devices'
+      ios_only_command: 'This command is iOS project only command'
+    config:
+      print_login_failed:
+        message: 'Login failed'
+        note: 'Please check your name and api token.'
+      print_not_login:
+        message: 'Not user login'
+        note: |
+          Please login to dg command.
+          $ dg login
+      print_login_user: 'User name: %{name}'
+    login:
+      start_login_or_create_account:
+        welcome: 'Welcome to DeployGate!'
+        email: 'Email: '
+        check_account: 'Checking for your account...'
+        input_password: 'Password: '
+      start:
+        login_error: |
+          Login failed...
+          Please try again
+        success: 'Hello %{name}!'
+      create_account:
+        prompt: "Looks new to DeployGate. Let's set up your account, just choose your username and password."
+        creating: 'Creating your account... '
+        error: |
+          User create error
+          Please try again
+        success: 'done! Your account has been set up successfully.'
+      input_new_account_name:
+        input_user_name: 'Username: '
+        checking: 'Checking for availability... '
+        already_used_user_name: 'Bad, %{user_name} is already used. Please try again.'
+        success: 'Good, %{user_name} is available.'
+      input_new_account_password:
+        input_password: 'Password: '
+        input_same_password: 'Type the same password: '
+        error: 'Password Please enter the same thing.'
+    logout:
+      success: |
+        Logout success!
+        Goodbye! :)
+  xcode:
+    export:
+      create_provisioning:
+        created: 'App ID %{identifier} was created'
+        error:
+          failed_to_create:
+            app_id: 'Error: Failed to create App ID'
+            provisioning_profile: 'Error: Failed to create provisioning profile'
+      select_teams:
+        prompt: 'Please select team'
+        choice: '%{team_id} %{team_name}'
+      check_local_certificates:
+        not_local_install_certificate:
+          error_message: 'Error: Not local install distribution certificate'
+          note: |
+            Not local install iPhone Distribution certificates.
+            Please install certificate.
+
+            Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
+        conflict_certificate:
+          error_message: 'Error: Conflicting local install certificates'
+          note: |
+            Conflicting local install certificates.
+            Please uninstall certificates.
+      clean_provisioning_profiles:
+        start: 'Clean local Provisioning Profiles...'
+        delete: 'Delete %{path}'
+        finish: 'Finish clean local Provisionig Profiles'
+    analyze:
+      target_bundle_identifier:
+        prompt: |
+          Please input bundle identifier
+          Example: com.example.ios
+        ask: 'Enter your bundle identifier: '
+    ios:
+      build:
+        error:
+          use_xcode: 'Current Xcode used to build: %{use_xcode_path} (via xcode-select)'
+    member_center:
+      input_email:
+        prompt: |
+          Please enter your email and password for Apple Developer Center
+          to set up/download provisioning profile automatically so you can
+          export the app without any extra steps.
+
+          Note: Your password will be stored to Keychain and never be sent to DeployGate.
+        email: 'Email: '

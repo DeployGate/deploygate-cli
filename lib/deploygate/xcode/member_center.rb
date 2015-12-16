@@ -32,16 +32,10 @@ module DeployGate
 
       # @return [String]
       def input_email
-        puts <<EOF
-
-Please enter your email and password for Apple Developer Center
-to set up/download provisioning profile automatically so you can
-export the app without any extra steps.
-
-Note: Your password will be stored to Keychain and never be sent to DeployGate.
-
-EOF
-        print 'Email: '
+        puts ''
+        puts I18n.t('xcode.member_center.input_email.prompt')
+        puts ''
+        print I18n.t('xcode.member_center.input_email.email')
         STDIN.gets.chop
       end
 

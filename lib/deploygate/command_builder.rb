@@ -12,18 +12,18 @@ module DeployGate
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
 
-      program :name, 'dg'
+      program :name, I18n.t('command_builder.name')
       program :version,  VERSION
-      program :description, 'You can control to DeployGate in your terminal.'
+      program :description, I18n.t('command_builder.description')
 
       command :login do |c|
         c.syntax = 'dg login'
-        c.description = 'DeployGate login command'
+        c.description = I18n.t('command_builder.login.description')
         c.action do |args, options|
           begin
             Commands::Login.run
           rescue => e
-            error_handling("Commands::Login Error: #{e.class}", create_error_issue_body(e))
+            error_handling(I18n.t('command_builder.login.error', e: e.class), create_error_issue_body(e))
             raise e
           end
         end
@@ -31,18 +31,18 @@ module DeployGate
 
       command :deploy do |c|
         c.syntax = 'dg deploy /path/to/app'
-        c.description = 'upload to deploygate'
-        c.option '--message STRING', String, 'release message'
-        c.option '--user STRING', String, 'owner name or group name'
-        c.option '--distribution-key STRING', String, 'update distribution key'
-        c.option '--open', 'open browser (OSX only)'
-        c.option '--disable_notify', 'disable notify via email (iOS app only)'
+        c.description = I18n.t('command_builder.deploy.description')
+        c.option '--message STRING', String, I18n.t('command_builder.deploy.message')
+        c.option '--user STRING', String, I18n.t('command_builder.deploy.user')
+        c.option '--distribution-key STRING', String, I18n.t('command_builder.deploy.distribution_key')
+        c.option '--open', I18n.t('command_builder.deploy.open')
+        c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
         c.action do |args, options|
           options.default :message => '', :user => nil, :open => false, 'disable_notify' => false
           begin
             Commands::Deploy.run(args, options)
           rescue => e
-            error_handling("Commands::Deploy Error: #{e.class}", create_error_issue_body(e))
+            error_handling(I18n.t('command_builder.deploy.error', e: e.class), create_error_issue_body(e))
             raise e
           end
         end
@@ -51,16 +51,16 @@ module DeployGate
 
       command 'add-devices' do |c|
         c.syntax = 'dg add-devices'
-        c.description = 'add ios devices(iOS only)'
-        c.option '--user STRING', String, 'owner name or group name'
-        c.option '--udid STRING', String, 'add device udid'
-        c.option '--device-name STRING', String, 'add device name'
+        c.description = I18n.t('command_builder.add_devices.description')
+        c.option '--user STRING', String, I18n.t('command_builder.add_devices.user')
+        c.option '--udid STRING', String, I18n.t('command_builder.add_devices.udid')
+        c.option '--device-name STRING', String, I18n.t('command_builder.add_devices.device_name')
         c.action do |args, options|
           options.default :user => nil
           begin
             Commands::AddDevices.run(args, options)
           rescue => e
-            error_handling("Commands::AddDevices Error: #{e.class}", create_error_issue_body(e))
+            error_handling(I18n.t('command_builder.add_devices.error', e: e.class), create_error_issue_body(e))
             raise e
           end
         end
@@ -68,12 +68,12 @@ module DeployGate
 
       command :logout do |c|
         c.syntax = 'dg logout'
-        c.description = 'logout'
+        c.description = I18n.t('command_builder.logout.description')
         c.action do |args, options|
           begin
             Commands::Logout.run
           rescue => e
-            error_handling("Commands::Logout Error: #{e.class}", create_error_issue_body(e))
+            error_handling(I18n.t('command_builder.logout.error', e: e.class), create_error_issue_body(e))
             raise e
           end
         end
@@ -81,15 +81,15 @@ module DeployGate
 
       command :config do |c|
         c.syntax = 'dg config'
-        c.description = 'dg user login config'
-        c.option '--json', 'output json format'
-        c.option '--name STRING', String, 'your DeployGate user name'
-        c.option '--token STRING', String, 'your DeployGate api token'
+        c.description = I18n.t('command_builder.config.description')
+        c.option '--json', I18n.t('command_builder.config.json')
+        c.option '--name STRING', String, I18n.t('command_builder.config.name')
+        c.option '--token STRING', String, I18n.t('command_builder.config.token')
         c.action do |args, options|
           begin
             Commands::Config.run(args, options)
           rescue => e
-            error_handling("Commands::Config Error: #{e.class}", create_error_issue_body(e))
+            error_handling(I18n.t('command_builder.config.error', e: e.class), create_error_issue_body(e))
             raise e
           end
         end
@@ -127,8 +127,8 @@ EOF
       }
       url = GithubIssueRequest::Url.new(options).to_s
       puts ''
-      if HighLine.agree('Do you want to report this issue on GitHub? (y/n) ') {|q| q.default = "n"}
-        puts "Please open github issue: #{url}"
+      if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
+        puts I18n.t('command_builder.error_handling.please_open', url: url)
         system('open', url) if Commands::Deploy::Push.openable?
       end
       puts ''
@@ -176,16 +176,9 @@ EOF
     def show_update_message(latest_version)
       gem_name = DeployGate.name.downcase
       current_version = DeployGate::VERSION
-      update_message =<<EOF
-
-#################################################################
-# #{gem_name} #{latest_version} is available. You are on #{current_version}.
-# It is recommended to use the latest version.
-# Update using 'gem update #{gem_name}'.
-#################################################################
-
-EOF
-      DeployGate::Message::Warning.print(update_message)
+      puts ''
+      DeployGate::Message::Warning.print(I18n.t('command_builder.show_update_message', gem_name: gem_name, latest_version: latest_version, current_version: current_version))
+      puts ''
     end
   end
 end

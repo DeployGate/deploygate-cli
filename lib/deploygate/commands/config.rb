@@ -55,7 +55,7 @@ module DeployGate
         # @param [Hash] data
         # @return [void]
         def print_login_failed(json_format, data = {})
-          message = 'Login failed'
+          message = I18n.t('commands.config.print_login_failed.message')
           data[:error]   = true
           data[:message] = message
 
@@ -63,10 +63,8 @@ module DeployGate
             print_json(data)
           else
             DeployGate::Message::Error.print(message)
-            puts <<EOF
-
-Please check your name and api token.
-EOF
+            puts ''
+            puts I18n.t('commands.config.print_login_failed.note')
           end
         end
 
@@ -74,7 +72,7 @@ EOF
         # @param [Hash] data
         # @return [void]
         def print_not_login(json_format, data = {})
-          message = 'Not user login'
+          message = I18n.t('commands.config.print_not_login.message')
           data[:error]   = true
           data[:message] = message
 
@@ -82,11 +80,8 @@ EOF
             print_json(data)
           else
             DeployGate::Message::Warning.print(message)
-            puts <<EOF
-
-Please login to dg command.
-$ dg login
-EOF
+            puts ''
+            puts I18n.t('commands.config.print_not_login.note')
           end
         end
 
@@ -101,9 +96,7 @@ EOF
           if json_format
             print_json(data)
           else
-            puts <<EOF
-User name: #{data[:name]}
-EOF
+            puts I18n.t('commands.config.print_login_user', name: data[:name])
           end
         end
 

@@ -1,0 +1,41 @@
+internal_locale: en
+base_locale: en
+locales:
+- en
+data:
+  adapter: I18n::Tasks::Data::FileSystem
+  read:
+  - config/locales/%{locale}.yml
+  write:
+  - config/locales/%{locale}.yml
+search:
+  scanner: I18n::Tasks::Scanners::PatternWithScopeScanner
+  relative_roots:
+  - lib/deploygate
+  paths:
+  - lib/
+  exclude:
+  - "*.jpg"
+  - "*.png"
+  - "*.gif"
+  - "*.svg"
+  - "*.ico"
+  - "*.eot"
+  - "*.otf"
+  - "*.ttf"
+  - "*.woff"
+  - "*.woff2"
+  - "*.pdf"
+  - "*.css"
+  - "*.sass"
+  - "*.scss"
+  - "*.less"
+  - "*.yml"
+  - "*.json"
+  ignore_lines:
+    rb: "^\\s*#(?!\\si18n-tasks-use)"
+    opal: "^\\s*#(?!\\si18n-tasks-use)"
+    haml: "^\\s*-\\s*#(?!\\si18n-tasks-use)"
+    slim: "^\\s*(?:-#|/)(?!\\si18n-tasks-use)"
+    coffee: "^\\s*#(?!\\si18n-tasks-use)"
+    erb: "^\\s*<%\\s*#(?!\\si18n-tasks-use)"

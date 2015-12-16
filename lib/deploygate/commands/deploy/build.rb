@@ -42,13 +42,9 @@ module DeployGate
           end
 
           def print_no_target
-            message = <<EOF
-
-No deploy target found.
-Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
-
-EOF
-            DeployGate::Message::Warning.print(message)
+            puts ''
+            DeployGate::Message::Warning.print(I18n.t('commands.deploy.build.print_no_target'))
+            puts ''
           end
         end
       end

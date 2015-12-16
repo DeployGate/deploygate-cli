@@ -7,8 +7,7 @@ module DeployGate
         def run
           DeployGate::Session.delete
 
-          Message::Success.print('Logout success!')
-          Message::Success.print('Goodbye! :)')
+          Message::Success.print(I18n.t('commands.logout.success'))
         end
       end
     end

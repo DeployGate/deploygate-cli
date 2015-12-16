@@ -30,7 +30,7 @@ module DeployGate
           rescue => e
             # TODO: build error handling
             use_xcode_path = `xcode-select -p`
-            DeployGate::Message::Error.print("Current Xcode used to build: #{use_xcode_path} (via xcode-select)")
+            DeployGate::Message::Error.print(I18n.t('xcode.ios.build.error.use_xcode', use_xcode_path: use_xcode_path))
             raise e
           end
           absolute_dsym_path = absolute_ipa_path.gsub(".ipa", ".app.dSYM.zip") # TODO: upload to deploygate
