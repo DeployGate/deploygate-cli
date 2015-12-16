@@ -117,8 +117,8 @@ module DeployGate
         # @return [void]
         def not_application(owner, bundle_id)
           puts ''
-          puts I18n.t('commands.add_devices.not_application.data', owner: owner, bundle_id: bundle_id)
-          puts HighLine.color(I18n.t('commands.add_devices.not_application.message'), HighLine::YELLOW)
+          puts I18n.t('commands.add_devices.unknown_application.data', owner: owner, bundle_id: bundle_id)
+          puts HighLine.color(I18n.t('commands.add_devices.unknown_application.message'), HighLine::YELLOW)
           exit
         end
 
