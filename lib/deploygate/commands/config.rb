@@ -44,7 +44,7 @@ module DeployGate
           data = {:message => message, :error => false}
 
           unless json_format
-            DeployGate::Message::Success.print(message)
+            puts HighLine.color(message, HighLine::GREEN)
             puts ''
           end
 
@@ -62,7 +62,7 @@ module DeployGate
           if json_format
             print_json(data)
           else
-            DeployGate::Message::Error.print(message)
+            puts HighLine.color(message, HighLine::RED)
             puts ''
             puts I18n.t('commands.config.print_login_failed.note')
           end
@@ -79,7 +79,7 @@ module DeployGate
           if json_format
             print_json(data)
           else
-            DeployGate::Message::Warning.print(message)
+            puts HighLine.color(message, HighLine::YELLOW)
             puts ''
             puts I18n.t('commands.config.print_not_login.note')
           end

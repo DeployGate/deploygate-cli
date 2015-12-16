@@ -35,13 +35,13 @@ module DeployGate
             Session.login(email, password)
           rescue Session::LoginError => e
             # login failed
-            Message::Error.print(I18n.t('commands.login.start.login_error'))
+            puts HighLine.color(I18n.t('commands.login.start.login_error'), HighLine::RED)
             raise e
           end
 
           # login success
           session = Session.new
-          Message::Success.print(I18n.t('commands.login.start.success', name: session.name))
+          puts HighLine.color(I18n.t('commands.login.start.success', name: session.name), HighLine::GREEN)
         end
 
         # @param [String] email
@@ -58,10 +58,10 @@ module DeployGate
 
           print I18n.t('commands.login.create_account.creating')
           if DeployGate::User.create(name, email, password).nil?
-            Message::Error.print(I18n.t('commands.login.create_account.error'))
+            puts HighLine.color(I18n.t('commands.login.create_account.error'), HighLine::RED)
             raise 'User create error'
           else
-            Message::Success.print(I18n.t('commands.login.create_account.success'))
+            puts HighLine.color(I18n.t('commands.login.create_account.success'), HighLine::GREEN)
             start(email, password)
           end
         end
@@ -72,10 +72,10 @@ module DeployGate
           print I18n.t('commands.login.input_new_account_name.checking')
 
           if DeployGate::User.registered?(user_name, '')
-            Message::Error.print(I18n.t('commands.login.input_new_account_name.already_used_user_name', user_name: user_name))
+            puts HighLine.color(I18n.t('commands.login.input_new_account_name.already_used_user_name', user_name: user_name), HighLine::RED)
             return input_new_account_name()
           else
-            Message::Success.print(I18n.t('commands.login.input_new_account_name.success', user_name: user_name))
+            puts HighLine.color(I18n.t('commands.login.input_new_account_name.success', user_name: user_name), HighLine::GREEN)
             return user_name
           end
         end
@@ -88,7 +88,7 @@ module DeployGate
           if password == secound_password
             return password
           else
-            Message::Error.print(I18n.t('commands.login.input_new_account_password.error'))
+            puts HighLine.color(I18n.t('commands.login.input_new_account_password.error'), HighLine::RED)
             return input_new_account_password()
           end
         end

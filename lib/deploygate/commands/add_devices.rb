@@ -97,18 +97,18 @@ module DeployGate
         # @param [Device] device
         # @return [void]
         def success_registered_device(device)
-          DeployGate::Message::Success.print(I18n.t('commands.add_devices.success_registered_device', device: device.to_s))
+          puts HighLine.color(I18n.t('commands.add_devices.success_registered_device', device: device.to_s), HighLine::GREEN)
         end
 
         # @return [void]
         def not_device
-          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.not_device'))
+          puts HighLine.color(I18n.t('commands.add_devices.not_device'), HighLine::YELLOW)
           exit
         end
 
         # @return [void]
         def ios_only_command
-          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.ios_only_command'))
+          puts HighLine.color(I18n.t('commands.add_devices.ios_only_command'), HighLine::YELLOW)
           exit
         end
 
@@ -118,13 +118,13 @@ module DeployGate
         def not_application(owner, bundle_id)
           puts ''
           puts I18n.t('commands.add_devices.not_application.data', owner: owner, bundle_id: bundle_id)
-          DeployGate::Message::Warning.print(I18n.t('commands.add_devices.not_application.message'))
+          puts HighLine.color(I18n.t('commands.add_devices.not_application.message'), HighLine::YELLOW)
           exit
         end
 
         def unknown_user
           puts ''
-          DeployGate::Message::Error.print(I18n.t('commands.add_devices.unknown_user'))
+          puts HighLine.color(I18n.t('commands.add_devices.unknown_user'), HighLine::RED)
           exit
         end
       end
