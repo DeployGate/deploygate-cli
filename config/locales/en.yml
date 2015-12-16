@@ -24,7 +24,7 @@ en:
       description: 'Log out current session'
       error: 'Commands::Logout Error: %{e}'
     config:
-      description: 'Configure login session of `dg` command. Usually, the session automatically created on the installation process so you don't need to use this command.'
+      description: "Configure login session of `dg` command. Usually, the session automatically created on the installation process so you don't need to use this command."
       json: 'Set output format to JSON'
       name: 'DeployGate user name'
       token: 'DeployGate API token'
