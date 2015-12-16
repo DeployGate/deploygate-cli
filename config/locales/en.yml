@@ -51,11 +51,11 @@ en:
         upload_success:
           done: 'done'
           data_message: |
-            Name: \t\t %{application_name}
-            Owner: \t\t %{owner_name}
-            Package: \t %{package_name}
-            Revision: \t %{revision}
-            URL: \t\t %{web_url}
+            Name: %{application_name}
+            Owner: %{owner_name}
+            Package: %{package_name}
+            Revision: %{revision}
+            URL: %{web_url}
     add_devices:
       input_udid: 'Input UDID: '
       input_device_name: 'Input Device Name: '
