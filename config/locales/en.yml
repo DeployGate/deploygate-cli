@@ -2,48 +2,48 @@
 en:
   command_builder:
     name: 'dg'
-    description: 'You can control to DeployGate in your terminal.'
+    description: 'Control DeployGate from your terminal.'
     login:
-      description: 'DeployGate login command'
+      description: 'Log in to DeployGate'
       error: 'Commands::Login Error: %{e}'
     deploy:
-      description: 'upload to deploygate'
-      message: 'release message'
-      user: 'owner name or group name'
-      distribution_key: 'update distribution key'
-      open: 'open browser (OSX only)'
-      disable_notify: 'disable notify via email (iOS app only)'
+      description: 'Build and upload a new build'
+      message: 'Build description message'
+      user: 'User or organization name of app owner'
+      distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
+      open: 'Open a browser after the build uploaded (OS X only)'
+      disable_notify: 'Disable email notification (iOS app only)'
       error: 'Commands::Deploy Error: %{e}'
     add_devices:
-      description: 'add ios devices(iOS only)'
-      user: 'owner name or group name'
-      udid: 'add device udid'
-      device_name: 'add device name'
+      description: 'Register devices to your Apple Developer account and refresh your provisioning profile. (iOS only) By default, it automatically finds new devices added to your application on DeployGate and ask you which device to register. You can also specify which device to register via command line options.'
+      user: 'Owner user or organization name'
+      udid: 'UDID to be registered'
+      device_name: 'Device name to be registered'
       error: 'Commands::AddDevices Error: %{e}'
     logout:
-      description: 'logout'
+      description: 'Log out current session'
       error: 'Commands::Logout Error: %{e}'
     config:
-      description: 'dg user login config'
-      json: 'output json format'
-      name: 'your DeployGate user name'
-      token: 'your DeployGate api token'
+      description: "Configure login session of `dg` command. Usually, the session automatically created on the installation process so you don't need to use this command."
+      json: 'Set output format to JSON'
+      name: 'DeployGate user name'
+      token: 'DeployGate API token'
       error: 'Commands::Config Error: %{e}'
     error_handling:
       agree: 'Do you want to report this issue on GitHub? (y/n) '
-      please_open: 'Please open github issue: %{url}'
+      please_open: 'Please open GitHub issue: %{url}'
     show_update_message: |
       #################################################################
       # %{gem_name} %{latest_version} is available. You are on %{current_version}.
       # It is recommended to use the latest version.
-      # Update using 'gem update %{gem_name}'.
+      # You can update it by running 'gem update %{gem_name}'.
       #################################################################
   commands:
     deploy:
       build:
         print_no_target: |
           No deploy target found.
-          Please run on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
+          Please run dg on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
       push:
         upload:
           loading: 'Uploading to %{owner}..'
@@ -57,15 +57,15 @@ en:
             Revision: %{revision}
             URL: %{web_url}
     add_devices:
-      input_udid: 'Input UDID: '
-      input_device_name: 'Input Device Name: '
-      device_register_confirm: 'It will register with the contents of the above. Is it OK? (y/n) '
+      input_udid: 'Enter UDID: '
+      input_device_name: 'Set device name: '
+      device_register_confirm: 'A device will be registered as the contents above. Is it OK? (y/n) '
       select_devices:
         device_info: 'Device [%{device}]'
-        agree: 'Would you like to add this device? (y/n) '
-      success_registered_device: 'Registered %{device}'
-      not_device: 'Not add devices'
-      ios_only_command: 'This command is iOS project only command'
+        agree: 'Do you want to add this device? (y/n) '
+      success_registered_device: 'Device [%{device}] successfully registered.'
+      not_device: 'No device found to be registered'
+      ios_only_command: 'This command is only for iOS project'
       unknown_application:
         data: |
           Owner: %{owner}
@@ -75,11 +75,11 @@ en:
     config:
       print_login_failed:
         message: 'Login failed'
-        note: 'Please check your name and api token.'
+        note: 'Please check your user name and API token.'
       print_not_login:
-        message: 'Not user login'
+        message: 'No user logged in'
         note: |
-          Please login to dg command.
+          Please login to DeployGate by running:
           $ dg login
       print_login_user: 'User name: %{name}'
     login:
@@ -90,25 +90,25 @@ en:
         input_password: 'Password: '
       start:
         login_error: |
-          Login failed...
-          Please try again
+          Could not log in to DeployGate.
+          Please try again.
         success: 'Hello %{name}!'
       create_account:
-        prompt: "Looks new to DeployGate. Let's set up your account, just choose your username and password."
+        prompt: "Looks new to DeployGate. Let's set up your account, just choose your user name and password."
         creating: 'Creating your account... '
         error: |
-          User create error
-          Please try again
+          Could not create your account.
+          Please try again.
         success: 'done! Your account has been set up successfully.'
       input_new_account_name:
         input_user_name: 'Username: '
         checking: 'Checking for availability... '
-        already_used_user_name: 'Bad, %{user_name} is already used. Please try again.'
+        already_used_user_name: 'Sorry, %{user_name} was already taken. Please try again.'
         success: 'Good, %{user_name} is available.'
       input_new_account_password:
         input_password: 'Password: '
         input_same_password: 'Type the same password: '
-        error: 'Password Please enter the same thing.'
+        error: "Passwords didn't match. Please type again."
     logout:
       success: |
         Logout success!
@@ -122,31 +122,31 @@ en:
             app_id: 'Error: Failed to create App ID'
             provisioning_profile: 'Error: Failed to create provisioning profile'
       select_teams:
-        prompt: 'Please select team'
+        prompt: 'Please select a team'
         choice: '%{team_id} %{team_name}'
       check_local_certificates:
         not_local_install_certificate:
-          error_message: 'Error: Not local iPhone Distribution certificates installed.'
+          error_message: 'Error: No applicable iPhone Distribution certificate found on your Mac.'
           note: |
-            Not local install iPhone Distribution certificates.
-            Please install certificate.
+            No "iPhone Distribution" certificate and/or corresponding private key installed locally.
+            To sign your application code, make sure you have installed them and available in your Keychain.
 
-            Docs: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
+            See also: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
         conflict_certificate:
-          error_message: 'Error: Conflicting local install certificates'
+          error_message: 'Error: Too many certificates found.'
           note: |
-            Conflicting local install certificates.
-            Please uninstall certificates.
+            You have more than one "iPhone Distribution" certificate installed on your Mac.
+            Please remove other unnecessary certificates from your Keychain.
       clean_provisioning_profiles:
-        start: 'Clean local Provisioning Profiles...'
+        start: 'Cleaning local Provisioning Profiles...'
         delete: 'Delete %{path}'
-        finish: 'Finish clean local Provisionig Profiles'
+        finish: 'Finish cleaning local Provisionig Profiles'
     analyze:
       target_bundle_identifier:
         prompt: |
-          Please input bundle identifier
+          Please input your app bundle identifier
           Example: com.example.ios
-        ask: 'Enter your bundle identifier: '
+        ask: 'Enter your app bundle identifier: '
     ios:
       build:
         error:
@@ -158,5 +158,5 @@ en:
           to set up/download provisioning profile automatically so you can
           export the app without any extra steps.
 
-          Note: Your password will be stored to Keychain and never be sent to DeployGate.
+          Note: Your password will be stored to your Keychain and never be sent to DeployGate.
         email: 'Email: '
