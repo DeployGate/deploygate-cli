@@ -9,7 +9,7 @@ module DeployGate
           # @return [void]
           def run(args, options)
             # android/ios build
-            work_dir = args.first
+            work_dir = args.empty? ? Dir.pwd : args.first
 
             if DeployGate::Project.ios?(work_dir)
               root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
