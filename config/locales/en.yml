@@ -30,6 +30,7 @@ en:
       token: 'DeployGate API token'
       error: 'Commands::Config Error: %{e}'
     error_handling:
+      message: 'Error: %{message}'
       agree: 'Do you want to report this issue on GitHub? (y/n) '
       please_open: 'Please open GitHub issue: %{url}'
     show_update_message: |
