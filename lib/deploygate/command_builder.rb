@@ -126,21 +126,21 @@ EOF
     # @param [Exception] error
     # @return [String]
     def create_issue_url(command, error)
-      title_id = case command
+      title = case command
                    when LOGIN
-                     'command_builder.login.error'
+                     I18n.t('command_builder.login.error', e: error.class)
                    when LOGOUT
-                     'command_builder.logout.error'
+                     I18n.t('command_builder.logout.error', e: error.class)
                    when DEPLOY
-                     'command_builder.deploy.error'
+                     I18n.t('command_builder.deploy.error', e: error.class)
                    when ADD_DEVICES
-                     'command_builder.add_devices.error'
+                     I18n.t('command_builder.add_devices.error', e: error.class)
                    when CONFIG
-                     'command_builder.config.error'
+                     I18n.t('command_builder.config.error', e: error.class)
                  end
 
       options = {
-          :title => I18n.t(title_id, e: error.class),
+          :title => title,
           :body  => create_error_issue_body(error),
       }
       GithubIssueRequest::Url.new(options).to_s
