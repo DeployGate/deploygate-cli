@@ -3,6 +3,12 @@ module DeployGate
     include Commander::Methods
     attr_reader :arguments
 
+    LOGIN       = 'login'
+    LOGOUT      = 'logout'
+    DEPLOY      = 'deploy'
+    ADD_DEVICES = 'add-devices'
+    CONFIG      = 'config'
+
     def run
       Signal.trap(:INT){
         puts ''
@@ -16,20 +22,20 @@ module DeployGate
       program :version,  VERSION
       program :description, I18n.t('command_builder.description')
 
-      command :login do |c|
+      command LOGIN do |c|
         c.syntax = 'dg login'
         c.description = I18n.t('command_builder.login.description')
         c.action do |args, options|
           begin
             Commands::Login.run
           rescue => e
-            error_handling(I18n.t('command_builder.login.error', e: e.class), create_error_issue_body(e))
+            error_handling(LOGIN, e)
             raise e
           end
         end
       end
 
-      command :deploy do |c|
+      command DEPLOY do |c|
         c.syntax = 'dg deploy /path/to/app'
         c.description = I18n.t('command_builder.deploy.description')
         c.option '--message STRING', String, I18n.t('command_builder.deploy.message')
@@ -42,14 +48,14 @@ module DeployGate
           begin
             Commands::Deploy.run(args, options)
           rescue => e
-            error_handling(I18n.t('command_builder.deploy.error', e: e.class), create_error_issue_body(e))
+            error_handling(DEPLOY, e)
             raise e
           end
         end
       end
       alias_command :'push', :deploy
 
-      command 'add-devices' do |c|
+      command ADD_DEVICES do |c|
         c.syntax = 'dg add-devices'
         c.description = I18n.t('command_builder.add_devices.description')
         c.option '--user STRING', String, I18n.t('command_builder.add_devices.user')
@@ -60,26 +66,26 @@ module DeployGate
           begin
             Commands::AddDevices.run(args, options)
           rescue => e
-            error_handling(I18n.t('command_builder.add_devices.error', e: e.class), create_error_issue_body(e))
+            error_handling(ADD_DEVICES, e)
             raise e
           end
         end
       end
 
-      command :logout do |c|
+      command LOGOUT do |c|
         c.syntax = 'dg logout'
         c.description = I18n.t('command_builder.logout.description')
         c.action do |args, options|
           begin
             Commands::Logout.run
           rescue => e
-            error_handling(I18n.t('command_builder.logout.error', e: e.class), create_error_issue_body(e))
+            error_handling(LOGOUT, e)
             raise e
           end
         end
       end
 
-      command :config do |c|
+      command CONFIG do |c|
         c.syntax = 'dg config'
         c.description = I18n.t('command_builder.config.description')
         c.option '--json', I18n.t('command_builder.config.json')
@@ -89,7 +95,7 @@ module DeployGate
           begin
             Commands::Config.run(args, options)
           rescue => e
-            error_handling(I18n.t('command_builder.config.error', e: e.class), create_error_issue_body(e))
+            error_handling(CONFIG, e)
             raise e
           end
         end
@@ -116,18 +122,38 @@ deploygate-cli ver #{DeployGate::VERSION}
 EOF
     end
 
-    # @param [String] title
-    # @param [String] body
-    # @param [Array] labels
-    def error_handling(title, body, labels = [])
+    # @param [Symbol] command
+    # @param [Exception] error
+    # @return [String]
+    def create_issue_url(command, error)
+      title_id = case command
+                   when LOGIN
+                     'command_builder.login.error'
+                   when LOGOUT
+                     'command_builder.logout.error'
+                   when DEPLOY
+                     'command_builder.deploy.error'
+                   when ADD_DEVICES
+                     'command_builder.add_devices.error'
+                   when CONFIG
+                     'command_builder.config.error'
+                 end
+
       options = {
-          :title => title,
-          :body  => body,
-          :labels => labels
+          :title => I18n.t(title_id, e: error.class),
+          :body  => create_error_issue_body(error),
       }
-      url = GithubIssueRequest::Url.new(options).to_s
+      GithubIssueRequest::Url.new(options).to_s
+    end
+
+    # @param [Symbol] command
+    # @param [Exception] error
+    def error_handling(command, error)
+      STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
+
       puts ''
       if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
+        url = create_issue_url(command, error)
         puts I18n.t('command_builder.error_handling.please_open', url: url)
         system('open', url) if Commands::Deploy::Push.openable?
       end
