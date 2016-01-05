@@ -61,8 +61,12 @@ module DeployGate
 
     # @param [String] notify_key
     def notify_finish(notify_key)
-      HTTPClient.new(:agent_name => "dg/#{DeployGate::VERSION}").post(@notify_uri.to_s, {key: notify_key, command_action: 'credential_saved'})
-      HTTPClient.new(:agent_name => "dg/#{DeployGate::VERSION}").post(@notify_uri.to_s, {key: notify_key, command_action: 'finished'})
+      notify_post(notify_key, 'credential_saved')
+      notify_post(notify_key, 'finished')
+    end
+
+    def notify_post(notify_key, action)
+      HTTPClient.new(:agent_name => "dg/#{DeployGate::VERSION}").post(@notify_uri.to_s, {key: notify_key, command_action: action})
     end
   end
 end
