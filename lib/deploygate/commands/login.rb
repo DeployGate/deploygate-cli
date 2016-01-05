@@ -4,14 +4,23 @@ module DeployGate
       class << self
 
         # @return [void]
-        def run
-          start_login_or_create_account()
+        def run(args, options)
+          welcome()
+
+          if options.terminal
+            start_login_or_create_account()
+          else
+            DeployGate::BrowserLogin.new().start()
+          end
+        end
+
+        def welcome
+          puts I18n.t('commands.login.start_login_or_create_account.welcome')
+          print_deploygate_aa()
         end
 
         # @return [void]
         def start_login_or_create_account
-          puts I18n.t('commands.login.start_login_or_create_account.welcome')
-          print_deploygate_aa()
           puts ''
           email = ask(I18n.t('commands.login.start_login_or_create_account.email'))
 
@@ -39,7 +48,10 @@ module DeployGate
             raise e
           end
 
-          # login success
+          login_success()
+        end
+
+        def login_success
           session = Session.new
           puts HighLine.color(I18n.t('commands.login.start.success', name: session.name), HighLine::GREEN)
         end

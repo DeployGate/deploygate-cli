@@ -5,6 +5,7 @@ en:
     description: 'Control DeployGate from your terminal.'
     login:
       description: 'Log in to DeployGate'
+      terminal: 'Login in terminal'
       error: 'Commands::Login Error: %{e}'
     deploy:
       description: 'Build and upload a new build'
