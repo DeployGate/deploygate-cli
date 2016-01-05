@@ -1,6 +1,6 @@
 module DeployGate
   class BrowserLogin
-    DEFAULT_PORT = 9292
+    DEFAULT_PORT = 64126
     LOGIN_URL = "#{DeployGate::API::V1::Base::BASE_URL}/cli/login"
     CREDENTIAL_URL = "#{DeployGate::API::V1::Base::BASE_URL}/cli/credential"
     NOTIFY_URL = "#{DeployGate::API::V1::Base::BASE_URL}/cli/notify"
