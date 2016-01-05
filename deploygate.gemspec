@@ -31,6 +31,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'gem_update_checker', '~> 0.2.0'
   spec.add_dependency 'activesupport', '~> 4.2.4'
   spec.add_dependency 'i18n'
+  spec.add_dependency 'launchy'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.0.0'
