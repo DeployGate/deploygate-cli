@@ -25,9 +25,11 @@ module DeployGate
       command LOGIN do |c|
         c.syntax = 'dg login'
         c.description = I18n.t('command_builder.login.description')
+        c.option '--terminal', I18n.t('command_builder.login.terminal')
         c.action do |args, options|
+          options.default :terminal => false
           begin
-            Commands::Login.run
+            Commands::Login.run(args, options)
           rescue => e
             error_handling(LOGIN, e)
             raise e
