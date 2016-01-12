@@ -4,7 +4,7 @@ module DeployGate
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
 
-      class NotSupportExportMethodError < StandardError
+      class NotSupportExportMethodError < DeployGate::NotIssueError
       end
 
       class << self

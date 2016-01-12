@@ -1,10 +1,10 @@
 module DeployGate
   class Deploy
-    class NotLoginError < StandardError
+    class NotLoginError < DeployGate::NotIssueError
     end
-    class NotFileExistError < StandardError
+    class NotFileExistError < DeployGate::NotIssueError
     end
-    class UploadError < StandardError
+    class UploadError < DeployGate::NotIssueError
     end
 
     class << self
