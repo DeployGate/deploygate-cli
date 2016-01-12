@@ -162,3 +162,6 @@ en:
 
           Note: Your password will be stored to your Keychain and never be sent to DeployGate.
         email: 'Email: '
+      provisioning_profile:
+        not_installed_certificate_error: 'No iPhone Distribution Certificate associated with private key was found in local Keychain'
+        not_exist_uuid_provisioning_profile_error: 'No provisioning profile found for the specified UUID (%{uuid})'
