@@ -31,6 +31,7 @@ require "xcodeproj"
 module DeployGate
 end
 
+require "deploygate/not_issue_error"
 require "deploygate/api/v1/base"
 require "deploygate/api/v1/session"
 require "deploygate/api/v1/push"

@@ -1,6 +1,6 @@
 module DeployGate
   class Session
-    class LoginError < StandardError
+    class LoginError < DeployGate::NotIssueError
     end
 
     attr_reader :name, :token
