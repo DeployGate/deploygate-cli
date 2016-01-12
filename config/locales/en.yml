@@ -162,3 +162,6 @@ en:
 
           Note: Your password will be stored to your Keychain and never be sent to DeployGate.
         email: 'Email: '
+      provisioning_profile:
+        not_installed_certificate_error: 'Certificates of all the provisioning profile is not installed on the local'
+        not_exist_uuid_provisioning_profile_error: 'The specified is does not exist UUID(%{uuid}) provisioning profile'

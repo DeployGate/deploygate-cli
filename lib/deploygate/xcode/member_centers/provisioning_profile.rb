@@ -4,6 +4,11 @@ module DeployGate
       class ProvisioningProfile
         attr_reader :member_center, :app_identifier
 
+        class NotInstalledCertificateError < DeployGate::NotIssueError
+        end
+        class NotExistUUIDProvisioningProfileError < DeployGate::NotIssueError
+        end
+
         OUTPUT_PATH = '/tmp/dg/provisioning_profile/'
         CERTIFICATE_OUTPUT_PATH = '/tmp/dg/certificate/'
 
@@ -45,7 +50,7 @@ module DeployGate
             File.write(path, raw_data)
             distribution_cert_ids.push(cert.id) if FastlaneCore::CertChecker.installed?(path)
           end
-          raise 'Not local install certificate' if distribution_cert_ids.empty?
+          raise NotInstalledCertificateError, I18n.t('xcode.member_center.provisioning_profile.not_installed_certificate_error') if distribution_cert_ids.empty?
 
           provisionings = []
           distribution_cert_ids.each do |cert_id|
@@ -62,7 +67,7 @@ module DeployGate
         def download(uuid)
           profiles = Spaceship.provisioning_profile.all.reject!{|p| p.uuid != uuid}
 
-          raise 'Not Xcode selected Provisioning Profile' if profiles.empty?
+          raise NotExistUUIDProvisioningProfileError, I18n.t('xcode.member_center.provisioning_profile.not_exist_uuid_provisioning_profile_error', uuid: uuid) if profiles.empty?
           select_profile = profiles.first
           method = select_profile.kind_of?(Spaceship::Portal::ProvisioningProfile::AdHoc)
 
