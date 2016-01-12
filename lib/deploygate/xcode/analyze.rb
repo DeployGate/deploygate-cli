@@ -3,9 +3,6 @@ module DeployGate
     class Analyze
       attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme
 
-      class NotLocalProvisioningProfileError < DeployGate::NotIssueError
-      end
-
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       BUILD_CONFIGRATION = 'Release'
 
