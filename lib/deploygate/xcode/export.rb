@@ -12,17 +12,17 @@ module DeployGate
         # @param [String] uuid
         # @return [String]
         def provisioning_profile(bundle_identifier, uuid = nil)
-          data = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid)
-          profiles = data[:profiles]
-          teams = data[:teams]
+          local_teams = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid)
 
           target_provisioning_profile = nil
-          if teams.empty?
-            target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
-          elsif teams.count == 1
-            target_provisioning_profile = select_profile(profiles[teams.keys.first])
-          elsif teams.count >= 2
-            target_provisioning_profile = select_teams(teams, profiles)
+          case local_teams.teams_count
+            when 0
+              target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
+            when 1
+              target_provisioning_profile = select_profile(local_teams.first_team_profile_paths)
+            else
+              # when many teams
+              target_provisioning_profile = select_teams(local_teams)
           end
 
           target_provisioning_profile
@@ -30,10 +30,10 @@ module DeployGate
 
         # @param [String] bundle_identifier
         # @param [String] uuid
-        # @return [Hash]
+        # @return [LocalTeams]
         def find_local_data(bundle_identifier, uuid = nil)
-          result_profiles = {}
-          teams = {}
+          local_teams = LocalTeams.new
+
           profile_paths = load_profile_paths
           profiles = profile_paths.map{|p| profile_to_plist(p)}
           profiles.reject! {|profile| profile['UUID'] != uuid} unless uuid.nil?
@@ -41,25 +41,20 @@ module DeployGate
           profiles.each do |profile|
             entities = profile['Entitlements']
             unless entities['get-task-allow']
-              team = entities['com.apple.developer.team-identifier']
+              team_id = entities['com.apple.developer.team-identifier']
               application_id = entities['application-identifier']
-              application_id.slice!(/^#{team}\./)
+              application_id.slice!(/^#{team_id}\./)
               application_id = '.' + application_id if application_id == '*'
               if bundle_identifier.match(application_id) &&
                   DateTime.now < profile['ExpirationDate'] &&
                   installed_certificate?(profile['Path'])
 
-                teams[team] = profile['TeamName'] if teams[team].nil?
-                result_profiles[team] = [] if result_profiles[team].nil?
-                result_profiles[team].push(profile['Path'])
+                local_teams.add(team_id, profile['TeamName'], profile['Path'])
               end
             end
           end
 
-          {
-              :teams => teams,
-              :profiles => result_profiles
-          }
+          local_teams
         end
 
         # @param [String] profile_path
@@ -226,17 +221,17 @@ module DeployGate
           select_profile(provisioning_profiles)
         end
 
-        # @param [Hash] teams
-        # @param [Hash] profiles
+        # @param [LocalTeams] local_teams
         # @return [String]
-        def select_teams(teams, profiles)
+        def select_teams(local_teams)
           result = nil
           cli = HighLine.new
           cli.choose do |menu|
             menu.prompt = I18n.t('xcode.export.select_teams.prompt')
-            teams.each_with_index do |team, index|
-              menu.choice(I18n.t('xcode.export.select_teams.choice', team_id: team[1], team_name: team[0])) {
-                result = DeployGate::Xcode::Export.select_profile(profiles[team])
+            local_teams.teams.each do |team|
+              menu.choice(I18n.t('xcode.export.select_teams.choice', team_name: team[:name], team_id: team[:id])) {
+                profile_paths = local_teams.profile_paths(team[:id])
+                result = DeployGate::Xcode::Export.select_profile(profile_paths)
               }
             end
           end
