@@ -125,7 +125,7 @@ en:
             provisioning_profile: 'Error: Failed to create provisioning profile'
       select_teams:
         prompt: 'Please select a team'
-        choice: '%{team_id} %{team_name}'
+        choice: '%{team_name} %{team_id}'
       check_local_certificates:
         not_local_install_certificate:
           error_message: 'Error: No applicable iPhone Distribution certificate found on your Mac.'
