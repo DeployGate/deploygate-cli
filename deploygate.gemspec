@@ -32,12 +32,12 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'activesupport', '~> 4.2.4'
   spec.add_dependency 'i18n'
   spec.add_dependency 'launchy'
+  spec.add_dependency 'locale'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.0.0'
-  spec.add_dependency 'spaceship', '~> 0.12.3'
-  spec.add_dependency 'sigh', '~> 1.1.0'
-  spec.add_dependency 'locale'
+  spec.add_dependency 'gym', '~> 1.4.0'
+  spec.add_dependency 'spaceship', '~> 0.19.0'
+  spec.add_dependency 'sigh', '~> 1.2.2'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
