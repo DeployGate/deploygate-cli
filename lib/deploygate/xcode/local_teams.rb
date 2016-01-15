@@ -30,6 +30,7 @@ module DeployGate
 
       # @return [Array<String>]
       def first_team_profile_paths
+        return [] if @team_ids.empty?
         profile_paths(@team_ids.first)
       end
 
