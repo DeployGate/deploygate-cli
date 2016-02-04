@@ -39,15 +39,16 @@ module DeployGate
           profiles.reject! {|profile| profile['UUID'] != uuid} unless uuid.nil?
 
           profiles.each do |profile|
+            next if DateTime.now >= profile['ExpirationDate'] || !installed_certificate?(profile['Path'])
+
             entities = profile['Entitlements']
             unless entities['get-task-allow']
               team_id = entities['com.apple.developer.team-identifier']
               application_id = entities['application-identifier']
               application_id.slice!(/^#{team_id}\./)
               application_id = '.' + application_id if application_id == '*'
-              if bundle_identifier.match(application_id) &&
-                  DateTime.now < profile['ExpirationDate'] &&
-                  installed_certificate?(profile['Path'])
+              if match = bundle_identifier.match(application_id)
+                next if match[0] != bundle_identifier
 
                 local_teams.add(team_id, profile['TeamName'], profile['Path'])
               end
