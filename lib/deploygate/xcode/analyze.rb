@@ -44,7 +44,10 @@ module DeployGate
               end
           plist_bundle_identifier = convert_bundle_identifier(plist_bundle_identifier)
 
-          raise BundleIdentifierDifferentError if product_bundle_identifier != plist_bundle_identifier
+          if product_bundle_identifier != plist_bundle_identifier
+            raise BundleIdentifierDifferentError,
+                  I18n.t('xcode.analyze.target_bundle_identifier.bundle_identifier_different', plist_id: plist_bundle_identifier, product_id: product_bundle_identifier)
+          end
 
           bundle_identifier = product_bundle_identifier
           bundle_identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
