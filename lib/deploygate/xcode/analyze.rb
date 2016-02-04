@@ -6,6 +6,9 @@ module DeployGate
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       BUILD_CONFIGRATION = 'Release'
 
+      class BundleIdentifierDifferentError < DeployGate::NotIssueError
+      end
+
       # @param [Array] workspaces
       # @return [DeployGate::Xcode::Analyze]
       def initialize(workspaces)
@@ -29,13 +32,42 @@ module DeployGate
       def target_bundle_identifier
         begin
           product_name = target_product_name
-          identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
-          identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
-        rescue
+          product_bundle_identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
+          product_bundle_identifier = convert_bundle_identifier(product_bundle_identifier)
+
+          info_plist_file_path = target_build_configration.build_settings['INFOPLIST_FILE']
+          root_path = DeployGate::Xcode::Ios.project_root_path(@scheme_workspace)
+          plist_bundle_identifier =
+              File.open(File.join(root_path, info_plist_file_path)) do |file|
+                plist = Plist.parse_xml file.read
+                plist['CFBundleIdentifier']
+              end
+          plist_bundle_identifier = convert_bundle_identifier(plist_bundle_identifier)
+
+          raise BundleIdentifierDifferentError if product_bundle_identifier != plist_bundle_identifier
+
+          bundle_identifier = product_bundle_identifier
+          bundle_identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
+        rescue BundleIdentifierDifferentError => e
+          raise e
+        rescue => e
           cli = HighLine.new
           puts I18n.t('xcode.analyze.target_bundle_identifier.prompt')
-          identifier = cli.ask(I18n.t('xcode.analyze.target_bundle_identifier.ask')) { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
+          bundle_identifier = cli.ask(I18n.t('xcode.analyze.target_bundle_identifier.ask')) { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
         end
+
+        bundle_identifier
+      end
+
+      # @param [String] bundle_identifier
+      # @return [String]
+      def convert_bundle_identifier(bundle_identifier)
+        identifier = bundle_identifier
+        if match = bundle_identifier.match(/\$\((.+)\)/)
+          custom_id = match[1]
+          identifier = target_build_configration.build_settings[custom_id]
+        end
+        identifier = convert_bundle_identifier(identifier) if bundle_identifier.match(/\$\((.+)\)/)
 
         identifier
       end
