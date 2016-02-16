@@ -3,20 +3,37 @@ module DeployGate
     include Commander::Methods
     attr_reader :arguments
 
+    class NotInternetConnectionError < DeployGate::NotIssueError
+    end
+
+    PING_URL = 'https://deploygate.com'
+
     LOGIN       = 'login'
     LOGOUT      = 'logout'
     DEPLOY      = 'deploy'
     ADD_DEVICES = 'add-devices'
     CONFIG      = 'config'
 
-    def run
+    def setup
+      # set Ctrl-C trap
       Signal.trap(:INT){
         puts ''
         exit 0
       }
 
+      # check internet connection
+      unless internet_connection?
+        STDERR.puts HighLine.color(I18n.t('command_builder.not_internet_connection_error'), HighLine::RED)
+        exit
+      end
+
+      # check update
       GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
+    end
+
+    def run
+      setup()
 
       program :name, I18n.t('command_builder.name')
       program :version,  VERSION
@@ -208,6 +225,11 @@ EOF
       STDERR.puts ''
       STDERR.puts HighLine.color(I18n.t('command_builder.show_update_message', gem_name: gem_name, latest_version: latest_version, current_version: current_version), HighLine::YELLOW)
       STDERR.puts ''
+    end
+
+    # @return [Boolean]
+    def internet_connection?
+      Net::Ping::HTTP.new(PING_URL).ping?
     end
   end
 end
