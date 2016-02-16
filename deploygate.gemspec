@@ -33,6 +33,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'i18n'
   spec.add_dependency 'launchy'
   spec.add_dependency 'locale'
+  spec.add_dependency 'net-ping'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.4.0'

@@ -40,6 +40,7 @@ en:
       # It is recommended to use the latest version.
       # You can update it by running 'gem update %{gem_name}'.
       #################################################################
+    not_internet_connection_error: 'Error: Not internet connection. Please by connecting to the internet'
   commands:
     deploy:
       build:
