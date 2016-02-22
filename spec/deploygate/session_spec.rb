@@ -1,4 +1,31 @@
 describe DeployGate::Session do
+  describe "use env" do
+    let(:name) { 'name' }
+    let(:env_name) { 'env_name' }
+    let(:token) { 'token' }
+    let(:env_token) { 'env_token' }
+
+    it "not set env" do
+      ENV[DeployGate::Session::ENVKey::DG_USER_NAME] = nil
+      ENV[DeployGate::Session::ENVKey::DG_TOKEN] = nil
+
+      DeployGate::Session.save(name, token)
+      session = DeployGate::Session.new
+      expect(session.name).to eq name
+      expect(session.token).to eq token
+    end
+
+    it "set env" do
+      ENV[DeployGate::Session::ENVKey::DG_USER_NAME] = env_name
+      ENV[DeployGate::Session::ENVKey::DG_TOKEN] = env_token
+
+      DeployGate::Session.save(name, token)
+      session = DeployGate::Session.new
+      expect(session.name).to eq env_name
+      expect(session.token).to eq env_token
+    end
+  end
+
   describe "#login?" do
     it "call check api" do
       call_check = false
