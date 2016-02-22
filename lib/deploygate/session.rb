@@ -5,6 +5,11 @@ module DeployGate
 
     attr_reader :name, :token
 
+    module ENVKey
+      DG_USER_NAME = 'DG_USER_NAME'
+      DG_TOKEN = 'DG_TOKEN'
+    end
+
     @@login = nil
 
     # @return [DeployGate::Session]
@@ -55,10 +60,20 @@ module DeployGate
 
     # @return [void]
     def load_setting
+      return if load_env
       return unless Config::Credential.exist?
       settings = Config::Credential.read
+
       @name = settings['name']
       @token = settings['token']
+    end
+
+    # @return [Boolean]
+    def load_env
+      @name = ENV[ENVKey::DG_USER_NAME]
+      @token = ENV[ENVKey::DG_TOKEN]
+
+      @name.present? && @token.present?
     end
 
   end
