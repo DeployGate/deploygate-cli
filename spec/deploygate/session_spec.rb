@@ -15,6 +15,16 @@ describe DeployGate::Session do
       expect(session.token).to eq token
     end
 
+    it "set env blank" do
+      ENV[DeployGate::Session::ENVKey::DG_USER_NAME] = ''
+      ENV[DeployGate::Session::ENVKey::DG_TOKEN] = ''
+
+      DeployGate::Session.save(name, token)
+      session = DeployGate::Session.new
+      expect(session.name).to eq name
+      expect(session.token).to eq token
+    end
+
     it "set env" do
       ENV[DeployGate::Session::ENVKey::DG_USER_NAME] = env_name
       ENV[DeployGate::Session::ENVKey::DG_TOKEN] = env_token
