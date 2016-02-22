@@ -54,7 +54,7 @@ module DeployGate
                         revision: data[:revision],
                         web_url: data[:web_url])
             if((open || data[:revision] == 1) && openable?)
-              system "open #{data[:web_url]}"
+              Launchy.open(data[:web_url])
             end
           end
 
