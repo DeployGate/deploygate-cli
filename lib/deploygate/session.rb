@@ -73,7 +73,7 @@ module DeployGate
       @name = ENV[ENVKey::DG_USER_NAME]
       @token = ENV[ENVKey::DG_TOKEN]
 
-      !@name.blank? && !@token.blank?
+      @name.present? && @token.present?
     end
 
   end
