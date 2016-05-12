@@ -21,7 +21,7 @@ dg installed! To get started fast:
 POST_INSTALL_MESSAGE
 
   spec.add_dependency 'json', '~> 1.8.2'
-  spec.add_dependency 'httpclient', '~> 2.2.5'
+  spec.add_dependency 'httpclient', '~> 2.8.0'
   spec.add_dependency 'commander', '~> 4.3.5'
   spec.add_dependency 'plist', '~> 3.1.0'
   spec.add_dependency 'xcodeproj', '~> 0.28.2'
@@ -36,9 +36,9 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'net-ping'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.6.2'
-  spec.add_dependency 'spaceship', '~> 0.23.0'
-  spec.add_dependency 'sigh', '~> 1.4.1'
+  spec.add_dependency 'gym', '~> 1.6.3'
+  spec.add_dependency 'spaceship', '~> 0.26.2'
+  spec.add_dependency 'sigh', '~> 1.8.0'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
