@@ -36,8 +36,8 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'net-ping'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.6.3'
-  spec.add_dependency 'spaceship', '~> 0.27.1'
+  spec.add_dependency 'gym', '~> 1.7.0'
+  spec.add_dependency 'spaceship', '~> 0.28.0'
   spec.add_dependency 'sigh', '~> 1.8.0'
 
   spec.add_development_dependency "bundler", "~> 1.3"
