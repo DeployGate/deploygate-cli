@@ -18,9 +18,23 @@ module DeployGate
           owner       = options.user || session.name
           udid        = options.udid
           device_name = options.device_name
+          server      = options.server
 
           bundle_id = bundle_id(work_dir)
 
+          if server
+            run_server(session, owner, bundle_id, args, options)
+          else
+            build(session, owner, udid, device_name, bundle_id, args, options)
+          end
+        end
+
+        def run_server(session, owner, bundle_id, args, options)
+          puts 'Start add device server'
+          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, args, options)
+        end
+
+        def build(session, owner, udid, device_name, bundle_id, args, options)
           if udid.nil? && device_name.nil?
             devices = fetch_devices(session.token, owner, bundle_id)
             select_devices = select_devices(devices)
