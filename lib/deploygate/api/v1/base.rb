@@ -2,7 +2,7 @@ module DeployGate
   module API
     module V1
       class Base
-        BASE_URL     = 'https://deploygate.com'
+        BASE_URL     = ENV['DG_DEVELOP_URL'] || 'https://deploygate.com'
         API_BASE_URL = "#{BASE_URL}/api"
 
         # @param [String] token
