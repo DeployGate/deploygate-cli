@@ -41,7 +41,7 @@ module DeployGate
       end
 
       loop do
-        p DeployGate::API::V1::Users::Apps::AddDevices.heatbeat(token, owner_name, bundle_id, push_token)
+        p DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, push_token)
         sleep 10
       end
     end

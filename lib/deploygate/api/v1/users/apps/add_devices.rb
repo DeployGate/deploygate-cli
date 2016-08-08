@@ -14,8 +14,8 @@ module DeployGate::API::V1::Users::Apps
         }
       end
 
-      def heatbeat(token, name, package_name, push_token, platform = 'ios')
-        res = DeployGate::API::V1::Base.new(token).get("#{sprintf(ENDPOINT, name, platform, package_name)}/#{push_token}/heatbeat", {})
+      def heartbeat(token, name, package_name, push_token, platform = 'ios')
+        res = DeployGate::API::V1::Base.new(token).get("#{sprintf(ENDPOINT, name, platform, package_name)}/#{push_token}/heartbeat", {})
 
         {
             error: res['error']
