@@ -20,6 +20,7 @@ require "launchy"
 require "webrick"
 require "net/ping"
 require "socket.io-client-simple"
+require "parallel"
 
 require "i18n"
 I18n.load_path = Dir[File.join(File.dirname(__FILE__), '../config/locales/*.yml')]

@@ -4,6 +4,7 @@ module DeployGate
     ACTION = 'add_devices'
 
     def start(token, owner_name, bundle_id, args, options)
+      DeployGate::Xcode::MemberCenter.instance
       res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id)
 
       server = res[:webpush_server]
@@ -30,27 +31,31 @@ module DeployGate
       socket.on push_token do |push_data|
         return if push_data['action'] != ACTION
         data = JSON.parse(push_data['data'])
-        p data
 
-        build(data['udid'], data['device_name'], args, options) unless data['registered']
-      end
-
-      socket.on :info do |data|
-        p 'info'
-        p data
+        iphones = data['iphones']
+        DeployGate::AddDevicesServer.build(bundle_id, iphones, args, options)
       end
 
       loop do
-        p DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, push_token)
+        DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, push_token)
         sleep 10
       end
     end
 
-    def build(udid, device_name, args, options)
+    def self.build(bunlde_id, iphones, args, options)
       options.server = false
-      options.udid = udid
-      options.device_name= device_name
-      DeployGate::Commands::AddDevices.run(args, options)
+      devices = iphones.map do |iphone|
+        # TODO: reject iphone['is_registered'] = true
+        udid = iphone['udid']
+        device_name= iphone['device_name']
+        DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
+      end
+
+      # TODO: Check running build
+      Parallel.each([1], in_threads: 1) do |v|
+        DeployGate::Commands::AddDevices.register!(devices)
+        DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
+      end
     end
   end
 end
