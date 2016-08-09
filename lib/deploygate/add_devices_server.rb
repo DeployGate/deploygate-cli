@@ -3,9 +3,9 @@ module DeployGate
 
     ACTION = 'add_devices'
 
-    def start(token, owner_name, bundle_id, args, options)
+    def start(token, owner_name, bundle_id, distribution_key, args, options)
       DeployGate::Xcode::MemberCenter.instance
-      res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id)
+      res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id, distribution_key)
 
       server = res[:webpush_server]
       push_token  = res[:push_token]
@@ -36,8 +36,9 @@ module DeployGate
         DeployGate::AddDevicesServer.build(bundle_id, iphones, args, options)
       end
 
+      # TODO: Use Workers::PeriodicTimer
       loop do
-        DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, push_token)
+        DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
         sleep 10
       end
     end
@@ -51,10 +52,16 @@ module DeployGate
         DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
       end
 
-      # TODO: Check running build
-      Parallel.each([1], in_threads: 1) do |v|
-        DeployGate::Commands::AddDevices.register!(devices)
-        DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
+      # TODO: Check other run build
+      worker = Workers::Worker.new
+      worker.perform do
+        begin
+          DeployGate::Commands::AddDevices.register!(devices)
+          DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
+        rescue Exception => e
+          # TODO: Get exception
+          p e
+        end
       end
     end
   end

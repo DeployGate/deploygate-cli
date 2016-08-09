@@ -15,23 +15,24 @@ module DeployGate
             session = DeployGate::Session.new()
           end
 
-          owner       = options.user || session.name
-          udid        = options.udid
-          device_name = options.device_name
-          server      = options.server
+          owner            = options.user || session.name
+          udid             = options.udid
+          device_name      = options.device_name
+          distribution_key = options.distribution_key
+          server           = options.server
 
           bundle_id = bundle_id(work_dir)
 
           if server
-            run_server(session, owner, bundle_id, args, options)
+            run_server(session, owner, bundle_id, distribution_key, args, options)
           else
             device_register(session, owner, udid, device_name, bundle_id, args, options)
           end
         end
 
-        def run_server(session, owner, bundle_id, args, options)
+        def run_server(session, owner, bundle_id, distribution_key, args, options)
           puts 'Start add device server'
-          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, args, options)
+          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, distribution_key, args, options)
         end
 
         def device_register(session, owner, udid, device_name, bundle_id, args, options)
