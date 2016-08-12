@@ -5,42 +5,33 @@ module DeployGate
 
     def start(token, owner_name, bundle_id, distribution_key, args, options)
       DeployGate::Xcode::MemberCenter.instance
+
+      puts 'Please wait...'
       res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id, distribution_key)
 
       server = res[:webpush_server]
       push_token  = res[:push_token]
-
       if server.blank? || push_token.blank?
-        p 'ERRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR' # TODO: fix
+        # TODO: Show error message
         exit
       end
 
-      socket = SocketIO::Client::Simple.connect server
-      socket.on :connect do
-        p 'connect'
-        socket.emit :subscribe, push_token
-      end
-      socket.on :disconnect do
-        p 'disconnect'
-      end
-      socket.on :error do |err|
-        p 'error'
-        p err
-      end
+      socket = websocket_setup(server, push_token, args, options)
+      puts 'Start add device server'
 
-      socket.on push_token do |push_data|
-        return if push_data['action'] != ACTION
-        data = JSON.parse(push_data['data'])
-
-        iphones = data['iphones']
-        DeployGate::AddDevicesServer.build(bundle_id, iphones, args, options)
-      end
-
-      # TODO: Use Workers::PeriodicTimer
-      loop do
+      heartbeat_timer = Workers::PeriodicTimer.new(60) do
         DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
-        sleep 10
       end
+
+      loop do
+        sleep 60
+      end
+
+      Signal.trap(:INT){
+        heartbeat_timer.cancel
+        socket.disconnect
+        exit 0
+      }
     end
 
     def self.build(bunlde_id, iphones, args, options)
@@ -63,6 +54,27 @@ module DeployGate
           p e
         end
       end
+    end
+
+    private
+
+    def websocket_setup(server, push_token, args, options)
+      socket = SocketIO::Client::Simple.connect server
+      socket.on :connect do
+        socket.emit :subscribe, push_token
+      end
+      # TODO: Support socket.on :disconnect
+      # TODO: Support socket.on :error
+
+      socket.on push_token do |push_data|
+        return if push_data['action'] != ACTION
+        data = JSON.parse(push_data['data'])
+
+        iphones = data['iphones']
+        DeployGate::AddDevicesServer.build(bundle_id, iphones, args, options)
+      end
+
+      socket
     end
   end
 end

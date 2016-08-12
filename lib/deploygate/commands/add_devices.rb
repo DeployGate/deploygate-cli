@@ -31,7 +31,6 @@ module DeployGate
         end
 
         def run_server(session, owner, bundle_id, distribution_key, args, options)
-          puts 'Start add device server'
           DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, distribution_key, args, options)
         end
 
