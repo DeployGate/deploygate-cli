@@ -15,22 +15,22 @@ module DeployGate
         raise res[:message]
       end
 
-      socket = websocket_setup(server, bundle_id, push_token, args, options)
-      puts HighLine.color(I18n.t('command_builder.add_devices.server.start'), HighLine::GREEN)
+      websocket_setup(server, bundle_id, push_token, args, options) do |socket|
+        puts HighLine.color(I18n.t('command_builder.add_devices.server.start'), HighLine::GREEN)
 
-      heartbeat_timer = Workers::PeriodicTimer.new(60) do
-        DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
+        Workers::PeriodicTimer.new(60) do
+          DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
+        end
+
+        Signal.trap(:INT){
+          socket.disconnect
+          exit 0
+        }
       end
 
       loop do
         sleep 60
       end
-
-      Signal.trap(:INT){
-        heartbeat_timer.cancel
-        socket.disconnect
-        exit 0
-      }
     end
 
     def self.build(pool, bunlde_id, iphones, args, options)
@@ -50,13 +50,16 @@ module DeployGate
 
     private
 
-    def websocket_setup(server, bundle_id, push_token, args, options)
+    def websocket_setup(server, bundle_id, push_token, args, options, &block)
       socket = SocketIO::Client::Simple.connect server
       socket.on :connect do
         socket.emit :subscribe, push_token
+        block.call(socket)
       end
-      # TODO: Support socket.on :disconnect
-      # TODO: Support socket.on :error
+
+      socket.on :error do
+        raise 'Socket Error'
+      end
 
       pool = Workers::Pool.new(size: 1, on_exception: proc { |e|
         raise e
@@ -68,8 +71,6 @@ module DeployGate
         iphones = data['iphones']
         DeployGate::AddDevicesServer.build(pool, bundle_id, iphones, args, options)
       end
-
-      socket
     end
   end
 end
