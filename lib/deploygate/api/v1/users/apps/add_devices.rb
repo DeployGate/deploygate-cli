@@ -7,12 +7,25 @@ module DeployGate::API::V1::Users::Apps
         params = {distribution_access_key: distribution_key} unless distribution_key.nil?
         res = DeployGate::API::V1::Base.new(token).post(sprintf(ENDPOINT, name, platform, package_name), params || {})
 
-        results = res['results']
-        {
-            error: res['error'],
-            push_token: results['push_token'],
-            webpush_server: results['webpush_server']
+        results = {
+            error: res['error']
         }
+        if results[:error]
+          results.merge!(
+              {
+                  message: res['message']
+              }
+          )
+        else
+          results.merge!(
+              {
+                  push_token: res['results']['push_token'],
+                  webpush_server: res['results']['webpush_server']
+              }
+          )
+        end
+
+        results
       end
 
       def heartbeat(token, name, package_name, distribution_key, push_token, platform = 'ios')

@@ -6,18 +6,18 @@ module DeployGate
     def start(token, owner_name, bundle_id, distribution_key, args, options)
       DeployGate::Xcode::MemberCenter.instance
 
-      puts 'Please wait...'
+      puts I18n.t('command_builder.add_devices.server.wait')
       res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id, distribution_key)
 
       server = res[:webpush_server]
       push_token  = res[:push_token]
-      if server.blank? || push_token.blank?
-        # TODO: Show error message
-        exit
+      if res[:error] || server.blank? || push_token.blank?
+        puts HighLine.color(I18n.t('command_builder.add_devices.server.init_server_error', e: res[:message]), HighLine::RED)
+        exit 1
       end
 
       socket = websocket_setup(server, bundle_id, push_token, args, options)
-      puts 'Start add device server'
+      puts HighLine.color(I18n.t('command_builder.add_devices.server.start'), HighLine::GREEN)
 
       heartbeat_timer = Workers::PeriodicTimer.new(60) do
         DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
@@ -44,13 +44,9 @@ module DeployGate
       end
 
       pool.perform do
-        begin
-          DeployGate::Commands::AddDevices.register!(devices)
-          DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
-        rescue Exception => e
-          # TODO: Get exception
-          p e
-        end
+        # TODO: Get exception
+        DeployGate::Commands::AddDevices.register!(devices)
+        DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
       end
     end
 
