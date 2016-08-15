@@ -12,8 +12,7 @@ module DeployGate
       server = res[:webpush_server]
       push_token  = res[:push_token]
       if res[:error] || server.blank? || push_token.blank?
-        puts HighLine.color(I18n.t('command_builder.add_devices.server.init_server_error', e: res[:message]), HighLine::RED)
-        exit 1
+        raise res[:message]
       end
 
       socket = websocket_setup(server, bundle_id, push_token, args, options)
@@ -44,7 +43,6 @@ module DeployGate
       end
 
       pool.perform do
-        # TODO: Get exception
         DeployGate::Commands::AddDevices.register!(devices)
         DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
       end
@@ -60,7 +58,9 @@ module DeployGate
       # TODO: Support socket.on :disconnect
       # TODO: Support socket.on :error
 
-      pool = Workers::Pool.new(size: 1)
+      pool = Workers::Pool.new(size: 1, on_exception: proc { |e|
+        raise e
+      })
       socket.on push_token do |push_data|
         return if push_data['action'] != ACTION
         data = JSON.parse(push_data['data'])

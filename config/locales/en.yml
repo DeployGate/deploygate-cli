@@ -22,7 +22,6 @@ en:
       device_name: 'Device name to be registered'
       error: 'Commands::AddDevices Error: %{e}'
       server:
-        init_server_error: 'Commands::AddDevices Init Server Error: %{e}'
         wait: 'Please wait...'
         start: 'Start add-devices server (Stop: Ctr-c)'
     logout:
