@@ -16,7 +16,7 @@ module DeployGate
         exit
       end
 
-      socket = websocket_setup(server, push_token, args, options)
+      socket = websocket_setup(server, bundle_id, push_token, args, options)
       puts 'Start add device server'
 
       heartbeat_timer = Workers::PeriodicTimer.new(60) do
@@ -34,7 +34,7 @@ module DeployGate
       }
     end
 
-    def self.build(bunlde_id, iphones, args, options)
+    def self.build(pool, bunlde_id, iphones, args, options)
       options.server = false
       devices = iphones.map do |iphone|
         # TODO: reject iphone['is_registered'] = true
@@ -43,9 +43,7 @@ module DeployGate
         DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
       end
 
-      # TODO: Check other run build
-      worker = Workers::Worker.new
-      worker.perform do
+      pool.perform do
         begin
           DeployGate::Commands::AddDevices.register!(devices)
           DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
@@ -58,7 +56,7 @@ module DeployGate
 
     private
 
-    def websocket_setup(server, push_token, args, options)
+    def websocket_setup(server, bundle_id, push_token, args, options)
       socket = SocketIO::Client::Simple.connect server
       socket.on :connect do
         socket.emit :subscribe, push_token
@@ -66,12 +64,13 @@ module DeployGate
       # TODO: Support socket.on :disconnect
       # TODO: Support socket.on :error
 
+      pool = Workers::Pool.new(size: 1)
       socket.on push_token do |push_data|
         return if push_data['action'] != ACTION
         data = JSON.parse(push_data['data'])
 
         iphones = data['iphones']
-        DeployGate::AddDevicesServer.build(bundle_id, iphones, args, options)
+        DeployGate::AddDevicesServer.build(pool, bundle_id, iphones, args, options)
       end
 
       socket
