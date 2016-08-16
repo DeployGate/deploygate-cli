@@ -1,25 +1,24 @@
 module DeployGate
   class AddDevicesServer
 
-    ACTION = 'add_devices'
-
     def start(token, owner_name, bundle_id, distribution_key, args, options)
       DeployGate::Xcode::MemberCenter.instance
 
       puts I18n.t('command_builder.add_devices.server.wait')
-      res = DeployGate::API::V1::Users::Apps::AddDevices.create(token, owner_name, bundle_id, distribution_key)
+      res = DeployGate::API::V1::Users::Apps::CliWebsockets.create(token, owner_name, bundle_id, distribution_key)
 
       server = res[:webpush_server]
       push_token  = res[:push_token]
-      if res[:error] || server.blank? || push_token.blank?
+      action  = res[:action]
+      if res[:error] || server.blank? || push_token.blank? || action.blank?
         raise res[:message]
       end
 
-      websocket_setup(server, bundle_id, push_token, args, options) do |socket|
+      websocket_setup(server, bundle_id, push_token, action, args, options) do |socket|
         puts HighLine.color(I18n.t('command_builder.add_devices.server.start'), HighLine::GREEN)
 
         Workers::PeriodicTimer.new(60) do
-          DeployGate::API::V1::Users::Apps::AddDevices.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
+          DeployGate::API::V1::Users::Apps::CliWebsockets.heartbeat(token, owner_name, bundle_id, distribution_key, push_token)
         end
 
         Signal.trap(:INT){
@@ -50,7 +49,7 @@ module DeployGate
 
     private
 
-    def websocket_setup(server, bundle_id, push_token, args, options, &block)
+    def websocket_setup(server, bundle_id, push_token, target_action, args, options, &block)
       socket = SocketIO::Client::Simple.connect server
       socket.on :connect do
         socket.emit :subscribe, push_token
@@ -65,7 +64,7 @@ module DeployGate
         raise e
       })
       socket.on push_token do |push_data|
-        return if push_data['action'] != ACTION
+        return if push_data['action'] != target_action
         data = JSON.parse(push_data['data'])
 
         iphones = data['iphones']

@@ -1,6 +1,6 @@
 module DeployGate::API::V1::Users::Apps
-  class AddDevices
-    ENDPOINT = "/users/%s/platforms/%s/apps/%s/add_devices"
+  class CliWebsockets
+    ENDPOINT = "/users/%s/platforms/%s/apps/%s/cli_websockets"
 
     class << self
       def create(token, name, package_name, distribution_key, platform = 'ios')
@@ -20,7 +20,8 @@ module DeployGate::API::V1::Users::Apps
           results.merge!(
               {
                   push_token: res['results']['push_token'],
-                  webpush_server: res['results']['webpush_server']
+                  webpush_server: res['results']['webpush_server'],
+                  action: res['results']['action']
               }
           )
         end
