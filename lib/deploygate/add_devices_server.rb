@@ -3,8 +3,9 @@ module DeployGate
 
     def start(token, owner_name, bundle_id, distribution_key, args, options)
       DeployGate::Xcode::MemberCenter.instance
+      options.server = false
 
-      puts I18n.t('command_builder.add_devices.server.wait')
+      puts I18n.t('command_builder.add_devices.server.connecting')
       res = DeployGate::API::V1::Users::Apps::CliWebsockets.create(token, owner_name, bundle_id, distribution_key)
 
       server = res[:webpush_server]
@@ -33,17 +34,20 @@ module DeployGate
     end
 
     def self.build(pool, bunlde_id, iphones, args, options)
-      options.server = false
       devices = iphones.map do |iphone|
         # TODO: reject iphone['is_registered'] = true
         udid = iphone['udid']
         device_name= iphone['device_name']
         DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
       end
+      return if devices.empty?
 
+      puts HighLine.color(I18n.t('command_builder.add_devices.server.start_build'), HighLine::GREEN)
       pool.perform do
         DeployGate::Commands::AddDevices.register!(devices)
         DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
+        puts HighLine.color(I18n.t('command_builder.add_devices.server.finish_build'), HighLine::GREEN)
+        puts ''
       end
     end
 

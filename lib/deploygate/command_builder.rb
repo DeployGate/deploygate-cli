@@ -80,8 +80,8 @@ module DeployGate
         c.option '--user STRING', String, I18n.t('command_builder.add_devices.user')
         c.option '--udid STRING', String, I18n.t('command_builder.add_devices.udid')
         c.option '--device-name STRING', String, I18n.t('command_builder.add_devices.device_name')
-        c.option '--distribution-key STRING', String, 'Distribution access key'
-        c.option '--server', 'Run add devices server'
+        c.option '--distribution-key STRING', String, I18n.t('command_builder.add_devices.distribution_key')
+        c.option '--server', I18n.t('command_builder.add_devices.server.description')
         c.action do |args, options|
           options.default :user => nil, :server => false
           begin

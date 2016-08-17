@@ -20,10 +20,14 @@ en:
       user: 'Owner user or organization name'
       udid: 'UDID to be registered'
       device_name: 'Device name to be registered'
+      distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
       error: 'Commands::AddDevices Error: %{e}'
       server:
-        wait: 'Please wait...'
-        start: 'Start add-devices server (Stop: Ctr-c)'
+        description: 'Start the add-devices server. When added new device automatically run add-devices command.'
+        connecting: 'Connecting...'
+        start: 'Start add-devices server. Use Ctrl-C to stop.'
+        start_build: 'New device has been added. Start add-devices command.'
+        finish_build: 'add-devices completed successfully.'
     logout:
       description: 'Log out current session'
       error: 'Commands::Logout Error: %{e}'
