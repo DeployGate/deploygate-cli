@@ -34,8 +34,8 @@ module DeployGate
     end
 
     def self.build(pool, bunlde_id, iphones, args, options)
+      iphones.reject! { |iphone| iphone['is_registered'] } # remove udids if already registered
       devices = iphones.map do |iphone|
-        # TODO: reject iphone['is_registered'] = true
         udid = iphone['udid']
         device_name= iphone['device_name']
         DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
