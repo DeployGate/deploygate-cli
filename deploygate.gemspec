@@ -34,6 +34,8 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'launchy'
   spec.add_dependency 'locale'
   spec.add_dependency 'net-ping'
+  spec.add_dependency 'socket.io-client-simple'
+  spec.add_dependency 'workers'
 
   # ios build
   spec.add_dependency 'gym', '~> 1.7.0'

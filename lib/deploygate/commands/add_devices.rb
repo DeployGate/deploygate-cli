@@ -15,21 +15,32 @@ module DeployGate
             session = DeployGate::Session.new()
           end
 
-          owner       = options.user || session.name
-          udid        = options.udid
-          device_name = options.device_name
+          owner            = options.user || session.name
+          udid             = options.udid
+          device_name      = options.device_name
+          distribution_key = options.distribution_key
+          server           = options.server
 
           bundle_id = bundle_id(work_dir)
 
+          if server
+            run_server(session, owner, bundle_id, distribution_key, args, options)
+          else
+            device_register(session, owner, udid, device_name, bundle_id, args, options)
+          end
+        end
+
+        def run_server(session, owner, bundle_id, distribution_key, args, options)
+          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, distribution_key, args, options)
+        end
+
+        def device_register(session, owner, udid, device_name, bundle_id, args, options)
           if udid.nil? && device_name.nil?
             devices = fetch_devices(session.token, owner, bundle_id)
             select_devices = select_devices(devices)
             not_device if select_devices.empty?
 
-            select_devices.each do |device|
-              device.register!
-              success_registered_device(device)
-            end
+            register!(devices)
           else
             register_udid = udid || HighLine.ask(I18n.t('commands.add_devices.input_udid'))
             register_device_name = device_name || HighLine.ask(I18n.t('commands.add_devices.input_device_name'))
@@ -37,13 +48,23 @@ module DeployGate
 
             puts device.to_s
             if HighLine.agree(I18n.t('commands.add_devices.device_register_confirm')) {|q| q.default = "y"}
-              device.register!
-              success_registered_device(device)
+              register!([device])
             else
               not_device
             end
           end
 
+          build!(bundle_id, args, options)
+        end
+
+        def register!(devices)
+          devices.each do |device|
+            device.register!
+            success_registered_device(device)
+          end
+        end
+
+        def build!(bundle_id, args, options)
           DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id).create!
           team = DeployGate::Xcode::MemberCenter.instance.team
           DeployGate::Xcode::Export.clean_provisioning_profiles(bundle_id, team)
