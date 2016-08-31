@@ -22,14 +22,14 @@ POST_INSTALL_MESSAGE
 
   spec.add_dependency 'json', '~> 1.8.2'
   spec.add_dependency 'httpclient', '~> 2.2.5'
-  spec.add_dependency 'commander', '~> 4.3.5'
+  spec.add_dependency 'commander', '~> 4.4.0'
   spec.add_dependency 'plist', '~> 3.1.0'
   spec.add_dependency 'xcodeproj', '~> 0.28.2'
-  spec.add_dependency 'github_issue_request', '~> 0.0.2'
+  spec.add_dependency 'github_issue_request', '~> 0.1.0'
   spec.add_dependency 'highline', '~> 1.7.8'
   spec.add_dependency 'uuid', '~> 2.3.8'
   spec.add_dependency 'gem_update_checker', '~> 0.2.0'
-  spec.add_dependency 'activesupport', '~> 4.2.4'
+  spec.add_dependency 'activesupport', '~> 4.2.7.1'
   spec.add_dependency 'i18n'
   spec.add_dependency 'launchy'
   spec.add_dependency 'locale'
@@ -38,9 +38,9 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'workers'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.7.0'
-  spec.add_dependency 'spaceship', '~> 0.28.0'
-  spec.add_dependency 'sigh', '~> 1.8.0'
+  spec.add_dependency 'gym', '~> 1.8.0'
+  spec.add_dependency 'spaceship', '~> 0.32.0'
+  spec.add_dependency 'sigh', '~> 1.10.0'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
