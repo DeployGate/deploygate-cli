@@ -26,3 +26,5 @@ spec/test_files/.dg
 # binary files
 *.app.dSYM.zip
 *.ipa
+
+.DS_Store

@@ -21,7 +21,7 @@ dg installed! To get started fast:
 POST_INSTALL_MESSAGE
 
   spec.add_dependency 'json', '~> 1.8.2'
-  spec.add_dependency 'httpclient', '~> 2.8.0'
+  spec.add_dependency 'httpclient', '~> 2.8.2.4'
   spec.add_dependency 'commander', '~> 4.4.0'
   spec.add_dependency 'plist', '~> 3.1.0'
   spec.add_dependency 'xcodeproj', '~> 0.28.2'
@@ -42,10 +42,10 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'spaceship', '~> 0.32.0'
   spec.add_dependency 'sigh', '~> 1.10.0'
 
-  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency "bundler", "~> 1.13.1"
   spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec", "~> 3.3.0"
-  spec.add_development_dependency "webmock", "~> 1.21.0"
+  spec.add_development_dependency "rspec", "~> 3.5.0"
+  spec.add_development_dependency "webmock", "~> 2.1.0"
   spec.add_development_dependency "i18n-tasks"
 
   spec.files         = `git ls-files`.split($/)
