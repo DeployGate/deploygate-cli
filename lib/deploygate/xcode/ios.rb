@@ -3,6 +3,7 @@ module DeployGate
     module Ios
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
+      IGNORE_DIRS = [ '.git', 'Carthage' ]
 
       class NotSupportExportMethodError < DeployGate::NotIssueError
       end
@@ -69,6 +70,8 @@ module DeployGate
             if File.extname(path) == WORK_DIR_EXTNAME
               projects.push(path)
             end
+
+            Find.prune if FileTest.directory?(path) && IGNORE_DIRS.include?(File.basename(path))
           end
 
           projects
