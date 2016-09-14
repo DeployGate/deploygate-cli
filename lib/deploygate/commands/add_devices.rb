@@ -40,7 +40,7 @@ module DeployGate
             select_devices = select_devices(devices)
             not_device if select_devices.empty?
 
-            register!(devices)
+            register!(select_devices)
           else
             register_udid = udid || HighLine.ask(I18n.t('commands.add_devices.input_udid'))
             register_device_name = device_name || HighLine.ask(I18n.t('commands.add_devices.input_device_name'))
