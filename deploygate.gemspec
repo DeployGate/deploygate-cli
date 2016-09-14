@@ -21,7 +21,7 @@ dg installed! To get started fast:
 POST_INSTALL_MESSAGE
 
   spec.add_dependency 'json', '~> 1.8.2'
-  spec.add_dependency 'httpclient', '~> 2.2.5'
+  spec.add_dependency 'httpclient', '~> 2.8.0'
   spec.add_dependency 'commander', '~> 4.4.0'
   spec.add_dependency 'plist', '~> 3.1.0'
   spec.add_dependency 'xcodeproj', '~> 0.28.2'
