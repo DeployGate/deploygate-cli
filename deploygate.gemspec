@@ -42,7 +42,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'spaceship', '~> 0.32.0'
   spec.add_dependency 'sigh', '~> 1.10.0'
 
-  spec.add_development_dependency "bundler", "~> 1.13.1"
+  spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.5.0"
   spec.add_development_dependency "webmock", "~> 2.1.0"
