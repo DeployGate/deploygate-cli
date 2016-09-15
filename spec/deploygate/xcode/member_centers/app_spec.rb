@@ -1,33 +1,21 @@
 describe DeployGate::Xcode::MemberCenters::App do
+  let(:email) { 'test@example.com' }
+  let(:registered_uuid) { 'com.example.test.registered' }
+  let(:non_registered_uuid) { 'com.example.test.non.registered' }
+  let(:app) { DeployGate::Xcode::MemberCenters::App.new('com.example.test.new.app') }
+
   before do
-    allow_any_instance_of(DeployGate::Xcode::MemberCenter).to receive(:instance) {}
-    allow(Spaceship).to receive(:app).and_return(SpaceshipApp.new(uuid))
+    allow_any_instance_of(Spaceship::PortalClient).to receive(:login) {}
+    allow_any_instance_of(Spaceship::PortalClient).to receive(:teams) {['team_name', 'team_id']}
+    allow_any_instance_of(Spaceship::Launcher).to receive(:select_team) {}
+    allow_any_instance_of(Spaceship::PortalClient).to receive(:apps) {[
+        {"identifier" => registered_uuid}
+    ]}
+    allow_any_instance_of(DeployGate::Xcode::MemberCenter).to receive(:input_email).and_return(email)
   end
 
-  class SpaceshipApp
-    attr_reader :bundle_id
-    def initialize(bundle_id)
-      @bundle_id = bundle_id
-    end
-    def create!(options)
-    end
-
-    def all
-    end
-  end
-
-  let(:uuid) { 'com.example.test' }
-  let(:app) { DeployGate::Xcode::MemberCenters::App.new(uuid) }
 
   context "#created?" do
-    let(:registered_uuid) { 'com.example.test.registered' }
-    let(:non_registered_uuid) { 'com.example.test.non.registered' }
-
-    before do
-      allow_any_instance_of(SpaceshipApp).to receive(:all) do
-        [SpaceshipApp.new(registered_uuid)]
-      end
-    end
 
     it "app created" do
       app = DeployGate::Xcode::MemberCenters::App.new(registered_uuid)
@@ -45,7 +33,7 @@ describe DeployGate::Xcode::MemberCenters::App do
   context "#create!" do
     it "must call Spaceshio.app.create!" do
       call_create = false
-      allow_any_instance_of(SpaceshipApp).to receive(:create!) { call_create = true }
+      allow(Spaceship::Portal::App).to receive(:create!) { call_create = true }
 
       app.create!
       expect(call_create).to be_truthy
@@ -54,7 +42,7 @@ describe DeployGate::Xcode::MemberCenters::App do
 
   context "#name" do
     it "get name" do
-      expect(app.name).to eq 'com example test'
+      expect(app.name).to eq 'com example test new app'
     end
   end
 end

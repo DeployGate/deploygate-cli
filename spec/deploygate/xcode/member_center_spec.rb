@@ -7,9 +7,9 @@ describe DeployGate::Xcode::MemberCenter do
   let(:email) { 'test@example.com' }
   let(:center) { DeployGate::Xcode::MemberCenter.instance }
   before do
-    allow(Spaceship).to receive(:login) {}
-    allow(Spaceship).to receive(:select_team) {}
-    allow(Spaceship).to receive(:client).and_return(SpaceshipClient.new)
+    allow_any_instance_of(Spaceship::PortalClient).to receive(:login) {}
+    allow_any_instance_of(Spaceship::PortalClient).to receive(:teams) {['team_name', 'team_id']}
+    allow_any_instance_of(Spaceship::Launcher).to receive(:select_team) {}
     allow_any_instance_of(DeployGate::Xcode::MemberCenter).to receive(:input_email).and_return(email)
   end
 
