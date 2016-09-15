@@ -18,16 +18,16 @@ module DeployGate
         end
 
         def registered?
-          DeployGate::Xcode::MemberCenter.instance
-          !Spaceship::Device.find_by_udid(@udid).nil?
+          instance = DeployGate::Xcode::MemberCenter.instance
+          !instance.launcher.device.find_by_udid(@udid).nil?
         end
 
         # @return [void]
         def register!
-          DeployGate::Xcode::MemberCenter.instance
+          instance = DeployGate::Xcode::MemberCenter.instance
           return if registered?
 
-          Spaceship::Device.create!(name: @register_name, udid: @udid)
+          instance.launcher.device.create!(name: @register_name, udid: @udid)
         end
 
         # @return [String]

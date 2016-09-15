@@ -36,9 +36,9 @@ module DeployGate
         # @return [Array]
         def all_create
           if @member_center.adhoc?
-            prod_certs = Spaceship.certificate.production.all
+            prod_certs = @member_center.launcher.certificate.production.all
           else
-            prod_certs = Spaceship.certificate.all.reject{|cert| cert.class != Spaceship::Portal::Certificate::InHouse}
+            prod_certs = @member_center.launcher.certificate.all.reject{|cert| cert.class != Spaceship::Portal::Certificate::InHouse}
           end
 
           # check local install certificate
@@ -65,7 +65,7 @@ module DeployGate
         # @param [String] uuid
         # @return [String]
         def download(uuid)
-          profiles = Spaceship.provisioning_profile.all.reject!{|p| p.uuid != uuid}
+          profiles = @member_center.launcher.provisioning_profile.all.reject!{|p| p.uuid != uuid}
 
           raise NotExistUUIDProvisioningProfileError, I18n.t('xcode.member_center.provisioning_profile.not_exist_uuid_provisioning_profile_error', uuid: uuid) if profiles.empty?
           select_profile = profiles.first
@@ -91,7 +91,7 @@ module DeployGate
               app_identifier: @app_identifier,
               username: @member_center.email,
               output_path: OUTPUT_PATH,
-              team_id: Spaceship.client.team_id,
+              team_id: @member_center.launcher.client.team_id,
               force: true
           }
           values.merge!({provisioning_name: provisioning_name}) unless provisioning_name.nil?

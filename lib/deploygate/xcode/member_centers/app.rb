@@ -13,7 +13,7 @@ module DeployGate
 
         # @return [Boolean]
         def created?
-          Spaceship.app.all.collect do |app|
+          @member_center.launcher.app.all.collect do |app|
             return true if app.bundle_id == @uuid
           end
 
@@ -22,7 +22,7 @@ module DeployGate
 
         # @return [void]
         def create!
-          Spaceship.app.create!(bundle_id: @uuid, name: name())
+          @member_center.launcher.app.create!(bundle_id: @uuid, name: name())
         end
 
         # @return [String]
