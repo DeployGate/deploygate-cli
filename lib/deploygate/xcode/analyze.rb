@@ -81,6 +81,10 @@ module DeployGate
         UUID.validate(uuid) ? uuid : nil
       end
 
+      def automatic_provisioning?
+        get_provisioning_style == 'Automatic'
+      end
+
       private
 
       def target_build_configration
@@ -91,13 +95,33 @@ module DeployGate
         target_project_setting.product_name
       end
 
+      def get_provisioning_style
+        main_target = target_project_setting
+        main_target_uuid = main_target && main_target.uuid
+
+        style = 'Manual'
+        if main_target_uuid
+          # Manual or Automatic
+          begin
+            style = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]['ProvisioningStyle']
+          rescue
+            # Not catch error
+          end
+        end
+
+        style
+      end
+
       def target_project_setting
         scheme_file = find_xcschemes
         xs = Xcodeproj::XCScheme.new(scheme_file)
         target_name = xs.profile_action.buildable_product_runnable.buildable_reference.target_name
 
-        project = Xcodeproj::Project.open(@xcodeproj)
-        project.native_targets.reject{|target| target.name != target_name}.first
+        target_project.native_targets.reject{|target| target.name != target_name}.first
+      end
+
+      def target_project
+        Xcodeproj::Project.open(@xcodeproj)
       end
 
       def find_xcschemes

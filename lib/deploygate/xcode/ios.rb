@@ -18,12 +18,12 @@ module DeployGate
           raise NotSupportExportMethodError, 'Not support export' unless DeployGate::Xcode::Export::SUPPORT_EXPORT_METHOD.include?(export_method)
 
           values = {
-              :export_method => export_method,
-              :workspace => ios_analyze.build_workspace,
-              :configuration => DeployGate::Xcode::Analyze::BUILD_CONFIGRATION,
-              :scheme => target_scheme,
-              :codesigning_identity => codesigning_identity
+              export_method: export_method,
+              workspace: ios_analyze.build_workspace,
+              configuration: DeployGate::Xcode::Analyze::BUILD_CONFIGRATION,
+              scheme: target_scheme
           }
+          values[:codesigning_identity] = codesigning_identity if codesigning_identity
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
 
           begin
