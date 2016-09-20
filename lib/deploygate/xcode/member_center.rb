@@ -4,14 +4,14 @@ module DeployGate
   module Xcode
     class MemberCenter
       include Singleton
-      attr_reader :email, :method, :team
+      attr_reader :email, :method, :team, :launcher
 
       def initialize
         @email = input_email
-        Spaceship.login @email
-        @team = Spaceship.select_team
+        @launcher = Spaceship::Launcher.new @email
+        @team = @launcher.select_team
 
-        if Spaceship.client.in_house?
+        if @launcher.client.in_house?
           @method = Export::ENTERPRISE
         else
           @method = Export::AD_HOC
