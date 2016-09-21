@@ -30,12 +30,18 @@ module DeployGate
 
             analyze = DeployGate::Xcode::Analyze.new(workspaces)
             target_scheme = analyze.scheme
+
             bundle_identifier = analyze.target_bundle_identifier
             xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
-
             target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(bundle_identifier, xcode_provisioning_profile_uuid)
+
             method = DeployGate::Xcode::Export.method(target_provisioning_profile)
-            codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
+
+            codesigning_identity= nil
+            unless analyze.automatic_provisioning?
+              # Only run Provisioning Style is Manual
+              codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
+            end
 
             ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, method)
             Push.upload([ipa_path], options)
