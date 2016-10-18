@@ -38,8 +38,9 @@ module DeployGate
             method = DeployGate::Xcode::Export.method(target_provisioning_profile)
 
             codesigning_identity= nil
-            unless analyze.automatic_provisioning?
-              # Only run Provisioning Style is Manual
+            provisioning_style = analyze.provisioning_style
+            if provisioning_style == nil || provisioning_style == DeployGate::Xcode::Analyze::PROVISIONING_STYLE_MANUAL
+              # Only run Provisioning Style is Manual or nil
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
             end
 
