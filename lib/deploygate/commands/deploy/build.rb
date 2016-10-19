@@ -38,8 +38,10 @@ module DeployGate
             method = DeployGate::Xcode::Export.method(target_provisioning_profile)
 
             codesigning_identity= nil
-            unless analyze.automatic_provisioning?
-              # Only run Provisioning Style is Manual
+            provisioning_style = analyze.provisioning_style
+            if (!over_xcode_8? && provisioning_style == nil) ||
+                provisioning_style == DeployGate::Xcode::Analyze::PROVISIONING_STYLE_MANUAL
+              # Only run Provisioning Style is Manual or nil
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
             end
 
@@ -50,6 +52,22 @@ module DeployGate
           def print_no_target
             puts ''
             puts HighLine.color(I18n.t('commands.deploy.build.print_no_target'), HighLine::YELLOW)
+            puts ''
+          end
+
+          def over_xcode_8?
+            version = Gym::Xcode.xcode_version
+            if version == nil
+              print_no_install_xcode
+              exit 1
+            end
+
+            version.split('.')[0].to_i >= 8
+          end
+
+          def print_no_install_xcode
+            puts ''
+            puts HighLine.color(I18n.t('commands.deploy.build.print_no_install_xcode'), HighLine::YELLOW)
             puts ''
           end
         end

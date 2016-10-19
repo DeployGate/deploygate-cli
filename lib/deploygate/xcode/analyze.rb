@@ -6,6 +6,9 @@ module DeployGate
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       BUILD_CONFIGRATION = 'Release'
 
+      PROVISIONING_STYLE_AUTOMATIC = 'Automatic'
+      PROVISIONING_STYLE_MANUAL    = 'Manual'
+
       class BundleIdentifierDifferentError < DeployGate::NotIssueError
       end
 
@@ -81,8 +84,21 @@ module DeployGate
         UUID.validate(uuid) ? uuid : nil
       end
 
-      def automatic_provisioning?
-        get_provisioning_style == 'Automatic'
+      def provisioning_style
+        main_target = target_project_setting
+        main_target_uuid = main_target && main_target.uuid
+
+        style = PROVISIONING_STYLE_MANUAL
+        if main_target_uuid
+          # Manual or Automatic or nil (Xcode7 below)
+          begin
+            style = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]['ProvisioningStyle']
+          rescue
+            # Not catch error
+          end
+        end
+
+        style
       end
 
       private
@@ -93,23 +109,6 @@ module DeployGate
 
       def target_product_name
         target_project_setting.product_name
-      end
-
-      def get_provisioning_style
-        main_target = target_project_setting
-        main_target_uuid = main_target && main_target.uuid
-
-        style = 'Manual'
-        if main_target_uuid
-          # Manual or Automatic
-          begin
-            style = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]['ProvisioningStyle']
-          rescue
-            # Not catch error
-          end
-        end
-
-        style
       end
 
       def target_project_setting
