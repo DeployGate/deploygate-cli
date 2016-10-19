@@ -54,6 +54,7 @@ en:
         print_no_target: |
           No deploy target found.
           Please run dg on the root directory of Android/iOS project or specify .apk/.ipa file to deploy.
+        print_no_install_xcode: 'Unable to locate Xcode. Please make sure to have Xcode installed on your machine'
       push:
         upload:
           loading: 'Uploading to %{owner}..'
