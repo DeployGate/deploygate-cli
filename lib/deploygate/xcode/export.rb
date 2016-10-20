@@ -10,11 +10,11 @@ module DeployGate
 
         # @param [String] bundle_identifier
         # @param [String] uuid
+        # @param [String] provisioning_team
         # @return [String]
-        def provisioning_profile(bundle_identifier, uuid = nil)
-          local_teams = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid)
+        def provisioning_profile(bundle_identifier, uuid = nil, provisioning_team = nil)
+          local_teams = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid, provisioning_team)
 
-          target_provisioning_profile = nil
           case local_teams.teams_count
             when 0
               target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
@@ -30,8 +30,9 @@ module DeployGate
 
         # @param [String] bundle_identifier
         # @param [String] uuid
+        # @param [String] provisioning_team
         # @return [LocalTeams]
-        def find_local_data(bundle_identifier, uuid = nil)
+        def find_local_data(bundle_identifier, uuid = nil, provisioning_team = nil)
           local_teams = LocalTeams.new
 
           profile_paths = load_profile_paths
@@ -44,6 +45,8 @@ module DeployGate
             entities = profile['Entitlements']
             unless entities['get-task-allow']
               team_id = entities['com.apple.developer.team-identifier']
+              next if provisioning_team != nil && team_id != provisioning_team
+
               application_id = entities['application-identifier']
               application_id.slice!(/^#{team_id}\./)
               application_id = '.' + application_id if application_id == '*'
