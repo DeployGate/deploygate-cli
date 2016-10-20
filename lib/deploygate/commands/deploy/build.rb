@@ -33,7 +33,9 @@ module DeployGate
 
             bundle_identifier = analyze.target_bundle_identifier
             xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
-            target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(bundle_identifier, xcode_provisioning_profile_uuid)
+
+            provisioning_team = analyze.provisioning_team
+            target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(bundle_identifier, xcode_provisioning_profile_uuid, provisioning_team)
 
             method = DeployGate::Xcode::Export.method(target_provisioning_profile)
 

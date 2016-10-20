@@ -85,14 +85,13 @@ module DeployGate
       end
 
       def provisioning_style
-        main_target = target_project_setting
-        main_target_uuid = main_target && main_target.uuid
+        target = target_provisioning_info
 
         style = PROVISIONING_STYLE_MANUAL
-        if main_target_uuid
+        if target
           # Manual or Automatic or nil (Xcode7 below)
           begin
-            style = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]['ProvisioningStyle']
+            style = target['ProvisioningStyle']
           rescue
             # Not catch error
           end
@@ -101,7 +100,38 @@ module DeployGate
         style
       end
 
+      def provisioning_team
+        target = target_provisioning_info
+
+        team = nil
+        if target
+          begin
+            team = target['DevelopmentTeam']
+          rescue
+            # Not catch error
+          end
+        end
+
+        team
+      end
+
       private
+
+      def target_provisioning_info
+        main_target = target_project_setting
+        main_target_uuid = main_target && main_target.uuid
+
+        target = nil
+        if main_target_uuid
+          begin
+            target = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]
+          rescue
+            # Not catch error
+          end
+        end
+
+        target
+      end
 
       def target_build_configration
         target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
