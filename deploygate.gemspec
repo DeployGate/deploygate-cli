@@ -38,9 +38,9 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'workers'
 
   # ios build
-  spec.add_dependency 'gym', '~> 1.9.0'
-  spec.add_dependency 'spaceship', '~> 0.32.4'
-  spec.add_dependency 'sigh', '~> 1.10.4'
+  spec.add_dependency 'gym', '~> 1.13.0'
+  spec.add_dependency 'spaceship', '~> 0.39.0'
+  spec.add_dependency 'sigh', '~> 1.12.1'
 
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
