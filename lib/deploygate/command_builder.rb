@@ -172,6 +172,7 @@ EOF
     def error_handling(command, error)
       STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
 
+      return if ENV['CI'] # When run ci server
       return if error.kind_of?(DeployGate::NotIssueError)
       puts ''
       if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
