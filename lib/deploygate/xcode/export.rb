@@ -193,7 +193,7 @@ module DeployGate
         # @return [Hash]
         def profile_to_plist(profile_path)
           File.open(profile_path) do |profile|
-            asn1 = OpenSSL::ASN1.decode(profile.read)
+            asn1 = OpenSSL::ASN1.decode_all(profile.read).first
             plist_str = asn1.value[1].value[0].value[2].value[1].value[0].value
             plist = Plist.parse_xml plist_str.force_encoding('UTF-8')
             plist['Path'] = profile_path
