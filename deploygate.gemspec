@@ -4,14 +4,14 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'deploygate/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "deploygate"
+  spec.name          = 'deploygate'
   spec.version       = DeployGate::VERSION
-  spec.authors       = ["deploygate"]
-  spec.email         = ["contact@deploygate.com"]
+  spec.authors       = ['deploygate']
+  spec.email         = ['contact@deploygate.com']
   spec.description   = %q{You can control to DeployGate in your terminal}
   spec.summary       = %q{A command-line interface for DeployGate}
-  spec.homepage      = "https://deploygate.com"
-  spec.license       = "Apache-2.0"
+  spec.homepage      = 'https://deploygate.com'
+  spec.license       = 'Apache-2.0'
   spec.post_install_message = <<"POST_INSTALL_MESSAGE"
 
 dg installed! To get started fast:
@@ -38,17 +38,17 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'workers'
 
   # ios build
-  spec.add_dependency 'fastlane', '~> 2.1.1'
+  spec.add_dependency 'fastlane', '~> 2.13.0'
 
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec", "~> 3.5.0"
-  spec.add_development_dependency "webmock", "~> 2.1.0"
-  spec.add_development_dependency "i18n-tasks"
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec', '~> 3.5.0'
+  spec.add_development_dependency 'webmock', '~> 2.1.0'
+  spec.add_development_dependency 'i18n-tasks'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
 end
