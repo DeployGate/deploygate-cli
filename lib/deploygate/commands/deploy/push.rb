@@ -3,6 +3,7 @@ module DeployGate
     module Deploy
       class Push
         BASE_URL = 'https://deploygate.com'
+        COMMAND  = 'push'
 
         class << self
 
@@ -21,12 +22,13 @@ module DeployGate
             distribution_key = options.distribution_key
             open             = options.open
             disable_notify   = options.disable_notify
+            command          = options.command || COMMAND
             file_path        = args.first
 
             data = nil
             print I18n.t('commands.deploy.push.upload.loading', owner: owner)
             begin
-              data = DeployGate::Deploy.push(file_path, owner, message, distribution_key, disable_notify) {
+              data = DeployGate::Deploy.push(command, file_path, owner, message, distribution_key, disable_notify) {
                 print '.'
                 sleep 0.2
               }
