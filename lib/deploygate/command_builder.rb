@@ -63,7 +63,7 @@ module DeployGate
         c.option '--open', I18n.t('command_builder.deploy.open')
         c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
         c.action do |args, options|
-          options.default :message => '', :user => nil, :open => false, 'disable_notify' => false
+          options.default :message => '', :user => nil, :open => false, 'disable_notify' => false, :command => nil
           begin
             Commands::Deploy.run(args, options)
           rescue => e
@@ -83,7 +83,7 @@ module DeployGate
         c.option '--distribution-key STRING', String, I18n.t('command_builder.add_devices.distribution_key')
         c.option '--server', I18n.t('command_builder.add_devices.server.description')
         c.action do |args, options|
-          options.default :user => nil, :server => false
+          options.default :user => nil, :server => false, :command => 'add_devices'
           begin
             Commands::AddDevices.run(args, options)
           rescue => e

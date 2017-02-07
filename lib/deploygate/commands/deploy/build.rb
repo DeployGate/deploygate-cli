@@ -2,6 +2,8 @@ module DeployGate
   module Commands
     module Deploy
       class Build
+        COMMAND = 'build'
+
         class << self
 
           # @param [Array] args
@@ -10,6 +12,9 @@ module DeployGate
           def run(args, options)
             # android/ios build
             work_dir = args.empty? ? Dir.pwd : args.first
+
+            # override options command
+            options.command = COMMAND
 
             if DeployGate::Project.ios?(work_dir)
               root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
