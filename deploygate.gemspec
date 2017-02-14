@@ -38,7 +38,7 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'workers'
 
   # ios build
-  spec.add_dependency 'fastlane', '~> 2.13.0'
+  spec.add_dependency 'fastlane', '~> 2.15.1'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
