@@ -1,7 +1,7 @@
 module DeployGate
   module Android
     class GradlePluginInstaller
-      MAVEN_METADATA_URL = 'https://repo1.maven.org/maven2/com/deploygate/gradle/maven-metadata.xml'
+      MAVEN_METADATA_URL = 'https://jcenter.bintray.com/com/deploygate/gradle/maven-metadata.xml'
 
       def initialize
         @cli = HighLine.new
