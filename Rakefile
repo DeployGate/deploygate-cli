@@ -49,6 +49,8 @@ namespace :package do
     end
     sh 'rm -rf packaging/tmp'
     sh 'mkdir packaging/tmp'
+    sh 'mkdir -p packaging/tmp/lib/deploygate'
+    sh 'cp -rf lib/deploygate/version.rb packaging/tmp/lib/deploygate/'
     sh 'cp Gemfile Gemfile.lock deploygate.gemspec packaging/tmp/'
     Bundler.with_clean_env do
       sh 'cd packaging/tmp && env BUNDLE_IGNORE_CONFIG=1 bundle install --path ../vendor --without development'
@@ -111,9 +113,18 @@ def create_package(target)
   sh "cp packaging/wrapper.sh #{package_dir}/dg"
   sh "cp -pR packaging/vendor #{package_dir}/lib/"
   sh "cp Gemfile Gemfile.lock deploygate.gemspec #{package_dir}/lib/vendor/"
+  sh "mkdir -p #{package_dir}/lib/vendor/lib/deploygate"
+  sh "cp -rf lib/deploygate/version.rb #{package_dir}/lib/vendor/lib/deploygate/"
   sh "mkdir #{package_dir}/lib/vendor/.bundle"
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
+
+  # update bundler
+  sh "mv #{package_dir}/lib/ruby/bin/bundler #{package_dir}/lib/ruby/bin/_bundler"
+  sh "mv #{package_dir}/lib/ruby/bin/bundle #{package_dir}/lib/ruby/bin/_bundle"
   sh "#{package_dir}/lib/ruby/bin/gem install bundler --no-ri --no-rdoc"
+  sh "mv #{package_dir}/lib/ruby/bin/_bundler #{package_dir}/lib/ruby/bin/bundler"
+  sh "mv #{package_dir}/lib/ruby/bin/_bundle #{package_dir}/lib/ruby/bin/bundle"
+
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-json-#{JSON_VERSION}.tar.gz " +
          "-C #{package_dir}/lib/vendor/ruby"
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-unf_ext-#{UNF_EXT_VERSION}.tar.gz " +

@@ -1,11 +1,11 @@
 # coding: utf-8
-# lib = File.expand_path('../lib', __FILE__)
-# $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-# require 'deploygate/version'
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'deploygate/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'deploygate'
-  spec.version       = '0.5.5'
+  spec.version       = DeployGate::VERSION
   spec.authors       = ['deploygate']
   spec.email         = ['contact@deploygate.com']
   spec.description   = %q{You can control to DeployGate in your terminal}
@@ -46,7 +46,7 @@ POST_INSTALL_MESSAGE
   spec.add_development_dependency 'webmock', '~> 2.3'
   spec.add_development_dependency 'i18n-tasks', '~> 0.9'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['config/**/*.yml'] + Dir['spec/**/*']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
