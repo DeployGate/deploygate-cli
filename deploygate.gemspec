@@ -20,31 +20,31 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_dependency 'json', '~> 1.8.2'
-  spec.add_dependency 'httpclient', '~> 2.8.2.4'
-  spec.add_dependency 'commander', '~> 4.4.0'
-  spec.add_dependency 'plist', '~> 3.1.0'
-  spec.add_dependency 'xcodeproj', '~> 0.28.2'
-  spec.add_dependency 'github_issue_request', '~> 0.1.0'
-  spec.add_dependency 'highline', '~> 1.7.8'
-  spec.add_dependency 'uuid', '~> 2.3.8'
-  spec.add_dependency 'gem_update_checker', '~> 0.2.0'
-  spec.add_dependency 'activesupport', '~> 4.2.7.1'
-  spec.add_dependency 'i18n'
-  spec.add_dependency 'launchy'
-  spec.add_dependency 'locale'
-  spec.add_dependency 'net-ping'
-  spec.add_dependency 'socket.io-client-simple'
-  spec.add_dependency 'workers'
+  spec.add_runtime_dependency 'json', '~> 1.8'
+  spec.add_runtime_dependency 'httpclient', '~> 2.8'
+  spec.add_runtime_dependency 'commander', '~> 4.4'
+  spec.add_runtime_dependency 'plist', '~> 3.1'
+  spec.add_runtime_dependency 'xcodeproj', '~> 0.28'
+  spec.add_runtime_dependency 'github_issue_request', '~> 0.1'
+  spec.add_runtime_dependency 'highline', '~> 1.7'
+  spec.add_runtime_dependency 'uuid', '~> 2.3'
+  spec.add_runtime_dependency 'gem_update_checker', '~> 0.2'
+  spec.add_runtime_dependency 'activesupport', '~> 4.2'
+  spec.add_runtime_dependency 'i18n', '~> 0.7'
+  spec.add_runtime_dependency 'launchy', '~> 2.4'
+  spec.add_runtime_dependency 'locale', '~> 2.1'
+  spec.add_runtime_dependency 'net-ping', '~> 2.0'
+  spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
+  spec.add_runtime_dependency 'workers', '~> 0.6'
 
   # ios build
-  spec.add_dependency 'fastlane', '~> 2.26.1'
+  spec.add_runtime_dependency 'fastlane', '~> 2.26'
 
-  spec.add_development_dependency 'bundler'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.5.0'
-  spec.add_development_dependency 'webmock', '~> 2.3.2'
-  spec.add_development_dependency 'i18n-tasks'
+  spec.add_development_dependency 'bundler', '~> 1.13'
+  spec.add_development_dependency 'rake', '~> 12.0'
+  spec.add_development_dependency 'rspec', '~> 3.5'
+  spec.add_development_dependency 'webmock', '~> 2.3'
+  spec.add_development_dependency 'i18n-tasks', '~> 0.9'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
