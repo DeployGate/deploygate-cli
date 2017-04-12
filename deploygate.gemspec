@@ -38,12 +38,12 @@ POST_INSTALL_MESSAGE
   spec.add_dependency 'workers'
 
   # ios build
-  spec.add_dependency 'fastlane', '~> 2.15.1'
+  spec.add_dependency 'fastlane', '~> 2.26.1'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 3.5.0'
-  spec.add_development_dependency 'webmock', '~> 2.1.0'
+  spec.add_development_dependency 'webmock', '~> 2.3.2'
   spec.add_development_dependency 'i18n-tasks'
 
   spec.files         = `git ls-files`.split($/)
