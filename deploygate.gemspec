@@ -1,11 +1,11 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'deploygate/version'
+# lib = File.expand_path('../lib', __FILE__)
+# $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+# require 'deploygate/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'deploygate'
-  spec.version       = DeployGate::VERSION
+  spec.version       = '0.5.5'
   spec.authors       = ['deploygate']
   spec.email         = ['contact@deploygate.com']
   spec.description   = %q{You can control to DeployGate in your terminal}
@@ -20,7 +20,7 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_runtime_dependency 'json', '~> 1.8'
+  spec.add_runtime_dependency 'json', '1.8.2'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
   spec.add_runtime_dependency 'plist', '~> 3.1'
@@ -39,8 +39,8 @@ POST_INSTALL_MESSAGE
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.26'
+  spec.add_runtime_dependency 'unf_ext', '0.0.6'
 
-  spec.add_development_dependency 'bundler', '~> 1.13'
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'webmock', '~> 2.3'
