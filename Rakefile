@@ -14,13 +14,9 @@ task package: %w(package:linux:x86 package:linux:x86_64 package:osx)
 
 namespace :package do
   namespace :linux do
-    desc 'Package your app for Linux x86'
-    task x86: [:bundle_install,
-               "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86.tar.gz",
-               "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-json-#{JSON_VERSION}.tar.gz",
-               "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-unf_ext-#{UNF_EXT_VERSION}.tar.gz"
-    ] do
-      create_package('linux-x86')
+    desc 'Package your app for Linux x86_64 on Docker'
+    task x86_64_docker: [] do
+      create_package_on_docker('linux:x86_64')
     end
 
     desc 'Package your app for Linux x86_64'
@@ -64,10 +60,6 @@ namespace :package do
   end
 end
 
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86.tar.gz" do
-  download_runtime('linux-x86')
-end
-
 file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64.tar.gz" do
   download_runtime('linux-x86_64')
 end
@@ -76,9 +68,6 @@ file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx.tar.gz" do
   download_runtime('osx')
 end
 
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-json-#{JSON_VERSION}.tar.gz" do
-  download_native_extension('linux-x86', "json-#{JSON_VERSION}")
-end
 
 file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64-json-#{JSON_VERSION}.tar.gz" do
   download_native_extension('linux-x86_64', "json-#{JSON_VERSION}")
@@ -88,16 +77,17 @@ file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx-json-#{JSON_VERSION
   download_native_extension('osx', "json-#{JSON_VERSION}")
 end
 
-file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86-unf_ext-#{UNF_EXT_VERSION}.tar.gz" do
-  download_native_extension('linux-x86', "unf_ext-#{UNF_EXT_VERSION}")
-end
-
 file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-linux-x86_64-unf_ext-#{UNF_EXT_VERSION}.tar.gz" do
   download_native_extension('linux-x86_64', "unf_ext-#{UNF_EXT_VERSION}")
 end
 
 file "packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-osx-unf_ext-#{UNF_EXT_VERSION}.tar.gz" do
   download_native_extension('osx', "unf_ext-#{UNF_EXT_VERSION}")
+end
+
+def create_package_on_docker(target)
+  sh 'docker pull henteko/ruby:2.2.0'
+  sh "docker run -v `pwd`:/deploygate-cli --rm -ti henteko/ruby:2.2.0 /bin/bash -ci 'cd /deploygate-cli && bundle install && rake package:#{target}'"
 end
 
 def create_package(target)
@@ -119,11 +109,17 @@ def create_package(target)
   sh "cp packaging/bundler-config #{package_dir}/lib/vendor/.bundle/config"
 
   # update bundler
-  sh "mv #{package_dir}/lib/ruby/bin/bundler #{package_dir}/lib/ruby/bin/_bundler"
-  sh "mv #{package_dir}/lib/ruby/bin/bundle #{package_dir}/lib/ruby/bin/_bundle"
-  sh "#{package_dir}/lib/ruby/bin/gem install bundler --no-ri --no-rdoc"
-  sh "mv #{package_dir}/lib/ruby/bin/_bundler #{package_dir}/lib/ruby/bin/bundler"
-  sh "mv #{package_dir}/lib/ruby/bin/_bundle #{package_dir}/lib/ruby/bin/bundle"
+  if target == 'osx'
+    sh "mv #{package_dir}/lib/ruby/bin/bundler #{package_dir}/lib/ruby/bin/_bundler"
+    sh "mv #{package_dir}/lib/ruby/bin/bundle #{package_dir}/lib/ruby/bin/_bundle"
+    sh "#{package_dir}/lib/ruby/bin/gem install bundler --no-ri --no-rdoc"
+    sh "mv #{package_dir}/lib/ruby/bin/_bundler #{package_dir}/lib/ruby/bin/bundler"
+    sh "mv #{package_dir}/lib/ruby/bin/_bundle #{package_dir}/lib/ruby/bin/bundle"
+  else
+    sh "#{package_dir}/lib/ruby/bin/gem install bundler --no-ri --no-rdoc"
+    sh "rm #{package_dir}/lib/ruby/bin/bundler"
+    sh "rm #{package_dir}/lib/ruby/bin/bundle"
+  end
 
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-json-#{JSON_VERSION}.tar.gz " +
          "-C #{package_dir}/lib/vendor/ruby"
