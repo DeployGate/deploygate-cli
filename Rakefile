@@ -126,7 +126,7 @@ def create_package(target)
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}-unf_ext-#{UNF_EXT_VERSION}.tar.gz " +
          "-C #{package_dir}/lib/vendor/ruby"
   unless ENV['DIR_ONLY']
-    sh "tar -czf #{package_dir}.tar.gz #{package_dir}"
+    sh "zip -r #{package_dir}.zip #{package_dir}"
     sh "rm -rf #{package_dir}"
   end
 end
