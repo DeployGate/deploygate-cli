@@ -22,5 +22,9 @@ SELFDIR="`cd \"$SELFDIR\" && pwd`"
 export BUNDLE_GEMFILE="$SELFDIR/lib/vendor/Gemfile"
 unset BUNDLE_IGNORE_CONFIG
 
+read INSTALLED_VIA_HOMEBREW < ./bundle-env
+export DEPLOYGATE_INSTALLED_VIA_HOMEBREW=$INSTALLED_VIA_HOMEBREW
+echo $DEPLOYGATE_INSTALLED_VIA_HOMEBREW
+
 # Run the actual app using the bundled Ruby interpreter, with Bundler activated.
 exec "$SELFDIR/lib/ruby/bin/ruby" -rbundler/setup "$SELFDIR/lib/app/bin/dg" "$@"
