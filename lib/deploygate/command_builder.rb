@@ -14,6 +14,8 @@ module DeployGate
     ADD_DEVICES = 'add-devices'
     CONFIG      = 'config'
 
+    ENV_INSTALLED_VIA_HOMEBREW = 'DEPLOYGATE_INSTALLED_VIA_HOMEBREW'
+
     def setup
       # set Ctrl-C trap
       Signal.trap(:INT){
@@ -186,6 +188,19 @@ EOF
     # @return [void]
     def check_update
       current_version = DeployGate::VERSION
+      installed_via_homebrew = ENV[ENV_INSTALLED_VIA_HOMEBREW]
+
+      case installed_via_homebrew
+        when 'true'
+          # Install Homebrew
+          puts '[DEBUG] Install by Homebrew'
+        when 'false'
+          # Install Manual
+          puts '[DEBUG] Install by Manual'
+        else
+          # Install Rubygems
+          puts '[DEBUG] Install by Rubygems'
+      end
 
       # check cache
       if DeployGate::Config::CacheVersion.exist?

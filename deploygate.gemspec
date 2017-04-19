@@ -20,7 +20,7 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_runtime_dependency 'json', '~> 1.8'
+  spec.add_runtime_dependency 'json', '1.8.2'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
   spec.add_runtime_dependency 'plist', '~> 3.1'
@@ -39,14 +39,14 @@ POST_INSTALL_MESSAGE
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.26'
+  spec.add_runtime_dependency 'unf_ext', '0.0.6'
 
-  spec.add_development_dependency 'bundler', '~> 1.13'
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'webmock', '~> 2.3'
   spec.add_development_dependency 'i18n-tasks', '~> 0.9'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['config/**/*.yml'] + Dir['spec/**/*']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
