@@ -18,7 +18,7 @@ while getopts ":pub" opt; do
   esac
 done
 
-BUNDLE_ENV_PATH="$CURRENT_DIR/bundle-env"
+BUNDLE_ENV_PATH="$CURRENT_DIR/lib/bundle-env"
 sed -i -e "s/IS_INSTALLED_VIA_HOMEBREW/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
 
 if ! $INSTALLED_VIA_HOMEBREW; then
