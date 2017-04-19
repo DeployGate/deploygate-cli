@@ -102,7 +102,7 @@ def create_package(target)
   sh "tar -xzf packaging/traveling-ruby-#{TRAVELING_RUBY_VERSION}-#{target}.tar.gz -C #{package_dir}/lib/ruby"
   sh "cp packaging/wrapper.sh #{package_dir}/dg"
   sh "cp packaging/install.sh #{package_dir}/"
-  sh "cp packaging/bundle-env #{package_dir}/"
+  sh "cp packaging/bundle-env #{package_dir}/lib/"
   sh "cp -pR packaging/vendor #{package_dir}/lib/"
   sh "cp Gemfile Gemfile.lock deploygate.gemspec #{package_dir}/lib/vendor/"
   sh "mkdir -p #{package_dir}/lib/vendor/lib/deploygate"

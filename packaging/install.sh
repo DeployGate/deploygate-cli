@@ -26,6 +26,5 @@ if ! $INSTALLED_VIA_HOMEBREW; then
   mkdir -p $DEPLOYGATE_DIR
   cp -rf "$CURRENT_DIR/lib" $DEPLOYGATE_DIR
   cp "$CURRENT_DIR/dg" $DEPLOYGATE_DIR
-  cp "$CURRENT_DIR/bundle-env" $DEPLOYGATE_DIR
   echo 'Finish install'
 fi
