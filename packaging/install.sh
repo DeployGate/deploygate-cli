@@ -19,7 +19,7 @@ while getopts ":pub" opt; do
 done
 
 BUNDLE_ENV_PATH="$CURRENT_DIR/lib/bundle-env"
-sed -i -e "s/IS_INSTALLED_VIA_HOMEBREW/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
+sed -i -e "s/{{IS_INSTALLED_VIA_HOMEBREW}}/$INSTALLED_VIA_HOMEBREW/g" $BUNDLE_ENV_PATH
 
 if ! $INSTALLED_VIA_HOMEBREW; then
   echo "Installing deploygate to $DEPLOYGATE_DIR"
