@@ -28,3 +28,4 @@ spec/test_files/.dg
 *.ipa
 
 .DS_Store
+vendor
