@@ -49,7 +49,7 @@ POST_INSTALL_MESSAGE
   spec.add_development_dependency 'webmock', '~> 2.3'
   spec.add_development_dependency 'i18n-tasks', '~> 0.9'
 
-  spec.files         = `git ls-files`.split($/)
+  spec.files         = Dir['lib/**/*.rb'] + Dir['bin/*'] + Dir['config/**/*.yml'] + Dir['spec/**/*']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
