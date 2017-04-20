@@ -20,7 +20,6 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_runtime_dependency 'json', '~> 1.8'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
   spec.add_runtime_dependency 'plist', '~> 3.1'
@@ -36,6 +35,10 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'net-ping', '~> 2.0'
   spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
   spec.add_runtime_dependency 'workers', '~> 0.6'
+
+  # Native gems
+  spec.add_runtime_dependency 'json', '1.8.2'
+  spec.add_runtime_dependency 'unf_ext', '0.0.6'
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.26'
