@@ -4,7 +4,7 @@ module DeployGate
       attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme
 
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
-      BUILD_CONFIGURATION = 'Release'
+      DEFAULT_BUILD_CONFIGURATION = 'Release'
 
       PROVISIONING_STYLE_AUTOMATIC = 'Automatic'
       PROVISIONING_STYLE_MANUAL    = 'Manual'
@@ -13,9 +13,11 @@ module DeployGate
       end
 
       # @param [Array] workspaces
+      # @param [String] build_configuration
       # @return [DeployGate::Xcode::Analyze]
-      def initialize(workspaces)
+      def initialize(workspaces, build_configuration = nil)
         @workspaces = workspaces
+        @build_configuration = build_configuration || DEFAULT_BUILD_CONFIGURATION
         @scheme_workspace = find_scheme_workspace(workspaces)
         @build_workspace = find_build_workspace(workspaces)
         @xcodeproj = File.dirname(@scheme_workspace)
@@ -134,7 +136,7 @@ module DeployGate
       end
 
       def target_build_configration
-        target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGURATION}.first
+        target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != @build_configuration}.first
       end
 
       def target_product_name

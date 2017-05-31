@@ -21,7 +21,7 @@ module DeployGate
           distribution_key = options.distribution_key
           server           = options.server
 
-          bundle_id = bundle_id(work_dir)
+          bundle_id = bundle_id(work_dir, options.build_configuration)
 
           if server
             run_server(session, owner, bundle_id, distribution_key, args, options)
@@ -91,11 +91,12 @@ module DeployGate
         end
 
         # @param [String] work_dir
+        # @param [String] build_configuration
         # @return [String]
-        def bundle_id(work_dir)
+        def bundle_id(work_dir, build_configuration)
           root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
           workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
-          analyze = DeployGate::Xcode::Analyze.new(workspaces)
+          analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration)
           analyze.target_bundle_identifier
         end
 

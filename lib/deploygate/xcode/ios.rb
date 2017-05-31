@@ -12,15 +12,16 @@ module DeployGate
         # @param [Analyze] ios_analyze
         # @param [String] target_scheme
         # @param [String] codesigning_identity
+        # @param [String] build_configuration
         # @param [String] export_method
         # @return [String]
-        def build(ios_analyze, target_scheme, codesigning_identity, export_method = DeployGate::Xcode::Export::AD_HOC)
+        def build(ios_analyze, target_scheme, codesigning_identity, build_configuration = nil, export_method = DeployGate::Xcode::Export::AD_HOC)
           raise NotSupportExportMethodError, 'Not support export' unless DeployGate::Xcode::Export::SUPPORT_EXPORT_METHOD.include?(export_method)
 
           values = {
               export_method: export_method,
               workspace: ios_analyze.build_workspace,
-              configuration: DeployGate::Xcode::Analyze::BUILD_CONFIGURATION,
+              configuration: build_configuration || DeployGate::Xcode::Analyze::DEFAULT_BUILD_CONFIGURATION,
               scheme: target_scheme
           }
           values[:codesigning_identity] = codesigning_identity if codesigning_identity

@@ -60,6 +60,7 @@ module DeployGate
         c.option '--message STRING', String, I18n.t('command_builder.deploy.message')
         c.option '--user STRING', String, I18n.t('command_builder.deploy.user')
         c.option '--distribution-key STRING', String, I18n.t('command_builder.deploy.distribution_key')
+        c.option '--ios-build-configuration STRING', String, I18n.t('command_builder.deploy.ios_build_configuration')
         c.option '--open', I18n.t('command_builder.deploy.open')
         c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
         c.action do |args, options|
@@ -81,6 +82,7 @@ module DeployGate
         c.option '--udid STRING', String, I18n.t('command_builder.add_devices.udid')
         c.option '--device-name STRING', String, I18n.t('command_builder.add_devices.device_name')
         c.option '--distribution-key STRING', String, I18n.t('command_builder.add_devices.distribution_key')
+        c.option '--build-configuration STRING', String, I18n.t('command_builder.deploy.ios_build_configuration')
         c.option '--server', I18n.t('command_builder.add_devices.server.description')
         c.action do |args, options|
           options.default :user => nil, :server => false, :command => 'add_devices'
