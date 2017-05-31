@@ -20,7 +20,7 @@ module DeployGate
           values = {
               export_method: export_method,
               workspace: ios_analyze.build_workspace,
-              configuration: DeployGate::Xcode::Analyze::BUILD_CONFIGRATION,
+              configuration: DeployGate::Xcode::Analyze::BUILD_CONFIGURATION,
               scheme: target_scheme
           }
           values[:codesigning_identity] = codesigning_identity if codesigning_identity

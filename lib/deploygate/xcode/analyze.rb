@@ -4,7 +4,7 @@ module DeployGate
       attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme
 
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
-      BUILD_CONFIGRATION = 'Release'
+      BUILD_CONFIGURATION = 'Release'
 
       PROVISIONING_STYLE_AUTOMATIC = 'Automatic'
       PROVISIONING_STYLE_MANUAL    = 'Manual'
@@ -134,7 +134,7 @@ module DeployGate
       end
 
       def target_build_configration
-        target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGRATION}.first
+        target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != BUILD_CONFIGURATION}.first
       end
 
       def target_product_name
