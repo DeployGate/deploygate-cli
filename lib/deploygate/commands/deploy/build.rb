@@ -32,7 +32,7 @@ module DeployGate
           # @return [void]
           def ios(workspaces, options)
             DeployGate::Xcode::Export.check_local_certificates
-            build_configuration = options.ios_build_configuration || options.build_configuration
+            build_configuration = options.configuration
 
             analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration)
             target_scheme = analyze.scheme

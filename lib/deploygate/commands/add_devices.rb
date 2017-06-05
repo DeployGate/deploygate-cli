@@ -21,7 +21,7 @@ module DeployGate
           distribution_key = options.distribution_key
           server           = options.server
 
-          bundle_id = bundle_id(work_dir, options.build_configuration)
+          bundle_id = bundle_id(work_dir, options.configuration)
 
           if server
             run_server(session, owner, bundle_id, distribution_key, args, options)
