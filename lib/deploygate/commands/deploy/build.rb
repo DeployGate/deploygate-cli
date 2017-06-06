@@ -32,8 +32,9 @@ module DeployGate
           # @return [void]
           def ios(workspaces, options)
             DeployGate::Xcode::Export.check_local_certificates
+            build_configuration = options.configuration
 
-            analyze = DeployGate::Xcode::Analyze.new(workspaces)
+            analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration)
             target_scheme = analyze.scheme
 
             bundle_identifier = analyze.target_bundle_identifier
@@ -52,7 +53,7 @@ module DeployGate
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
             end
 
-            ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, method)
+            ipa_path = DeployGate::Xcode::Ios.build(analyze, target_scheme, codesigning_identity, build_configuration, method)
             Push.upload([ipa_path], options)
           end
 

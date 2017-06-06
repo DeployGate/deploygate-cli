@@ -12,6 +12,7 @@ en:
       message: 'Build description message'
       user: 'User or organization name of app owner'
       distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
+      configuration: 'Set Xcode build configuration (iOS app only)'
       open: 'Open a browser after the build uploaded (OS X only)'
       disable_notify: 'Disable email notification (iOS app only)'
       error: 'Commands::Deploy Error: %{e}'
