@@ -61,6 +61,7 @@ module DeployGate
         c.option '--user STRING', String, I18n.t('command_builder.deploy.user')
         c.option '--distribution-key STRING', String, I18n.t('command_builder.deploy.distribution_key')
         c.option '--configuration STRING', String, I18n.t('command_builder.deploy.configuration')
+        c.option '--scheme STRING', String, I18n.t('command_builder.deploy.scheme')
         c.option '--open', I18n.t('command_builder.deploy.open')
         c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
         c.action do |args, options|

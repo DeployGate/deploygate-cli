@@ -33,8 +33,9 @@ module DeployGate
           def ios(workspaces, options)
             DeployGate::Xcode::Export.check_local_certificates
             build_configuration = options.configuration
+            target_scheme = options.scheme
 
-            analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration)
+            analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
             target_scheme = analyze.scheme
 
             bundle_identifier = analyze.target_bundle_identifier
