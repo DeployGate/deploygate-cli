@@ -14,8 +14,9 @@ module DeployGate
 
       # @param [Array] workspaces
       # @param [String] build_configuration
+      # @param [String] target_scheme
       # @return [DeployGate::Xcode::Analyze]
-      def initialize(workspaces, build_configuration = nil)
+      def initialize(workspaces, build_configuration = nil, target_scheme = nil)
         @workspaces = workspaces
         @build_configuration = build_configuration || DEFAULT_BUILD_CONFIGURATION
         @scheme_workspace = find_scheme_workspace(workspaces)
@@ -28,7 +29,12 @@ module DeployGate
           config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @build_workspace})
           project = FastlaneCore::Project.new(config)
         end
-        project.select_scheme
+
+        if 1 < project.schemes.length && target_scheme
+            project.options[:scheme] = target_scheme
+        else
+            project.select_scheme
+        end
         @scheme = project.options[:scheme]
       end
 
