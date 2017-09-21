@@ -23,17 +23,13 @@ module DeployGate
         @build_workspace = find_build_workspace(workspaces)
         @xcodeproj = File.dirname(@scheme_workspace)
 
-        config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @scheme_workspace})
+        config = FastlaneCore::Configuration.create(Gym::Options.available_options, { workspace: @scheme_workspace })
         project = FastlaneCore::Project.new(config)
-        if project.schemes.empty?
-          config = FastlaneCore::Configuration.create(Gym::Options.available_options, {:workspace => @build_workspace})
-          project = FastlaneCore::Project.new(config)
-        end
 
-        if 1 < project.schemes.length && target_scheme
-            project.options[:scheme] = target_scheme
+        if project.schemes.length > 1 && target_scheme && project.schemes.include?(target_scheme)
+          project.options[:scheme] = target_scheme
         else
-            project.select_scheme
+          project.select_scheme
         end
         @scheme = project.options[:scheme]
       end
