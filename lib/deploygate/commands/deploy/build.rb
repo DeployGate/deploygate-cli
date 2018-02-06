@@ -38,28 +38,34 @@ module DeployGate
             analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
             target_scheme = analyze.scheme
 
-            bundle_identifier = analyze.target_bundle_identifier
-            xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
-
-            provisioning_team = analyze.provisioning_team
-            target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(bundle_identifier, xcode_provisioning_profile_uuid, provisioning_team)
-
-            method = DeployGate::Xcode::Export.method(target_provisioning_profile)
+            method = select_method
 
             codesigning_identity= nil
             provisioning_style = analyze.provisioning_style
             if (!over_xcode?(8) && provisioning_style == nil) ||
                 provisioning_style == DeployGate::Xcode::Analyze::PROVISIONING_STYLE_MANUAL
+
               # Only run Provisioning Style is Manual or nil
+              bundle_identifier = analyze.target_bundle_identifier
+              xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
+              provisioning_team = analyze.provisioning_team
+              target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(
+                  bundle_identifier,
+                  xcode_provisioning_profile_uuid,
+                  provisioning_team
+              )
+
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
             end
 
-            ipa_path = DeployGate::Xcode::Ios.build(analyze,
-                                                    target_scheme,
-                                                    codesigning_identity,
-                                                    build_configuration,
-                                                    method,
-                                                    over_xcode?(9))
+            ipa_path = DeployGate::Xcode::Ios.build(
+                analyze,
+                target_scheme,
+                codesigning_identity,
+                build_configuration,
+                method,
+                over_xcode?(9) && codesigning_identity.nil?
+            )
             Push.upload([ipa_path], options)
           end
 
@@ -83,6 +89,22 @@ module DeployGate
             puts ''
             puts HighLine.color(I18n.t('commands.deploy.build.print_no_install_xcode'), HighLine::YELLOW)
             puts ''
+          end
+
+          def select_method
+            result = nil
+            cli = HighLine.new
+            cli.choose do |menu|
+              menu.prompt = I18n.t('commands.deploy.build.select_method.title')
+              menu.choice(DeployGate::Xcode::Export::AD_HOC) {
+                result = DeployGate::Xcode::Export::AD_HOC
+              }
+              menu.choice(DeployGate::Xcode::Export::ENTERPRISE) {
+                result = DeployGate::Xcode::Export::ENTERPRISE
+              }
+            end
+
+            result
           end
         end
       end
