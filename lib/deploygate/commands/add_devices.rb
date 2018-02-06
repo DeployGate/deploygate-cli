@@ -65,9 +65,13 @@ module DeployGate
         end
 
         def build!(bundle_id, args, options)
+          app = DeployGate::Xcode::MemberCenters::App.new(bundle_id)
+          app.create! unless app.created?
+
           DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id).create!
           team = DeployGate::Xcode::MemberCenter.instance.team
           DeployGate::Xcode::Export.clean_provisioning_profiles(bundle_id, team)
+
           DeployGate::Commands::Deploy::Build.run(args, options)
         end
 

@@ -14,8 +14,14 @@ module DeployGate
         # @param [String] codesigning_identity
         # @param [String] build_configuration
         # @param [String] export_method
+        # @param [Boolean] allow_provisioning_updates
         # @return [String]
-        def build(ios_analyze, target_scheme, codesigning_identity, build_configuration = nil, export_method = DeployGate::Xcode::Export::AD_HOC)
+        def build(ios_analyze,
+                  target_scheme,
+                  codesigning_identity,
+                  build_configuration = nil,
+                  export_method = DeployGate::Xcode::Export::AD_HOC,
+                  allow_provisioning_updates = false)
           raise NotSupportExportMethodError, 'Not support export' unless DeployGate::Xcode::Export::SUPPORT_EXPORT_METHOD.include?(export_method)
 
           values = {
@@ -25,6 +31,8 @@ module DeployGate
               scheme: target_scheme
           }
           values[:codesigning_identity] = codesigning_identity if codesigning_identity
+          values[:export_xcargs] = '-allowProvisioningUpdates' if allow_provisioning_updates
+
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
 
           begin
