@@ -38,8 +38,7 @@ module DeployGate
             analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
             target_scheme = analyze.scheme
 
-            method = select_method
-
+            method = nil
             codesigning_identity= nil
             provisioning_style = analyze.provisioning_style
             if (!over_xcode?(8) && provisioning_style == nil) ||
@@ -55,7 +54,10 @@ module DeployGate
                   provisioning_team
               )
 
+              method = DeployGate::Xcode::Export.method(target_provisioning_profile)
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
+            else
+              method = select_method
             end
 
             ipa_path = DeployGate::Xcode::Ios.build(
