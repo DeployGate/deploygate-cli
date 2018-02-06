@@ -54,7 +54,7 @@ module DeployGate
             end
           end
 
-          build!(bundle_id, args, options)
+          DeployGate::Commands::Deploy::Build.run(args, options)
         end
 
         def register!(devices)
@@ -62,13 +62,6 @@ module DeployGate
             device.register!
             success_registered_device(device)
           end
-        end
-
-        def build!(bundle_id, args, options)
-          DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id).create!
-          team = DeployGate::Xcode::MemberCenter.instance.team
-          DeployGate::Xcode::Export.clean_provisioning_profiles(bundle_id, team)
-          DeployGate::Commands::Deploy::Build.run(args, options)
         end
 
         def fetch_devices(token, owner, bundle_id)
