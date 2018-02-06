@@ -38,6 +38,7 @@ module DeployGate
             analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
             target_scheme = analyze.scheme
 
+            # TODO: Support export method option (ex: --method adhoc)
             method = nil
             codesigning_identity= nil
             provisioning_style = analyze.provisioning_style
