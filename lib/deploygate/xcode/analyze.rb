@@ -77,13 +77,22 @@ module DeployGate
           # $(PRODUCT_NAME) or ${PRODUCT_NAME}
           if match = id.match(/\$\((.+)\)|\${(.+)}/)
             custom_id = match[1] || match[2]
-            target_build_configration.build_settings[custom_id]
+            if custom_id == 'TARGET_NAME'
+              target_project_setting.name
+            else
+              target_build_configration.build_settings[custom_id]
+            end
           else
             id
           end
         end
 
-        ids.join('.')
+        new_bundle_identifier = ids.join('.')
+        if new_bundle_identifier.match(/\$\((.+)\)|\${(.+)}/)
+          convert_bundle_identifier(new_bundle_identifier)
+        else
+          new_bundle_identifier
+        end
       end
 
       # @return [String]
