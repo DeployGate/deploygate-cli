@@ -23,7 +23,10 @@ describe DeployGate::Xcode::Analyze do
       def build_settings
         {
             'PRODUCT_NAME' => '$(TARGET_NAME)',
-            'CUSTOM_KEY'   => 'CustomKey'
+            'CUSTOM_KEY'   => 'CustomKey',
+            'PRODUCT_BUNDLE_IDENTIFER' => 'com.deploygate.app',
+            'DEBUG_POSTFIX' => '.debug',
+            'LOOP' => '$(LOOP)'
         }
       end
     end
@@ -40,6 +43,16 @@ describe DeployGate::Xcode::Analyze do
     it do
       analyze = DeployGate::Xcode::Analyze.new('', nil, DummyProject::SCHEME)
       expect(analyze.convert_bundle_identifier('com.deploygate.$(PRODUCT_NAME).${CUSTOM_KEY}')).to eq 'com.deploygate.TargetName.CustomKey'
+    end
+
+    it 'if only env' do
+      analyze = DeployGate::Xcode::Analyze.new('', nil, DummyProject::SCHEME)
+      expect(analyze.convert_bundle_identifier('$(PRODUCT_BUNDLE_IDENTIFER)$(DEBUG_POSTFIX)')).to eq 'com.deploygate.app.debug'
+    end
+
+    it 'if loop env' do
+      analyze = DeployGate::Xcode::Analyze.new('', nil, DummyProject::SCHEME)
+      expect(analyze.convert_bundle_identifier('$(LOOP)')).to eq '$(LOOP)'
     end
   end
 

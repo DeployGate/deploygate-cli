@@ -72,27 +72,18 @@ module DeployGate
       # @param [String] bundle_identifier
       # @return [String]
       def convert_bundle_identifier(bundle_identifier)
-        ids = bundle_identifier.split('.')
-        ids = ids.map do |id|
-          # $(PRODUCT_NAME) or ${PRODUCT_NAME}
-          if match = id.match(/\$\((.+)\)|\${(.+)}/)
-            custom_id = match[1] || match[2]
-            if custom_id == 'TARGET_NAME'
-              target_project_setting.name
-            else
-              target_build_configration.build_settings[custom_id]
-            end
+        new_bundle_identifier = bundle_identifier.gsub(/\$\(([^\)]+)\)|\${([^}]+)}/) {
+          custom_id = $1 || $2
+          if custom_id == 'TARGET_NAME'
+            target_project_setting.name
           else
-            id
+            target_build_configration.build_settings[custom_id]
           end
-        end
+        }
+        # bail out if the result identical to the original
+        return bundle_identifier if new_bundle_identifier == bundle_identifier
 
-        new_bundle_identifier = ids.join('.')
-        if new_bundle_identifier.match(/\$\((.+)\)|\${(.+)}/)
-          convert_bundle_identifier(new_bundle_identifier)
-        else
-          new_bundle_identifier
-        end
+        convert_bundle_identifier(new_bundle_identifier)
       end
 
       # @return [String]
