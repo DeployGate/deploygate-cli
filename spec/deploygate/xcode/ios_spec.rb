@@ -33,7 +33,7 @@ describe DeployGate::Xcode::Ios do
       allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
 
       expect {
-        DeployGate::Xcode::Ios.build(AnalyzeMock.new, '', '', '',  'not support export method')
+        DeployGate::Xcode::Ios.build(AnalyzeMock.new, '', '', nil, '',  'not support export method')
       }.to raise_error DeployGate::Xcode::Ios::NotSupportExportMethodError
     end
   end
