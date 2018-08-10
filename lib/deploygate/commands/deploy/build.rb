@@ -39,9 +39,9 @@ module DeployGate
             target_scheme = analyze.scheme
 
             # TODO: Support export method option (ex: --method adhoc)
-            method = nil
             codesigning_identity= nil
             provisioning_style = analyze.provisioning_style
+            provisioning_profile_info = nil
             if (!over_xcode?(8) && provisioning_style == nil) ||
                 provisioning_style == DeployGate::Xcode::Analyze::PROVISIONING_STYLE_MANUAL
 
@@ -57,6 +57,13 @@ module DeployGate
 
               method = DeployGate::Xcode::Export.method(target_provisioning_profile)
               codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
+
+              profile = FastlaneCore::ProvisioningProfile.parse(target_provisioning_profile)
+              provisioning_profile_info = {
+                  provisioningProfiles: {
+                      "#{bundle_identifier}" => profile['Name']
+                  }
+              }
             else
               method = select_method
             end
@@ -65,6 +72,7 @@ module DeployGate
                 analyze,
                 target_scheme,
                 codesigning_identity,
+                provisioning_profile_info,
                 build_configuration,
                 method,
                 over_xcode?(9) && codesigning_identity.nil?
