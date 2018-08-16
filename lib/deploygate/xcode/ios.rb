@@ -12,6 +12,7 @@ module DeployGate
         # @param [Analyze] ios_analyze
         # @param [String] target_scheme
         # @param [String] codesigning_identity
+        # @param [String] provisioning_profile_info
         # @param [String] build_configuration
         # @param [String] export_method
         # @param [Boolean] allow_provisioning_updates
@@ -19,6 +20,7 @@ module DeployGate
         def build(ios_analyze,
                   target_scheme,
                   codesigning_identity,
+                  provisioning_profile_info = nil,
                   build_configuration = nil,
                   export_method = DeployGate::Xcode::Export::AD_HOC,
                   allow_provisioning_updates = false)
@@ -32,6 +34,7 @@ module DeployGate
           }
           values[:codesigning_identity] = codesigning_identity if codesigning_identity
           values[:export_xcargs] = '-allowProvisioningUpdates' if allow_provisioning_updates
+          values[:export_options] = provisioning_profile_info if provisioning_profile_info
 
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
 

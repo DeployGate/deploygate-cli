@@ -51,12 +51,11 @@ module DeployGate
               end
           plist_bundle_identifier = convert_bundle_identifier(plist_bundle_identifier)
 
-          if product_bundle_identifier != plist_bundle_identifier
-            raise BundleIdentifierDifferentError,
-                  I18n.t('xcode.analyze.target_bundle_identifier.bundle_identifier_different', plist_id: plist_bundle_identifier, product_id: product_bundle_identifier)
-          end
-
-          bundle_identifier = product_bundle_identifier
+          bundle_identifier = if plist_bundle_identifier.blank?
+                                product_bundle_identifier
+                              else
+                                plist_bundle_identifier
+                              end
           bundle_identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
         rescue BundleIdentifierDifferentError => e
           raise e
@@ -94,12 +93,13 @@ module DeployGate
 
       def provisioning_style
         target = target_provisioning_info
+        build_settings = target_build_configration.build_settings
 
         style = PROVISIONING_STYLE_MANUAL
         if target
           # Manual or Automatic or nil (Xcode7 below)
           begin
-            style = target['ProvisioningStyle']
+            style = target['ProvisioningStyle'] || build_settings['CODE_SIGN_STYLE']
           rescue
             # Not catch error
           end
