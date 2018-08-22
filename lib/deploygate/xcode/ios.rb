@@ -33,7 +33,10 @@ module DeployGate
               scheme: target_scheme
           }
           values[:codesigning_identity] = codesigning_identity if codesigning_identity
-          values[:export_xcargs] = '-allowProvisioningUpdates' if allow_provisioning_updates
+          if allow_provisioning_updates
+            values[:xcargs]        = '-allowProvisioningUpdates'
+            values[:export_xcargs] = '-allowProvisioningUpdates'
+          end
           values[:export_options] = provisioning_profile_info if provisioning_profile_info
 
           v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
