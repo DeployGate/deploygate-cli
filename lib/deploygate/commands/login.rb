@@ -74,18 +74,12 @@ module DeployGate
           end
 
           print I18n.t('commands.login.create_account.creating')
-          results = DeployGate::User.create(name, email, password)
-          if results.nil?
+          if DeployGate::User.create(name, email, password).nil?
+            puts HighLine.color(I18n.t('commands.login.create_account.error'), HighLine::RED)
+            raise 'User create error'
+          else
             puts HighLine.color(I18n.t('commands.login.create_account.success'), HighLine::GREEN)
             start(email, password)
-          else
-            puts HighLine.color(I18n.t('commands.login.create_account.error'), HighLine::RED)
-            if results[:error_code] == DeployGate::API::V1::ErrorCode::BadRequest::NOT_AGREED_TO_THE_TERMS_OF_SERVICE
-              puts HighLine.color(I18n.t('commands.login.create_account.not_agreed_to_the_terms_of_service_error'), HighLine::RED)
-              exit 1
-            else
-              raise 'User create error'
-            end
           end
         end
 

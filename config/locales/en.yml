@@ -111,8 +111,9 @@ en:
       create_account:
         prompt: "Looks new to DeployGate. Let's set up your account, just choose your user name and password."
         creating: 'Creating your account... '
-        error: 'Could not create your account.'
-        not_agreed_to_the_terms_of_service_error: 'You must agree to the Terms of Service.'
+        error: |
+          Could not create your account.
+          Please try again.
         success: 'done! Your account has been set up successfully.'
       input_new_account_name:
         input_user_name: 'Username: '

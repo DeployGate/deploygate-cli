@@ -12,20 +12,12 @@ module DeployGate
           # @param [String] locale
           # @return [Hash]
           def create(name, email, password, locale = 'en')
-            res = Base.new().post(ENDPOINT, {
-                :name => name,
-                :email => email,
-                :password => password,
-                :locale => locale,
-                :terms_accept => true
-            })
+            res = Base.new().post(ENDPOINT, {:name => name, :email => email, :password => password, :locale => locale})
 
             user_create_results = {
                 :error => res['error'],
                 :message => res['because']
             }
-            error_code = res['error_code']
-            user_create_results[:error_code] = error_code if error_code
 
             results = res['results']
             unless results.nil?
