@@ -18,6 +18,8 @@ module DeployGate
                 :error => res['error'],
                 :message => res['because']
             }
+            error_code = res['error_code']
+            user_create_results[:error_code] = error_code if error_code
 
             results = res['results']
             unless results.nil?
