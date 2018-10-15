@@ -68,6 +68,11 @@ module DeployGate
           password = input_new_account_password()
           puts ''
 
+          unless check_terms
+            puts HighLine.color(I18n.t('commands.login.create_account.not_agreed_to_the_terms_of_service_error'), HighLine::RED)
+            exit 1
+          end
+
           print I18n.t('commands.login.create_account.creating')
           results = DeployGate::User.create(name, email, password)
           if results.nil?
@@ -109,6 +114,12 @@ module DeployGate
             puts HighLine.color(I18n.t('commands.login.input_new_account_password.error'), HighLine::RED)
             return input_new_account_password()
           end
+        end
+
+        # @return [boolean]
+        def check_terms
+          puts I18n.t('commands.login.check_terms.terms_url')
+          HighLine.agree(I18n.t('commands.login.check_terms.text')) {|q| q.default = "n"}
         end
 
         # @return [String]

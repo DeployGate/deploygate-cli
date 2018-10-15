@@ -12,7 +12,13 @@ module DeployGate
           # @param [String] locale
           # @return [Hash]
           def create(name, email, password, locale = 'en')
-            res = Base.new().post(ENDPOINT, {:name => name, :email => email, :password => password, :locale => locale})
+            res = Base.new().post(ENDPOINT, {
+                :name => name,
+                :email => email,
+                :password => password,
+                :locale => locale,
+                :terms_accept => true
+            })
 
             user_create_results = {
                 :error => res['error'],
