@@ -127,6 +127,7 @@ en:
       check_terms:
         terms_url: 'https://deploygate.com/terms'
         text: 'Do you agree the Terms of Service? (y/n) '
+        error: 'You must agree to the Terms of Service.'
     logout:
       success: |
         Logout success!

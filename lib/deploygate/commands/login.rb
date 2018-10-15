@@ -69,7 +69,7 @@ module DeployGate
           puts ''
 
           unless check_terms
-            puts HighLine.color(I18n.t('commands.login.create_account.not_agreed_to_the_terms_of_service_error'), HighLine::RED)
+            puts HighLine.color(I18n.t('commands.login.check_terms.error'), HighLine::RED)
             exit 1
           end
 
