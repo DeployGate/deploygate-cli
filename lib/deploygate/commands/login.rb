@@ -113,6 +113,9 @@ module DeployGate
         # @return [boolean]
         def check_terms
           puts I18n.t('commands.login.check_terms.terms_url')
+          puts I18n.t('commands.login.check_terms.privacy_url')
+          puts I18n.t('commands.login.check_terms.note')
+          puts ''
           HighLine.agree(I18n.t('commands.login.check_terms.text')) {|q| q.default = "n"}
         end
 
