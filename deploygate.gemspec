@@ -40,7 +40,7 @@ POST_INSTALL_MESSAGE
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.57.2'
 
-  spec.add_development_dependency 'bundler', '~> 1.13'
+  spec.add_development_dependency 'bundler', '~> 1.17'
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'webmock', '~> 2.3'
