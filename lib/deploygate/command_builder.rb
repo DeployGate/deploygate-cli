@@ -15,6 +15,12 @@ module DeployGate
     CONFIG      = 'config'
 
     def setup
+      # sentry config
+      Raven.configure do |config|
+        config.dsn = 'https://e0b4dda8fe2049a7b0d98c6d2759e067@sentry.io/1371610'
+        config.logger = Raven::Logger.new('/dev/null') # hide sentry log
+      end
+
       # set Ctrl-C trap
       Signal.trap(:INT){
         puts ''
@@ -47,7 +53,7 @@ module DeployGate
             Commands::Login.run(args, options)
           rescue => e
             error_handling(LOGIN, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -68,7 +74,7 @@ module DeployGate
             Commands::Deploy.run(args, options)
           rescue => e
             error_handling(DEPLOY, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -89,7 +95,7 @@ module DeployGate
             Commands::AddDevices.run(args, options)
           rescue => e
             error_handling(ADD_DEVICES, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -102,7 +108,7 @@ module DeployGate
             Commands::Logout.run
           rescue => e
             error_handling(LOGOUT, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -118,7 +124,7 @@ module DeployGate
             Commands::Config.run(args, options)
           rescue => e
             error_handling(CONFIG, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -126,18 +132,21 @@ module DeployGate
       run!
     end
 
-    # @param [Symbol] command
+    # @param [String] command
     # @param [Exception] error
     def error_handling(command, error)
       STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
 
       return if ENV['CI'] # When run ci server
       return if error.kind_of?(DeployGate::NotIssueError)
-      puts ''
-      if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
-        # TODO: send error to sentry
-      end
-      puts ''
+      tags = {
+          command: command,
+          dg_version: DeployGate::VERSION
+      }
+      version = Gym::Xcode.xcode_version
+      tags[:xcode_version] = version if version.present?
+
+      Raven.capture_exception(error, tags: tags)
     end
 
     # @return [void]

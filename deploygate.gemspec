@@ -35,6 +35,7 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'net-ping', '~> 2.0'
   spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
   spec.add_runtime_dependency 'workers', '~> 0.6'
+  spec.add_runtime_dependency 'sentry-raven', '~> 2.8'
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.57.2'
