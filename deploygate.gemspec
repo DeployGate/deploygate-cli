@@ -25,7 +25,6 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'commander', '~> 4.4'
   spec.add_runtime_dependency 'plist', '~> 3.1'
   spec.add_runtime_dependency 'xcodeproj', '~> 1.7'
-  spec.add_runtime_dependency 'github_issue_request', '~> 0.1'
   spec.add_runtime_dependency 'highline', '~> 1.7'
   spec.add_runtime_dependency 'uuid', '~> 2.3'
   spec.add_runtime_dependency 'gem_update_checker', '~> 0.2'

@@ -27,8 +27,6 @@ module DeployGate
         exit
       end
 
-      # check update
-      GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
     end
 
@@ -128,48 +126,6 @@ module DeployGate
       run!
     end
 
-    # @param [Exception] error
-    # @return [String]
-    def create_error_issue_body(error)
-      return <<EOF
-
-# Status
-deploygate-cli ver #{DeployGate::VERSION}
-
-# Error message
-#{error.message}
-
-# Backtrace
-```
-#{error.backtrace.join("\n")}
-```
-EOF
-    end
-
-    # @param [Symbol] command
-    # @param [Exception] error
-    # @return [String]
-    def create_issue_url(command, error)
-      title = case command
-                   when LOGIN
-                     I18n.t('command_builder.login.error', e: error.class)
-                   when LOGOUT
-                     I18n.t('command_builder.logout.error', e: error.class)
-                   when DEPLOY
-                     I18n.t('command_builder.deploy.error', e: error.class)
-                   when ADD_DEVICES
-                     I18n.t('command_builder.add_devices.error', e: error.class)
-                   when CONFIG
-                     I18n.t('command_builder.config.error', e: error.class)
-                 end
-
-      options = {
-          :title => title,
-          :body  => create_error_issue_body(error),
-      }
-      GithubIssueRequest::Url.new(options).to_s
-    end
-
     # @param [Symbol] command
     # @param [Exception] error
     def error_handling(command, error)
@@ -179,9 +135,7 @@ EOF
       return if error.kind_of?(DeployGate::NotIssueError)
       puts ''
       if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
-        url = create_issue_url(command, error)
-        puts I18n.t('command_builder.error_handling.please_open', url: url)
-        system('open', url) if Commands::Deploy::Push.openable?
+        # TODO: send error to sentry
       end
       puts ''
     end
