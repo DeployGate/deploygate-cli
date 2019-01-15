@@ -6,7 +6,6 @@ en:
     login:
       description: 'Log in to DeployGate'
       terminal: 'Login in terminal'
-      error: 'Commands::Login Error: %{e}'
     deploy:
       description: 'Build and upload a new build'
       message: 'Build description message'
@@ -16,14 +15,12 @@ en:
       scheme: 'Set Xcode build scheme (iOS app only)'
       open: 'Open a browser after the build uploaded (OS X only)'
       disable_notify: 'Disable email notification (iOS app only)'
-      error: 'Commands::Deploy Error: %{e}'
     add_devices:
       description: 'Register devices to your Apple Developer account and refresh your provisioning profile. (iOS only) By default, it automatically finds new devices added to your application on DeployGate and ask you which device to register. You can also specify which device to register via command line options.'
       user: 'Owner user or organization name'
       udid: 'UDID to be registered'
       device_name: 'Device name to be registered'
       distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
-      error: 'Commands::AddDevices Error: %{e}'
       server:
         description: 'Start the add-devices server. When added new device automatically run add-devices command.'
         connecting: 'Connecting...'
@@ -32,13 +29,11 @@ en:
         finish_build: 'add-devices completed successfully.'
     logout:
       description: 'Log out current session'
-      error: 'Commands::Logout Error: %{e}'
     config:
       description: "Configure login session of `dg` command. Usually, the session automatically created on the installation process so you don't need to use this command."
       json: 'Set output format to JSON'
       name: 'DeployGate user name'
       token: 'DeployGate API token'
-      error: 'Commands::Config Error: %{e}'
     error_handling:
       message: 'Error: %{message}'
     show_update_message: |
