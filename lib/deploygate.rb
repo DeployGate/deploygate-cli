@@ -35,7 +35,7 @@ require "xcodeproj"
 module DeployGate
 end
 
-require "deploygate/not_issue_error"
+require "deploygate/raven_ignore_exception"
 require "deploygate/api/v1/base"
 require "deploygate/api/v1/session"
 require "deploygate/api/v1/push"
@@ -56,6 +56,7 @@ require "deploygate/config/cache_version"
 require "deploygate/session"
 require "deploygate/deploy"
 require "deploygate/project"
+require "deploygate/raven_ignore_exception"
 require "deploygate/user"
 require "deploygate/browser_login"
 require "deploygate/add_devices_server"

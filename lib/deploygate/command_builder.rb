@@ -3,7 +3,7 @@ module DeployGate
     include Commander::Methods
     attr_reader :arguments
 
-    class NotInternetConnectionError < DeployGate::NotIssueError
+    class NotInternetConnectionError < DeployGate::RavenIgnoreException
     end
 
     PING_URL = 'https://deploygate.com'
@@ -19,6 +19,7 @@ module DeployGate
       Raven.configure do |config|
         config.dsn = 'https://e0b4dda8fe2049a7b0d98c6d2759e067@sentry.io/1371610'
         config.logger = Raven::Logger.new('/dev/null') # hide sentry log
+        config.excluded_exceptions = Raven::Configuration::IGNORE_DEFAULT + [DeployGate::RavenIgnoreException.name]
       end
 
       # set Ctrl-C trap
@@ -137,8 +138,7 @@ module DeployGate
     def error_handling(command, error)
       STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
 
-      return if ENV['CI'] # When run ci server
-      return if error.kind_of?(DeployGate::NotIssueError)
+      return if error.kind_of?(DeployGate::RavenIgnoreException)
       tags = {
           command: command,
           dg_version: DeployGate::VERSION

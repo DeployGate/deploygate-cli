@@ -1,10 +1,10 @@
 module DeployGate
   class Deploy
-    class NotLoginError < DeployGate::NotIssueError
+    class NotLoginError < DeployGate::RavenIgnoreException
     end
-    class NotFileExistError < DeployGate::NotIssueError
+    class NotFileExistError < DeployGate::RavenIgnoreException
     end
-    class UploadError < DeployGate::NotIssueError
+    class UploadError < DeployGate::RavenIgnoreException
     end
 
     class << self

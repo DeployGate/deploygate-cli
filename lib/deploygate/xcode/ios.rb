@@ -5,7 +5,7 @@ module DeployGate
       PROJECT_DIR_EXTNAME = '.xcodeproj'
       IGNORE_DIRS = [ '.git', 'Carthage' ]
 
-      class NotSupportExportMethodError < DeployGate::NotIssueError
+      class NotSupportExportMethodError < DeployGate::RavenIgnoreException
       end
 
       class << self

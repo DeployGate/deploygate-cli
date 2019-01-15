@@ -1,6 +1,6 @@
 module DeployGate
   class Session
-    class LoginError < DeployGate::NotIssueError
+    class LoginError < DeployGate::RavenIgnoreException
     end
 
     attr_reader :name, :token
