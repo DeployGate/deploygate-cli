@@ -36,6 +36,8 @@ en:
       token: 'DeployGate API token'
     error_handling:
       message: 'Error: %{message}'
+      agree: 'Do you want to this error report to DeployGate? (y/n) '
+      thanks: 'Thank you feedback! We will improve based on it.'
     show_update_message: |
       #################################################################
       # %{gem_name} %{latest_version} is available. You are on %{current_version}.

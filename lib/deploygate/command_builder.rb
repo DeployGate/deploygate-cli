@@ -137,16 +137,50 @@ module DeployGate
     # @param [Exception] error
     def error_handling(command, error)
       STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
-
+      return if ENV['CI'] # When run ci server
       return if error.kind_of?(DeployGate::RavenIgnoreException)
+
+      dg_version = DeployGate::VERSION
       tags = {
           command: command,
-          dg_version: DeployGate::VERSION
+          dg_version: dg_version
       }
       version = Gym::Xcode.xcode_version
       tags[:xcode_version] = version if version.present?
 
-      Raven.capture_exception(error, tags: tags)
+      puts ''
+      puts error_report(error, version, dg_version)
+      if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "y"}
+        tags = {
+            command: command,
+            dg_version: DeployGate::VERSION
+        }
+        version = Gym::Xcode.xcode_version
+        tags[:xcode_version] = version if version.present?
+
+        Raven.capture_exception(error, tags: tags)
+        puts HighLine.color(I18n.t('command_builder.error_handling.thanks'), HighLine::GREEN)
+      end
+    end
+
+    def error_report(error, dg_version, xcode_version)
+      meta_info = "dg version: #{dg_version}"
+      meta_info += "\nXcode version: #{xcode_version}" if xcode_version.present?
+
+      backtrace = error.backtrace.take(5).join("\n")
+      backtrace += "\nand more ..." if error.backtrace.count > 5
+
+      <<EOF
+------------------------
+DeployGate Error Report 
+
+Title: #{error}
+#{meta_info}
+
+Stack trace:
+#{backtrace}
+------------------------
+EOF
     end
 
     # @return [void]
