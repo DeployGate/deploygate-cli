@@ -9,7 +9,7 @@ module DeployGate
       PROVISIONING_STYLE_AUTOMATIC = 'Automatic'
       PROVISIONING_STYLE_MANUAL    = 'Manual'
 
-      class BundleIdentifierDifferentError < DeployGate::NotIssueError
+      class BundleIdentifierDifferentError < DeployGate::RavenIgnoreException
       end
 
       # @param [Array] workspaces

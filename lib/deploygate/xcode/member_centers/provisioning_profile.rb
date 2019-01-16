@@ -4,9 +4,9 @@ module DeployGate
       class ProvisioningProfile
         attr_reader :member_center, :app_identifier
 
-        class NotInstalledCertificateError < DeployGate::NotIssueError
+        class NotInstalledCertificateError < DeployGate::RavenIgnoreException
         end
-        class NotExistUUIDProvisioningProfileError < DeployGate::NotIssueError
+        class NotExistUUIDProvisioningProfileError < DeployGate::RavenIgnoreException
         end
 
         OUTPUT_PATH = '/tmp/dg/provisioning_profile/'

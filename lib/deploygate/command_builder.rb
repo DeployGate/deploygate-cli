@@ -3,7 +3,7 @@ module DeployGate
     include Commander::Methods
     attr_reader :arguments
 
-    class NotInternetConnectionError < DeployGate::NotIssueError
+    class NotInternetConnectionError < DeployGate::RavenIgnoreException
     end
 
     PING_URL = 'https://deploygate.com'
@@ -15,6 +15,13 @@ module DeployGate
     CONFIG      = 'config'
 
     def setup
+      # sentry config
+      Raven.configure do |config|
+        config.dsn = 'https://e0b4dda8fe2049a7b0d98c6d2759e067@sentry.io/1371610'
+        config.logger = Raven::Logger.new('/dev/null') # hide sentry log
+        config.excluded_exceptions = Raven::Configuration::IGNORE_DEFAULT + [DeployGate::RavenIgnoreException.name]
+      end
+
       # set Ctrl-C trap
       Signal.trap(:INT){
         puts ''
@@ -27,8 +34,6 @@ module DeployGate
         exit
       end
 
-      # check update
-      GithubIssueRequest::Url.config('deploygate', 'deploygate-cli')
       check_update()
     end
 
@@ -49,7 +54,7 @@ module DeployGate
             Commands::Login.run(args, options)
           rescue => e
             error_handling(LOGIN, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -70,7 +75,7 @@ module DeployGate
             Commands::Deploy.run(args, options)
           rescue => e
             error_handling(DEPLOY, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -91,7 +96,7 @@ module DeployGate
             Commands::AddDevices.run(args, options)
           rescue => e
             error_handling(ADD_DEVICES, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -104,7 +109,7 @@ module DeployGate
             Commands::Logout.run
           rescue => e
             error_handling(LOGOUT, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -120,7 +125,7 @@ module DeployGate
             Commands::Config.run(args, options)
           rescue => e
             error_handling(CONFIG, e)
-            raise e
+            exit 1
           end
         end
       end
@@ -128,62 +133,54 @@ module DeployGate
       run!
     end
 
-    # @param [Exception] error
-    # @return [String]
-    def create_error_issue_body(error)
-      return <<EOF
-
-# Status
-deploygate-cli ver #{DeployGate::VERSION}
-
-# Error message
-#{error.message}
-
-# Backtrace
-```
-#{error.backtrace.join("\n")}
-```
-EOF
-    end
-
-    # @param [Symbol] command
-    # @param [Exception] error
-    # @return [String]
-    def create_issue_url(command, error)
-      title = case command
-                   when LOGIN
-                     I18n.t('command_builder.login.error', e: error.class)
-                   when LOGOUT
-                     I18n.t('command_builder.logout.error', e: error.class)
-                   when DEPLOY
-                     I18n.t('command_builder.deploy.error', e: error.class)
-                   when ADD_DEVICES
-                     I18n.t('command_builder.add_devices.error', e: error.class)
-                   when CONFIG
-                     I18n.t('command_builder.config.error', e: error.class)
-                 end
-
-      options = {
-          :title => title,
-          :body  => create_error_issue_body(error),
-      }
-      GithubIssueRequest::Url.new(options).to_s
-    end
-
-    # @param [Symbol] command
+    # @param [String] command
     # @param [Exception] error
     def error_handling(command, error)
       STDERR.puts HighLine.color(I18n.t('command_builder.error_handling.message', message: error.message), HighLine::RED)
-
       return if ENV['CI'] # When run ci server
-      return if error.kind_of?(DeployGate::NotIssueError)
+      return if error.kind_of?(DeployGate::RavenIgnoreException)
+
+      dg_version = DeployGate::VERSION
+      tags = {
+          command: command,
+          dg_version: dg_version
+      }
+      version = Gym::Xcode.xcode_version
+      tags[:xcode_version] = version if version.present?
+
       puts ''
-      if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "n"}
-        url = create_issue_url(command, error)
-        puts I18n.t('command_builder.error_handling.please_open', url: url)
-        system('open', url) if Commands::Deploy::Push.openable?
+      puts error_report(error, version, dg_version)
+      if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "y"}
+        tags = {
+            command: command,
+            dg_version: DeployGate::VERSION
+        }
+        version = Gym::Xcode.xcode_version
+        tags[:xcode_version] = version if version.present?
+
+        Raven.capture_exception(error, tags: tags)
+        puts HighLine.color(I18n.t('command_builder.error_handling.thanks'), HighLine::GREEN)
       end
-      puts ''
+    end
+
+    def error_report(error, dg_version, xcode_version)
+      meta_info = "dg version: #{dg_version}"
+      meta_info += "\nXcode version: #{xcode_version}" if xcode_version.present?
+
+      backtrace = error.backtrace.take(5).join("\n")
+      backtrace += "\nand more ..." if error.backtrace.count > 5
+
+      <<EOF
+------------------------
+DeployGate Error Report 
+
+Title: #{error}
+#{meta_info}
+
+Stack trace:
+#{backtrace}
+------------------------
+EOF
     end
 
     # @return [void]
