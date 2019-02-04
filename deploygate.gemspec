@@ -38,7 +38,7 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'sentry-raven', '~> 2.8'
 
   # ios build
-  spec.add_runtime_dependency 'fastlane', '~> 2.57.2'
+  spec.add_runtime_dependency 'fastlane', '~> 2.115'
 
   spec.add_development_dependency 'bundler', '~> 1.17'
   spec.add_development_dependency 'rake', '~> 12.0'
