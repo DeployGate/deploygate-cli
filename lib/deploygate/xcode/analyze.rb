@@ -23,153 +23,83 @@ module DeployGate
         @build_workspace = find_build_workspace(workspaces)
         @xcodeproj = File.dirname(@scheme_workspace)
 
-        config = FastlaneCore::Configuration.create(Gym::Options.available_options, { workspace: @scheme_workspace })
-        project = FastlaneCore::Project.new(config)
+        config = FastlaneCore::Configuration.create(Gym::Options.available_options, { project: @xcodeproj })
+        Gym.config = config
+        @project = FastlaneCore::Project.new(config)
 
-        if project.schemes.length > 1 && target_scheme && project.schemes.include?(target_scheme)
-          project.options[:scheme] = target_scheme
+        if @project.schemes.length > 1 && target_scheme && @project.schemes.include?(target_scheme)
+          @project.options[:scheme] = target_scheme
         else
-          project.select_scheme
+          @project.select_scheme
         end
-        @scheme = project.options[:scheme]
+        @scheme = @project.options[:scheme]
       end
 
-      # Support Xcode7 more
-      # @return [String]
-      def target_bundle_identifier
-        begin
-          product_name = target_product_name
-          product_bundle_identifier = target_build_configration.build_settings['PRODUCT_BUNDLE_IDENTIFIER']
-          product_bundle_identifier = convert_bundle_identifier(product_bundle_identifier)
-
-          info_plist_file_path = target_build_configration.build_settings['INFOPLIST_FILE']
-          root_path = DeployGate::Xcode::Ios.project_root_path(@scheme_workspace)
-          plist_bundle_identifier =
-              File.open(File.join(root_path, info_plist_file_path)) do |file|
-                plist = Plist.parse_xml file.read
-                plist['CFBundleIdentifier']
-              end
-          plist_bundle_identifier = convert_bundle_identifier(plist_bundle_identifier)
-
-          bundle_identifier = if plist_bundle_identifier.blank?
-                                product_bundle_identifier
-                              else
-                                plist_bundle_identifier
-                              end
-          bundle_identifier.gsub!(/\$\(PRODUCT_NAME:.+\)/, product_name)
-        rescue BundleIdentifierDifferentError => e
-          raise e
-        rescue => e
-          cli = HighLine.new
-          puts I18n.t('xcode.analyze.target_bundle_identifier.prompt')
-          bundle_identifier = cli.ask(I18n.t('xcode.analyze.target_bundle_identifier.ask')) { |q| q.validate = /^(\w+)\.(\w+).*\w$/ }
-        end
-
-        bundle_identifier
-      end
-
-      # @param [String] bundle_identifier
-      # @return [String]
-      def convert_bundle_identifier(bundle_identifier)
-        new_bundle_identifier = bundle_identifier.gsub(/\$\(([^\)]+)\)|\${([^}]+)}/) {
-          custom_id = $1 || $2
-          if custom_id == 'TARGET_NAME'
-            target_project_setting.name
-          else
-            target_build_configration.build_settings[custom_id]
-          end
-        }
-        # bail out if the result identical to the original
-        return bundle_identifier if new_bundle_identifier == bundle_identifier
-
-        convert_bundle_identifier(new_bundle_identifier)
-      end
-
-      # @return [String]
-      def target_xcode_setting_provisioning_profile_uuid
-        uuid = target_build_configration.build_settings['PROVISIONING_PROFILE']
-        UUID.validate(uuid) ? uuid : nil
-      end
-
-      def provisioning_style
-        target = target_provisioning_info
-        build_settings = target_build_configration.build_settings
-
-        style = PROVISIONING_STYLE_MANUAL
-        if target
-          # Manual or Automatic or nil (Xcode7 below)
-          begin
-            style = target['ProvisioningStyle'] || build_settings['CODE_SIGN_STYLE']
-          rescue
-            # Not catch error
-          end
+      def code_sign_style
+        style = nil
+        resolve_build_configuration do |build_configuration, target|
+          style = build_configuration.resolve_build_setting("CODE_SIGN_STYLE", target)
         end
 
         style
       end
 
-      def provisioning_team
-        target = target_provisioning_info
+      def code_sign_identity
+        identity = nil
+        resolve_build_configuration do |build_configuration, target|
+          identity = build_configuration.resolve_build_setting("CODE_SIGN_IDENTITY", target)
+        end
 
+        identity
+      end
+
+      # Support Xcode7 more
+      # @return [String]
+      def target_bundle_identifier
+        bundle_identifier = nil
+        resolve_build_configuration do |build_configuration, target|
+          bundle_identifier = build_configuration.resolve_build_setting("PRODUCT_BUNDLE_IDENTIFIER", target)
+        end
+
+        bundle_identifier
+      end
+
+      def developer_team
         team = nil
-        if target
-          begin
-            team = target['DevelopmentTeam']
-          rescue
-            # Not catch error
-          end
+        resolve_build_configuration do |build_configuration, target|
+          team = build_configuration.resolve_build_setting("DEVELOPMENT_TEAM", target)
         end
 
         team
       end
 
+      def project_profile_info
+        gym = Gym::CodeSigningMapping.new(project: @project)
+
+        {
+            provisioningProfiles: gym.detect_project_profile_mapping
+        }
+      end
+
+      def target_provisioning_profile
+        gym = Gym::CodeSigningMapping.new(project: @project)
+        bundle_id = target_bundle_identifier
+
+        Xcode::Export.provisioning_profile(bundle_id, nil, developer_team, gym.merge_profile_mapping[bundle_id.to_sym])
+      end
+
       private
 
-      def target_provisioning_info
-        main_target = target_project_setting
-        main_target_uuid = main_target && main_target.uuid
+      def resolve_build_configuration(&block)
+        gym = Gym::CodeSigningMapping.new(project: @project)
+        specified_configuration = gym.detect_configuration_for_archive
 
-        target = nil
-        if main_target_uuid
-          begin
-            target = target_project.root_object.attributes['TargetAttributes'][main_target_uuid]
-          rescue
-            # Not catch error
+        Xcodeproj::Project.open(@xcodeproj).targets.each do |target|
+          target.build_configuration_list.build_configurations.each do |build_configuration|
+            next if build_configuration.name != specified_configuration
+            block.call(build_configuration, target)
           end
         end
-
-        target
-      end
-
-      def target_build_configration
-        target_project_setting.build_configuration_list.build_configurations.reject{|conf| conf.name != @build_configuration}.first
-      end
-
-      def target_product_name
-        target_project_setting.product_name
-      end
-
-      def target_project_setting
-        scheme_file = find_xcschemes
-        xs = Xcodeproj::XCScheme.new(scheme_file)
-        target_name = xs.profile_action.buildable_product_runnable.buildable_reference.target_name
-
-        target_project.native_targets.reject{|target| target.name != target_name}.first
-      end
-
-      def target_project
-        Xcodeproj::Project.open(@xcodeproj)
-      end
-
-      def find_xcschemes
-        shared_schemes = Dir[File.join(@xcodeproj, 'xcshareddata', 'xcschemes', '*.xcscheme')].reject do |scheme|
-          @scheme != File.basename(scheme, '.xcscheme')
-        end
-        user_schemes = Dir[File.join(@xcodeproj, 'xcuserdata', '*.xcuserdatad', 'xcschemes', '*.xcscheme')].reject do |scheme|
-          @scheme != File.basename(scheme, '.xcscheme')
-        end
-
-        shared_schemes.concat(user_schemes).first
       end
 
       # @param [Array] workspaces
