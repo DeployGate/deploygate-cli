@@ -28,7 +28,7 @@ module DeployGate
 
           values = {
               export_method: export_method,
-              workspace: ios_analyze.build_workspace,
+              project: ios_analyze.xcodeproj,
               configuration: build_configuration || DeployGate::Xcode::Analyze::DEFAULT_BUILD_CONFIGURATION,
               scheme: target_scheme
           }

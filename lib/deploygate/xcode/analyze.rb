@@ -1,7 +1,7 @@
 module DeployGate
   module Xcode
     class Analyze
-      attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme
+      attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme, :xcodeproj
 
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       DEFAULT_BUILD_CONFIGURATION = 'Release'
