@@ -149,7 +149,7 @@ module DeployGate
       tags[:xcode_version] = version if version.present?
 
       puts ''
-      puts error_report(error, version, dg_version)
+      puts error_report(error, dg_version, version)
       if HighLine.agree(I18n.t('command_builder.error_handling.agree')) {|q| q.default = "y"}
         tags = {
             command: command,
