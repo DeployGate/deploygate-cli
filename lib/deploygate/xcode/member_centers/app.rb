@@ -5,9 +5,10 @@ module DeployGate
         attr_reader :uuid, :member_center
 
         # @param [String] uuid
+        # @param [Xcode::MemberCenter] member_center
         # @return [DeployGate::Xcode::MemberCenters::App]
-        def initialize(uuid)
-          @member_center = DeployGate::Xcode::MemberCenter.instance
+        def initialize(uuid, member_center)
+          @member_center = member_center
           @uuid = uuid
         end
 

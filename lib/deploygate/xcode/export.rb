@@ -17,7 +17,7 @@ module DeployGate
 
           case local_teams.teams_count
             when 0
-              target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
+              target_provisioning_profile = create_provisioning(bundle_identifier, uuid, provisioning_team)
             when 1
               target_provisioning_profile = select_profile(local_teams.first_team_profile_paths)
             else
@@ -202,9 +202,10 @@ module DeployGate
           end
         end
 
-        def create_provisioning(identifier, uuid)
-          app = MemberCenters::App.new(identifier)
-          provisioning_prifile = MemberCenters::ProvisioningProfile.new(identifier)
+        def create_provisioning(identifier, uuid, team_id)
+          member_center = Xcode::MemberCenter.new(team_id)
+          app = MemberCenters::App.new(identifier, member_center)
+          provisioning_prifile = MemberCenters::ProvisioningProfile.new(identifier, member_center)
 
           begin
             unless app.created?
