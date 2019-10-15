@@ -47,7 +47,8 @@ echo "Checking requirements..."
 
 checking "Checking ruby..."
 
-if ! type "ruby" >/dev/null 2>&1; then
+# rbenv has ruby command but it's just a hub so `type` may detect false-positive.
+if ! ruby -v >/dev/null 2>&1; then
   abort 'ruby is not found'
   warn "ruby is required to install dg. Please make sure ruby is installed."
   exit 1
@@ -69,7 +70,8 @@ ok "ruby's version ($(ruby --version)) is enough."
 
 checking "Checking bundler..."
 
-if ! type "bundle" >/dev/null 2>&1; then
+# rbenv has bundle command but it's just a hub so `type` may detect false-positive.
+if ! bundle -v >/dev/null 2>&1; then
   abort "bundle is not found"
   warn "bundle command is required to install dg. Please run ${BOLD}gem install bundler${RESET} to install it."
   exit 1
