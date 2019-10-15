@@ -14,14 +14,31 @@ dg: A command-line interface for DeployGate
 
 ## Installation
 
-Install *dg* as a non-system standalone binary. (Recommended)
+*Recommended*
+
+Install *dg* as a non-system standalone binary.
 
 ```bash
 curl -sL 'https://github.com/DeployGate/deploygate-cli/blob/master/install.bash' | [DG_VERSION=...] bash
-# You can uninstall dg by running `cd ~/.dg && rm -fr .bundle vendor link Gemfile Gemfile.lock && rm /usr/local/bin/dg`
+# If you would like to uninstall dg, then please run
+# cd ~/.dg && rm -fr .bundle vendor link Gemfile Gemfile.lock && rm /usr/local/bin/dg`
 ```
 
-Or run `gem install deploygate` to install *dg*.
+Or use `bundler` to install dg locally like the following:
+
+```Gemfile
+# Edit your Gemfile
+
+gem 'deploygate'
+```
+
+And then, execute `bundle install` with a path option.
+
+```bash
+bundle install --path=vendor/bundle
+```
+
+NOTE: We do not recommend that you install dg globally if you are not familier with ruby gem stuff.. i.e. `gem install deploygate`, `bundler` w/o a path option.
 
 ## Usage
 
