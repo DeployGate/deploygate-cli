@@ -40,6 +40,7 @@ module DeployGate
     def run
       setup()
 
+      program :help_paging, false
       program :name, I18n.t('command_builder.name')
       program :version,  VERSION
       program :description, I18n.t('command_builder.description')
