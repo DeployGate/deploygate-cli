@@ -20,7 +20,7 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.add_runtime_dependency 'json', '~> 1.8'
+  spec.add_runtime_dependency 'json', '~> 2.0'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
   spec.add_runtime_dependency 'plist', '~> 3.1'

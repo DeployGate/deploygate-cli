@@ -3,9 +3,13 @@ env:
   global:
     secure: gGY+C54Cfp082o5Oaf6tZqzfOlXsWSMcVNvTpoOgMfJGsHo//d9t/si9Bn1pFaFyjJedW+IcC0pt+FcKVCDgnsUaL0Y0HT/ZsGkV8k7vv9F5nbHOde4nk189Sr2HtHR3wdr7KaMh2/DialisnqllxgzxA/wRLfHKsjqRsjWUw/VWL5E7Z734mzpTGE2mVJNRj02/cs0Y/izZgdi6wrt4lEZfxE3jS+QkJZHMjGNfcwvH26whU6oX1PiJ4o5xl0Rr8Q8xav3wbtTCcOJNPSeMkkiH5sSXuqrjI6kgwvjlByKhyg2Ws0GvZLxAfTml+Vo5po1uWsohdZJaJcEhd4GsGfbMZWCFuBP2mCE+gVmkkMeJxRKnWoi6NotgPmqG1JWlzGngDB/hJ4wuuh+swa0KJvZGiMEJ5P3GNydCybEPOsk1Ww+lUkXRHxD+/LW03EkxMd5LA3He/nYXz3pWCYA6qcFgrYMmq+3ozjSaQr+1d/Iu14Awv5+cwCltPfl5bERDno0jc0TdSs/7qplAL/efpjBsP7DkGE5r521gg8mIiXx509jU08i9S60SXiw0RBnYyjE5SzlsiOqaFdJxVygDGcDIAA/GTefLHO9i3SinZHFS6jr3Xi/vpOIc7Jz4W2Jmuqv+CJP4gspPoAxdWOE/QipTt0Jv4kCMf7dJwd9jaRc=
 rvm:
-  - 2.2.0
+  - 2.4
+  - 2.5
+  - 2.6
+  - 2.7
 before_install:
   - gem install bundler -v 1.17.3
+install: BUNDLER_VERSION=1.17.3 bundle install --jobs=3 --retry=3
 script:
   - bundle exec rake
 deploy:

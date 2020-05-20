@@ -1,8 +1,15 @@
 # deploygate-cli
+
 [![Gem Version](https://badge.fury.io/rb/deploygate.svg)](https://badge.fury.io/rb/deploygate)
 [![Build Status](https://travis-ci.org/DeployGate/deploygate-cli.svg?branch=master)](https://travis-ci.org/DeployGate/deploygate-cli)
 
-A command-line interface for DeployGate
+dg: A command-line interface for DeployGate
+
+## Requirements
+
+*dg* runs with a minimal set of requirements.
+
+- Ruby 2.4+ (Depends on [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/))
 
 ## Installation
 
@@ -42,7 +49,7 @@ $ dg deploy [Android/iOS project path]
 
 ## License
 
-Copyright (C) 2015 DeployGate All rights reserved.
+Copyright (C) 2015- DeployGate All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
