@@ -20,5 +20,6 @@ deploy:
   on:
     tags: true
     repo: DeployGate/deploygate-cli
+    rvm: 2.4
 after_deploy:
   - 'curl -X POST --data-urlencode "payload={\"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate/|RubyGems>\"}" $SLACK_URL'
