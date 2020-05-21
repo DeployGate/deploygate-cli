@@ -38,44 +38,24 @@ module DeployGate
             analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
             target_scheme = analyze.scheme
 
-            # TODO: Support export method option (ex: --method adhoc)
-            codesigning_identity= nil
-            provisioning_style = analyze.provisioning_style
-            provisioning_profile_info = nil
-            if (!over_xcode?(8) && provisioning_style == nil) ||
-                provisioning_style == DeployGate::Xcode::Analyze::PROVISIONING_STYLE_MANUAL
-
-              # Only run Provisioning Style is Manual or nil
-              bundle_identifier = analyze.target_bundle_identifier
-              xcode_provisioning_profile_uuid = analyze.target_xcode_setting_provisioning_profile_uuid
-              provisioning_team = analyze.provisioning_team
-              target_provisioning_profile = DeployGate::Xcode::Export.provisioning_profile(
-                  bundle_identifier,
-                  xcode_provisioning_profile_uuid,
-                  provisioning_team
-              )
-
-              method = DeployGate::Xcode::Export.method(target_provisioning_profile)
-              codesigning_identity = DeployGate::Xcode::Export.codesigning_identity(target_provisioning_profile)
-
-              profile = FastlaneCore::ProvisioningProfile.parse(target_provisioning_profile)
-              provisioning_profile_info = {
-                  provisioningProfiles: {
-                      "#{bundle_identifier}" => profile['Name']
-                  }
-              }
-            else
-              method = select_method
+            code_sign_identity = nil
+            project_profile_info = nil
+            allow_provisioning_updates = true
+            if analyze.code_sign_style == Xcode::Analyze::PROVISIONING_STYLE_MANUAL
+              code_sign_identity = analyze.code_sign_identity
+              project_profile_info = analyze.project_profile_info
             end
+
+            method = Xcode::Export.method(analyze.target_provisioning_profile) || select_method
 
             ipa_path = DeployGate::Xcode::Ios.build(
                 analyze,
                 target_scheme,
-                codesigning_identity,
-                provisioning_profile_info,
+                code_sign_identity,
+                project_profile_info,
                 build_configuration,
                 method,
-                over_xcode?(9) && codesigning_identity.nil?
+                allow_provisioning_updates
             )
             Push.upload([ipa_path], options)
           end

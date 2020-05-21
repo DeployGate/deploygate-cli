@@ -12,12 +12,12 @@ module DeployGate
         # @param [String] uuid
         # @param [String] provisioning_team
         # @return [String]
-        def provisioning_profile(bundle_identifier, uuid = nil, provisioning_team = nil)
-          local_teams = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid, provisioning_team)
+        def provisioning_profile(bundle_identifier, uuid = nil, provisioning_team = nil, specifier_name = nil)
+          local_teams = DeployGate::Xcode::Export.find_local_data(bundle_identifier, uuid, provisioning_team, specifier_name)
 
           case local_teams.teams_count
             when 0
-              target_provisioning_profile = create_provisioning(bundle_identifier, uuid)
+              target_provisioning_profile = create_provisioning(bundle_identifier, uuid, provisioning_team)
             when 1
               target_provisioning_profile = select_profile(local_teams.first_team_profile_paths)
             else
@@ -32,12 +32,13 @@ module DeployGate
         # @param [String] uuid
         # @param [String] provisioning_team
         # @return [LocalTeams]
-        def find_local_data(bundle_identifier, uuid = nil, provisioning_team = nil)
+        def find_local_data(bundle_identifier, uuid = nil, provisioning_team = nil, specifier_name = nil)
           local_teams = LocalTeams.new
 
           profile_paths = load_profile_paths
           profiles = profile_paths.map{|p| profile_to_plist(p)}
           profiles.reject! {|profile| profile['UUID'] != uuid} unless uuid.nil?
+          profiles.reject! {|profile| profile['Name'] != specifier_name} unless specifier_name.nil?
 
           profiles.each do |profile|
             next if DateTime.now >= profile['ExpirationDate'] || !installed_certificate?(profile['Path'])
@@ -201,9 +202,10 @@ module DeployGate
           end
         end
 
-        def create_provisioning(identifier, uuid)
-          app = MemberCenters::App.new(identifier)
-          provisioning_prifile = MemberCenters::ProvisioningProfile.new(identifier)
+        def create_provisioning(identifier, uuid, team_id)
+          member_center = Xcode::MemberCenter.new(team_id)
+          app = MemberCenters::App.new(identifier, member_center)
+          provisioning_prifile = MemberCenters::ProvisioningProfile.new(identifier, member_center)
 
           begin
             unless app.created?

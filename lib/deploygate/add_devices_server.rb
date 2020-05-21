@@ -1,8 +1,7 @@
 module DeployGate
   class AddDevicesServer
 
-    def start(token, owner_name, bundle_id, distribution_key, args, options)
-      DeployGate::Xcode::MemberCenter.instance
+    def start(token, owner_name, bundle_id, distribution_key, member_center, args, options)
       options.server = false
 
       puts I18n.t('command_builder.add_devices.server.connecting')
@@ -15,7 +14,7 @@ module DeployGate
         raise res[:message]
       end
 
-      websocket_setup(server, bundle_id, push_token, action, args, options) do |socket|
+      websocket_setup(server, bundle_id, push_token, action, member_center, args, options) do |socket|
         puts HighLine.color(I18n.t('command_builder.add_devices.server.start'), HighLine::GREEN)
 
         Workers::PeriodicTimer.new(60) do
@@ -33,12 +32,12 @@ module DeployGate
       end
     end
 
-    def self.build(pool, bunlde_id, iphones, args, options)
+    def self.build(pool, bunlde_id, iphones, member_center, args, options)
       iphones.reject! { |iphone| iphone['is_registered'] } # remove udids if already registered
       devices = iphones.map do |iphone|
         udid = iphone['udid']
         device_name= iphone['device_name']
-        DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name)
+        DeployGate::Xcode::MemberCenters::Device.new(udid, '', device_name, member_center)
       end
       return if devices.empty?
 
@@ -53,7 +52,7 @@ module DeployGate
 
     private
 
-    def websocket_setup(server, bundle_id, push_token, target_action, args, options, &block)
+    def websocket_setup(server, bundle_id, push_token, target_action, member_center, args, options, &block)
       socket = SocketIO::Client::Simple.connect server
       socket.on :connect do
         socket.emit :subscribe, push_token
@@ -72,7 +71,7 @@ module DeployGate
         data = JSON.parse(push_data['data'])
 
         iphones = data['iphones']
-        DeployGate::AddDevicesServer.build(pool, bundle_id, iphones, args, options)
+        DeployGate::AddDevicesServer.build(pool, bundle_id, iphones, member_center, args, options)
       end
     end
   end

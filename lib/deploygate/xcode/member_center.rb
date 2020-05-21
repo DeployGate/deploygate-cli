@@ -1,15 +1,12 @@
-require 'singleton'
-
 module DeployGate
   module Xcode
     class MemberCenter
-      include Singleton
       attr_reader :email, :method, :team, :launcher
 
-      def initialize
+      def initialize(team_id)
         @email = input_email
         @launcher = Spaceship::Launcher.new @email
-        @team = @launcher.select_team
+        @team = @launcher.select_team(team_id: team_id)
 
         if @launcher.client.in_house?
           @method = Export::ENTERPRISE

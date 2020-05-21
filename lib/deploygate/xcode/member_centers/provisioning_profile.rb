@@ -12,8 +12,8 @@ module DeployGate
         OUTPUT_PATH = '/tmp/dg/provisioning_profile/'
         CERTIFICATE_OUTPUT_PATH = '/tmp/dg/certificate/'
 
-        def initialize(app_identifier)
-          @member_center = DeployGate::Xcode::MemberCenter.instance
+        def initialize(app_identifier, member_center)
+          @member_center = member_center
           @app_identifier = app_identifier
 
           FileUtils.mkdir_p(OUTPUT_PATH)

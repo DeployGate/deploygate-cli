@@ -9,6 +9,9 @@ describe DeployGate::Xcode::Ios do
       def build_workspace
         ''
       end
+      def xcodeproj
+        ''
+      end
     end
   end
 

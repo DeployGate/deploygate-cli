@@ -21,22 +21,27 @@ module DeployGate
           distribution_key = options.distribution_key
           server           = options.server
 
-          bundle_id = bundle_id(work_dir, options.configuration)
+          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
+          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
+          analyze = DeployGate::Xcode::Analyze.new(workspaces, options.configuration)
+          bundle_id = analyze.target_bundle_identifier
+          developer_team = analyze.developer_team
+          member_center = DeployGate::Xcode::MemberCenter.new(developer_team)
 
           if server
-            run_server(session, owner, bundle_id, distribution_key, args, options)
+            run_server(session, owner, bundle_id, distribution_key, member_center, args, options)
           else
-            device_register(session, owner, udid, device_name, bundle_id, args, options)
+            device_register(session, owner, udid, device_name, bundle_id, member_center, args, options)
           end
         end
 
-        def run_server(session, owner, bundle_id, distribution_key, args, options)
-          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, distribution_key, args, options)
+        def run_server(session, owner, bundle_id, distribution_key, member_center, args, options)
+          DeployGate::AddDevicesServer.new().start(session.token, owner, bundle_id, distribution_key, member_center, args, options)
         end
 
-        def device_register(session, owner, udid, device_name, bundle_id, args, options)
+        def device_register(session, owner, udid, device_name, bundle_id, member_center, args, options)
           if udid.nil? && device_name.nil?
-            devices = fetch_devices(session.token, owner, bundle_id)
+            devices = fetch_devices(session.token, owner, bundle_id, member_center)
             select_devices = select_devices(devices)
             not_device if select_devices.empty?
 
@@ -44,7 +49,7 @@ module DeployGate
           else
             register_udid = udid || HighLine.ask(I18n.t('commands.add_devices.input_udid'))
             register_device_name = device_name || HighLine.ask(I18n.t('commands.add_devices.input_device_name'))
-            device = DeployGate::Xcode::MemberCenters::Device.new(register_udid, '', register_device_name)
+            device = DeployGate::Xcode::MemberCenters::Device.new(register_udid, '', register_device_name, member_center)
 
             puts device.to_s
             if HighLine.agree(I18n.t('commands.add_devices.device_register_confirm')) {|q| q.default = "y"}
@@ -54,7 +59,7 @@ module DeployGate
             end
           end
 
-          build!(bundle_id, args, options)
+          build!(bundle_id, member_center, args, options)
         end
 
         def register!(devices)
@@ -64,18 +69,18 @@ module DeployGate
           end
         end
 
-        def build!(bundle_id, args, options)
-          app = DeployGate::Xcode::MemberCenters::App.new(bundle_id)
+        def build!(bundle_id, member_center, args, options)
+          app = DeployGate::Xcode::MemberCenters::App.new(bundle_id, member_center)
           app.create! unless app.created?
 
-          DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id).create!
-          team = DeployGate::Xcode::MemberCenter.instance.team
+          DeployGate::Xcode::MemberCenters::ProvisioningProfile.new(bundle_id, member_center).create!
+          team = member_center.team
           DeployGate::Xcode::Export.clean_provisioning_profiles(bundle_id, team)
 
           DeployGate::Commands::Deploy::Build.run(args, options)
         end
 
-        def fetch_devices(token, owner, bundle_id)
+        def fetch_devices(token, owner, bundle_id, member_center)
           res = DeployGate::API::V1::Users::App.not_provisioned_udids(token, owner, bundle_id)
           if res[:error]
             case res[:message]
@@ -89,19 +94,9 @@ module DeployGate
           end
 
           results = res[:results]
-          devices = results.map{|r| DeployGate::Xcode::MemberCenters::Device.new(r[:udid], r[:user_name], r[:device_name])}
+          devices = results.map{|r| DeployGate::Xcode::MemberCenters::Device.new(r[:udid], r[:user_name], r[:device_name], member_center)}
 
           devices
-        end
-
-        # @param [String] work_dir
-        # @param [String] build_configuration
-        # @return [String]
-        def bundle_id(work_dir, build_configuration)
-          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
-          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
-          analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration)
-          analyze.target_bundle_identifier
         end
 
         # @param [Array]

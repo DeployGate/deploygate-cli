@@ -2,7 +2,8 @@ describe DeployGate::Xcode::MemberCenters::App do
   let(:email) { 'test@example.com' }
   let(:registered_uuid) { 'com.example.test.registered' }
   let(:non_registered_uuid) { 'com.example.test.non.registered' }
-  let(:app) { DeployGate::Xcode::MemberCenters::App.new('com.example.test.new.app') }
+  let(:member_center) { DeployGate::Xcode::MemberCenter.new('com-example-team-id') }
+  let(:app) { DeployGate::Xcode::MemberCenters::App.new('com.example.test.new.app', member_center) }
 
   before do
     allow_any_instance_of(Spaceship::PortalClient).to receive(:login) {}
@@ -18,13 +19,13 @@ describe DeployGate::Xcode::MemberCenters::App do
   context "#created?" do
 
     it "app created" do
-      app = DeployGate::Xcode::MemberCenters::App.new(registered_uuid)
+      app = DeployGate::Xcode::MemberCenters::App.new(registered_uuid, member_center)
 
       expect(app.created?).to be_truthy
     end
 
     it "no app created" do
-      app = DeployGate::Xcode::MemberCenters::App.new(non_registered_uuid)
+      app = DeployGate::Xcode::MemberCenters::App.new(non_registered_uuid, member_center)
 
       expect(app.created?).to be_falsey
     end
