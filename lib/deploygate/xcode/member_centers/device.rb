@@ -5,6 +5,8 @@ module DeployGate
         attr_reader :udid, :user_name ,:device_name, :member_center
         attr_accessor :register_name
 
+        REGISTER_NAME_MAX_LENGTH = 50
+
         # @param [String] udid
         # @param [String] user_name
         # @param [String] device_name
@@ -42,7 +44,13 @@ module DeployGate
           name += "#{user_name} - " if !user_name.nil? && user_name != ''
           name += device_name
 
-          name
+          register_name_trim(name)
+        end
+
+        # Device name must be 50 characters or less.
+        def register_name_trim(name)
+          return name if name.length <= REGISTER_NAME_MAX_LENGTH
+          name.slice(0, REGISTER_NAME_MAX_LENGTH)
         end
       end
     end
