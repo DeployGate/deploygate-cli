@@ -80,7 +80,7 @@ module DeployGate
           certificates = installed_certificates()
           ids = []
           certificates.each do |current|
-            next unless current.match(/iPhone Distribution:/)
+            next unless current.match(/iPhone Distribution:/) || current.match(/Apple Distribution:/)
             begin
               (ids << current.match(/.*\) (.*) \".*/)[1])
             rescue
@@ -92,12 +92,12 @@ module DeployGate
         end
 
         # @return [Array]
-        def installed_distribution_conflicting_certificates
+        def installed_distribution_conflicting_certificates_by(distribution_name)
           certificates = installed_certificates()
           names = []
           certificates.each do |current|
             begin
-              names << current.match(/(iPhone Distribution:.*)/)[1]
+              names << current.match(/(#{distribution_name}:.*)/)[1]
             rescue
             end
           end
@@ -106,7 +106,7 @@ module DeployGate
           conflicting_certificates = []
           certificates.each do |current|
             begin
-              name = current.match(/(iPhone Distribution:.*)/)[1]
+              name = current.match(/(#{distribution_name}:.*)/)[1]
               next unless conflicting_names.include?(name)
               conflicting_certificates << current
             rescue
@@ -255,12 +255,16 @@ module DeployGate
             exit
           end
 
-          conflicting_certificates = installed_distribution_conflicting_certificates
-          if conflicting_certificates.count > 0
+          iphone_conflicting_certificates = installed_distribution_conflicting_certificates_by('iPhone Distribution')
+          apple_conflicting_certificates = installed_distribution_conflicting_certificates_by('Apple Distribution')
+          if iphone_conflicting_certificates.count > 0 || apple_conflicting_certificates.count > 0
             puts HighLine.color(I18n.t('xcode.export.check_local_certificates.conflict_certificate.error_message'), HighLine::RED)
             puts ''
             puts I18n.t('xcode.export.check_local_certificates.conflict_certificate.note')
-            conflicting_certificates.each do |certificate|
+            iphone_conflicting_certificates.each do |certificate|
+              puts certificate
+            end
+            apple_conflicting_certificates.each do |certificate|
               puts certificate
             end
             puts ""
