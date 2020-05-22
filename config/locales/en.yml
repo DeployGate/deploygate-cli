@@ -142,16 +142,16 @@ en:
         choice: '%{team_name} %{team_id}'
       check_local_certificates:
         not_local_install_certificate:
-          error_message: 'Error: No applicable iPhone Distribution certificate found on your Mac.'
+          error_message: 'Error: No applicable iPhone Distribution or Apple Distribution certificate found on your Mac.'
           note: |
-            No "iPhone Distribution" certificate and/or corresponding private key installed locally.
+            No "iPhone Distribution" or "Apple Distribution" certificate and/or corresponding private key installed locally.
             To sign your application code, make sure you have installed them and available in your Keychain.
 
             See also: https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html
         conflict_certificate:
           error_message: 'Error: Too many certificates found.'
           note: |
-            You have more than one "iPhone Distribution" certificate installed on your Mac.
+            You have more than one "iPhone Distribution" or "Apple Distribution" certificate installed on your Mac.
             Please remove other unnecessary certificates from your Keychain.
       clean_provisioning_profiles:
         start: 'Cleaning local Provisioning Profiles...'
@@ -171,5 +171,5 @@ en:
           Note: Your password will be stored to your Keychain and never be sent to DeployGate.
         email: 'Email: '
       provisioning_profile:
-        not_installed_certificate_error: 'No iPhone Distribution Certificate associated with private key was found in local Keychain'
+        not_installed_certificate_error: 'No iPhone Distribution or Apple Distribution Certificate associated with private key was found in local Keychain'
         not_exist_uuid_provisioning_profile_error: 'No provisioning profile found for the specified UUID (%{uuid})'

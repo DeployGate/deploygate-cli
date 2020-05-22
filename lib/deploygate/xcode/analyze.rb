@@ -53,7 +53,7 @@ module DeployGate
         identity
       end
 
-      # Support Xcode7 more
+      # TODO: Need to support UDID additions for watchOS and App Extension
       # @return [String]
       def target_bundle_identifier
         bundle_identifier = nil
@@ -96,7 +96,17 @@ module DeployGate
 
         Xcodeproj::Project.open(@xcodeproj).targets.each do |target|
           target.build_configuration_list.build_configurations.each do |build_configuration|
-            next if build_configuration.name != specified_configuration
+            # Used the following code as an example
+            # https://github.com/fastlane/fastlane/blob/2.148.1/gym/lib/gym/code_signing_mapping.rb#L138
+            current = build_configuration.build_settings
+            next if gym.test_target?(current)
+            sdk_root = build_configuration.resolve_build_setting("SDKROOT", target)
+            next unless gym.same_platform?(sdk_root)
+            next unless specified_configuration == build_configuration.name
+
+            # If SKIP_INSTALL is true, it is an app extension or watch app
+            next if current["SKIP_INSTALL"]
+
             block.call(build_configuration, target)
           end
         end

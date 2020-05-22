@@ -35,16 +35,22 @@ module DeployGate
 
         # @return [Array]
         def all_create
-          if @member_center.adhoc?
-            prod_certs = @member_center.launcher.certificate.production.all
-          else
-            prod_certs = @member_center.launcher.certificate.all.reject{|cert| cert.class != Spaceship::Portal::Certificate::InHouse}
-          end
+          prod_certs = if @member_center.adhoc?
+                         @member_center.launcher.certificate.all.select{|cert|
+                           cert.class == Spaceship::Portal::Certificate::Production ||
+                               cert.class == Spaceship::Portal::Certificate::AppleDistribution
+                         }
+                       else
+                         @member_center.launcher.certificate.all.select{|cert|
+                           cert.class == Spaceship::Portal::Certificate::InHouse
+                         }
+                       end
 
           # check local install certificate
           FileUtils.mkdir_p(CERTIFICATE_OUTPUT_PATH)
           distribution_cert_ids = []
           prod_certs.each do |cert|
+            next if cert.expires < Time.now
             path = File.join(CERTIFICATE_OUTPUT_PATH, "#{cert.id}.cer")
             raw_data = cert.download_raw
             File.write(path, raw_data)
