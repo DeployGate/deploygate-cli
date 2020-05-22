@@ -53,7 +53,7 @@ module DeployGate
         identity
       end
 
-      # Support Xcode7 more
+      # TODO: Need to support UDID additions for watchOS and App Extension
       # @return [String]
       def target_bundle_identifier
         bundle_identifier = nil
@@ -104,7 +104,7 @@ module DeployGate
             next unless gym.same_platform?(sdk_root)
             next unless specified_configuration == build_configuration.name
 
-            # TODO: Need to support UDID additions for watchOS and App Extension
+            # If SKIP_INSTALL is true, it is an app extension or watch app
             next if current["SKIP_INSTALL"]
 
             block.call(build_configuration, target)
