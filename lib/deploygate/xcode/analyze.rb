@@ -104,6 +104,9 @@ module DeployGate
             next unless gym.same_platform?(sdk_root)
             next unless specified_configuration == build_configuration.name
 
+            # TODO: Need to support UDID additions for watchOS and App Extension
+            next if current["SKIP_INSTALL"]
+
             block.call(build_configuration, target)
           end
         end
