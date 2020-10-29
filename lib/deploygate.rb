@@ -1,3 +1,4 @@
+require "resolv-replace"
 require "commander"
 require "json"
 require "httpclient"
