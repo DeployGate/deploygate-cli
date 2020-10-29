@@ -45,7 +45,11 @@ module DeployGate
         private
 
         def client
-          HTTPClient.new(:agent_name => "dg/#{DeployGate::VERSION}")
+          timeout = 60 * 5 # 5 minutes
+          HTTPClient.new(agent_name: "dg/#{DeployGate::VERSION}").tap do |c|
+            c.receive_timeout = timeout
+            c.send_timeout = timeout
+          end
         end
 
         def headers
