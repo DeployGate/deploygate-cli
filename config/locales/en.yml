@@ -1,5 +1,7 @@
 ---
 en:
+  errors:
+    check_update_failure: 'Checking update failed'
   command_builder:
     name: 'dg'
     description: 'Control DeployGate from your terminal.'
@@ -46,9 +48,6 @@ en:
       #################################################################
     not_internet_connection_error: 'Error: Not internet connection. Please by connecting to the internet'
   commands:
-    _setup:
-      check_update:
-        error: 'Checking update failed'
     deploy:
       build:
         print_no_target: |
