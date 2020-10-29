@@ -203,6 +203,8 @@ EOF
       else
         request_gem_update_checker
       end
+    rescue => e
+      STDERR.puts I18n.t('errors.check_update_failure')
     end
 
     # @return [void]

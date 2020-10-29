@@ -1,5 +1,7 @@
 ---
 en:
+  errors:
+    check_update_failure: 'Checking update failed'
   command_builder:
     name: 'dg'
     description: 'Control DeployGate from your terminal.'
