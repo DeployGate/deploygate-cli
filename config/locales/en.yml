@@ -46,6 +46,9 @@ en:
       #################################################################
     not_internet_connection_error: 'Error: Not internet connection. Please by connecting to the internet'
   commands:
+    _setup:
+      check_update:
+        error: 'Checking update failed'
     deploy:
       build:
         print_no_target: |
