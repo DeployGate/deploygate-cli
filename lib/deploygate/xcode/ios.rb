@@ -28,10 +28,16 @@ module DeployGate
 
           values = {
               export_method: export_method,
-              project: ios_analyze.xcodeproj,
               configuration: build_configuration || DeployGate::Xcode::Analyze::DEFAULT_BUILD_CONFIGURATION,
               scheme: target_scheme
           }
+
+          if ios_analyze.build_workspace
+            values[:workspace] = ios_analyze.build_workspace
+          else
+            values[:project] = ios_analyze.xcodeproj
+          end
+
           values[:codesigning_identity] = codesigning_identity if codesigning_identity
           if allow_provisioning_updates
             values[:xcargs]        = '-allowProvisioningUpdates'
