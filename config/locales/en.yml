@@ -2,6 +2,8 @@
 en:
   errors:
     check_update_failure: 'Checking update failed'
+    account_not_found_error: 'Your account was not found. Please create it from https://deploygate.com.'
+
   command_builder:
     name: 'dg'
     description: 'Control DeployGate from your terminal.'

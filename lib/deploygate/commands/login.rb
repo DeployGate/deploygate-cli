@@ -8,7 +8,7 @@ module DeployGate
           welcome()
 
           if options.terminal
-            start_login_or_create_account()
+            start_login()
           else
             DeployGate::BrowserLogin.new().start()
           end
@@ -20,7 +20,8 @@ module DeployGate
         end
 
         # @return [void]
-        def start_login_or_create_account
+        # @raise [AccountNotFoundError] emailに一致するUserが存在しないとき
+        def start_login
           puts ''
           email = ask(I18n.t('commands.login.start_login_or_create_account.email'))
 
@@ -32,7 +33,7 @@ module DeployGate
             puts ''
             start(email, password)
           else
-            create_account(email)
+            raise AccountNotFoundError, 'No users matching email were found'
           end
         end
 
@@ -54,33 +55,6 @@ module DeployGate
         def login_success
           session = Session.new
           puts HighLine.color(I18n.t('commands.login.start.success', name: session.name), HighLine::GREEN)
-        end
-
-        # @param [String] email
-        # @return [void]
-        def create_account(email)
-          puts I18n.t('commands.login.create_account.prompt')
-          puts ''
-
-          name = input_new_account_name()
-          puts ''
-
-          password = input_new_account_password()
-          puts ''
-
-          unless check_terms
-            puts HighLine.color(I18n.t('commands.login.check_terms.error'), HighLine::RED)
-            exit 1
-          end
-
-          print I18n.t('commands.login.create_account.creating')
-          if DeployGate::User.create(name, email, password).nil?
-            puts HighLine.color(I18n.t('commands.login.create_account.error'), HighLine::RED)
-            raise 'User create error'
-          else
-            puts HighLine.color(I18n.t('commands.login.create_account.success'), HighLine::GREEN)
-            start(email, password)
-          end
         end
 
         # @return [String]
