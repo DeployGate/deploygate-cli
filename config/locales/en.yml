@@ -107,28 +107,6 @@ en:
           Could not log in to DeployGate.
           Please try again.
         success: 'Hello %{name}!'
-      create_account:
-        prompt: "Looks new to DeployGate. Let's set up your account, just choose your user name and password."
-        creating: 'Creating your account... '
-        error: |
-          Could not create your account.
-          Please try again.
-        success: 'done! Your account has been set up successfully.'
-      input_new_account_name:
-        input_user_name: 'Username: '
-        checking: 'Checking for availability... '
-        already_used_user_name: 'Sorry, %{user_name} was already taken. Please try again.'
-        success: 'Good, %{user_name} is available.'
-      input_new_account_password:
-        input_password: 'Password: '
-        input_same_password: 'Type the same password: '
-        error: "Passwords didn't match. Please type again."
-      check_terms:
-        terms_url: 'Terms of Service: https://deploygate.com/terms'
-        privacy_url: 'Privacy Policy: https://deploygate.com/terms/privacy'
-        note: "DeployGate properly manages your account information under GDPR, Japan's Personal Information Protection Act and our Privacy Policy."
-        text: 'I agree to the Terms of Service and Privacy Policy (y/n) '
-        error: 'You must agree to the Terms of Service and Privacy Policy.'
     logout:
       success: |
         Logout success!
