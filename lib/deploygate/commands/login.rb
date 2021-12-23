@@ -1,6 +1,8 @@
 module DeployGate
   module Commands
     class Login
+      class AccountNotFoundError < DeployGate::RavenIgnoreException; end
+
       class << self
 
         # @return [void]
@@ -33,7 +35,7 @@ module DeployGate
             puts ''
             start(email, password)
           else
-            raise AccountNotFoundError, 'No users matching email were found'
+            raise AccountNotFoundError, HighLine.color(I18n.t('errors.account_not_found_error'))
           end
         end
 

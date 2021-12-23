@@ -53,9 +53,6 @@ module DeployGate
           options.default :terminal => false
           begin
             Commands::Login.run(args, options)
-          rescue Commands::AccountNotFoundError => e
-            puts HighLine.color(I18n.t('errors.account_not_found_error'), HighLine::RED)
-            exit 1
           rescue => e
             error_handling(LOGIN, e)
             exit 1
@@ -77,9 +74,6 @@ module DeployGate
           options.default :message => '', :user => nil, :open => false, 'disable_notify' => false, :command => nil
           begin
             Commands::Deploy.run(args, options)
-          rescue Commands::AccountNotFoundError => e
-            puts HighLine.color(I18n.t('errors.account_not_found_error'), HighLine::RED)
-            exit 1
           rescue => e
             error_handling(DEPLOY, e)
             exit 1
@@ -101,9 +95,6 @@ module DeployGate
           options.default :user => nil, :server => false, :command => 'add_devices'
           begin
             Commands::AddDevices.run(args, options)
-          rescue Commands::AccountNotFoundError => e
-            puts HighLine.color(I18n.t('errors.account_not_found_error'), HighLine::RED)
-            exit 1
           rescue => e
             error_handling(ADD_DEVICES, e)
             exit 1
