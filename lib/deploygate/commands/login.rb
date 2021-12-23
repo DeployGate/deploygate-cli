@@ -15,7 +15,7 @@ module DeployGate
         end
 
         def welcome
-          puts I18n.t('commands.login.start_login_or_create_account.welcome')
+          puts I18n.t('commands.login.start_login.welcome')
           print_deploygate_aa()
         end
 
@@ -23,13 +23,13 @@ module DeployGate
         # @raise [AccountNotFoundError] emailに一致するUserが存在しないとき
         def start_login
           puts ''
-          email = ask(I18n.t('commands.login.start_login_or_create_account.email'))
+          email = ask(I18n.t('commands.login.start_login.email'))
 
           puts ''
-          puts I18n.t('commands.login.start_login_or_create_account.check_account')
+          puts I18n.t('commands.login.start_login.check_account')
           if DeployGate::User.registered?('', email)
             puts ''
-            password = input_password(I18n.t('commands.login.start_login_or_create_account.input_password'))
+            password = input_password(I18n.t('commands.login.start_login.input_password'))
             puts ''
             start(email, password)
           else

@@ -97,7 +97,7 @@ en:
           $ dg login
       print_login_user: 'User name: %{name}'
     login:
-      start_login_or_create_account:
+      start_login:
         welcome: 'Welcome to DeployGate!'
         email: 'Email: '
         check_account: 'Checking for your account...'
