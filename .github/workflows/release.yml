@@ -1,0 +1,29 @@
+name: Release built gem on tag-push
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec rake build
+      - id: gem
+        run: echo "::set-output name=result::$(find pkg -name 'deploygate-*.gem' -type f | head -1)"
+      - run:
+        command: |
+          curl --data-binary '@${{ steps.result.outputs.result }}' \
+            -H 'Authorization: ${{ secrets.RUBYGEMS_API_KEY }}' \
+            "https://rubygems.org/api/v1/gems"
+      - uses: slackapi/slack-github-action@v1.16.0
+        with:
+          payload: "{\"text\": \"Released a deploygate gem in <https://rubygems.org/gems/deploygate/|RubyGems>\"}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SHARED_FOR_RELEASE_ARTIFACT_SLACK_INCOMING_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
