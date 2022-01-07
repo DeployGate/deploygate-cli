@@ -11,7 +11,7 @@ module DeployGate
 
           session = DeployGate::Session.new
           unless session.login?
-            Login.start_login_or_create_account()
+            Login.start_login()
             session = DeployGate::Session.new()
           end
 

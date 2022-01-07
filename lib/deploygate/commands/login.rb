@@ -1,6 +1,8 @@
 module DeployGate
   module Commands
     class Login
+      class AccountNotFoundError < DeployGate::RavenIgnoreException; end
+
       class << self
 
         # @return [void]
@@ -8,31 +10,32 @@ module DeployGate
           welcome()
 
           if options.terminal
-            start_login_or_create_account()
+            start_login()
           else
             DeployGate::BrowserLogin.new().start()
           end
         end
 
         def welcome
-          puts I18n.t('commands.login.start_login_or_create_account.welcome')
+          puts I18n.t('commands.login.start_login.welcome')
           print_deploygate_aa()
         end
 
         # @return [void]
-        def start_login_or_create_account
+        # @raise [AccountNotFoundError] emailに一致するUserが存在しないとき
+        def start_login
           puts ''
-          email = ask(I18n.t('commands.login.start_login_or_create_account.email'))
+          email = ask(I18n.t('commands.login.start_login.email'))
 
           puts ''
-          puts I18n.t('commands.login.start_login_or_create_account.check_account')
+          puts I18n.t('commands.login.start_login.check_account')
           if DeployGate::User.registered?('', email)
             puts ''
-            password = input_password(I18n.t('commands.login.start_login_or_create_account.input_password'))
+            password = input_password(I18n.t('commands.login.start_login.input_password'))
             puts ''
             start(email, password)
           else
-            create_account(email)
+            raise AccountNotFoundError, HighLine.color(I18n.t('errors.account_not_found_error'))
           end
         end
 
@@ -54,69 +57,6 @@ module DeployGate
         def login_success
           session = Session.new
           puts HighLine.color(I18n.t('commands.login.start.success', name: session.name), HighLine::GREEN)
-        end
-
-        # @param [String] email
-        # @return [void]
-        def create_account(email)
-          puts I18n.t('commands.login.create_account.prompt')
-          puts ''
-
-          name = input_new_account_name()
-          puts ''
-
-          password = input_new_account_password()
-          puts ''
-
-          unless check_terms
-            puts HighLine.color(I18n.t('commands.login.check_terms.error'), HighLine::RED)
-            exit 1
-          end
-
-          print I18n.t('commands.login.create_account.creating')
-          if DeployGate::User.create(name, email, password).nil?
-            puts HighLine.color(I18n.t('commands.login.create_account.error'), HighLine::RED)
-            raise 'User create error'
-          else
-            puts HighLine.color(I18n.t('commands.login.create_account.success'), HighLine::GREEN)
-            start(email, password)
-          end
-        end
-
-        # @return [String]
-        def input_new_account_name
-          user_name = ask(I18n.t('commands.login.input_new_account_name.input_user_name'))
-          print I18n.t('commands.login.input_new_account_name.checking')
-
-          if DeployGate::User.registered?(user_name, '')
-            puts HighLine.color(I18n.t('commands.login.input_new_account_name.already_used_user_name', user_name: user_name), HighLine::RED)
-            return input_new_account_name()
-          else
-            puts HighLine.color(I18n.t('commands.login.input_new_account_name.success', user_name: user_name), HighLine::GREEN)
-            return user_name
-          end
-        end
-
-        # @return [String]
-        def input_new_account_password
-          password = input_password(I18n.t('commands.login.input_new_account_password.input_password'))
-          secound_password = input_password(I18n.t('commands.login.input_new_account_password.input_same_password'))
-
-          if password == secound_password
-            return password
-          else
-            puts HighLine.color(I18n.t('commands.login.input_new_account_password.error'), HighLine::RED)
-            return input_new_account_password()
-          end
-        end
-
-        # @return [boolean]
-        def check_terms
-          puts I18n.t('commands.login.check_terms.terms_url')
-          puts I18n.t('commands.login.check_terms.privacy_url')
-          puts I18n.t('commands.login.check_terms.note')
-          puts ''
-          HighLine.agree(I18n.t('commands.login.check_terms.text')) {|q| q.default = "n"}
         end
 
         # @return [String]
