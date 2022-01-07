@@ -10,7 +10,7 @@ jobs:
         ruby_version:
           - 2.6
           - 2.7
-          - 3.0
+          # - 3.0 # needs to upgrade fastlane and activesupport else
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
