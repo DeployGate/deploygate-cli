@@ -1,0 +1,21 @@
+name: Run jobs on every PR
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        ruby_version:
+          - 2.6
+          - 2.7
+          # - 3.0 # needs to upgrade fastlane and activesupport else
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version:  ${{ matrix.ruby_version }}
+          bundler-cache: true
+      - run: bundle exec rake

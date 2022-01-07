@@ -9,7 +9,7 @@ dg: A command-line interface for DeployGate
 
 *dg* runs with a minimal set of requirements.
 
-- Ruby 2.4+ (Depends on [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/))
+- Ruby 2.6+ (Depends on [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/))
 
 ## Installation
 
