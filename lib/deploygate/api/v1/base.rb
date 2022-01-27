@@ -4,6 +4,10 @@ module DeployGate
       class Base
         BASE_URL     = ENV['DG_DEVELOP_URL'] || 'https://deploygate.com'
         API_BASE_URL = "#{BASE_URL}/api"
+        BASE_HEADERS = [
+          ['X-DEPLOYGATE-CLIENT-ID', "cli/#{::DeployGate::VERSION_CODE}"],
+          ['X-DEPLOYGATE-CLIENT-VERSION-NAME', ::DeployGate::VERSION],
+        ].freeze
 
         # @param [String] token
         # @return [DeployGate::API::V1::Base]
@@ -53,7 +57,8 @@ module DeployGate
         end
 
         def headers
-          extheaders = []
+          extheaders = BASE_HEADERS.dup
+
           unless @token.nil?
             extheaders.push(['AUTHORIZATION', @token])
           end
