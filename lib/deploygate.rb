@@ -36,6 +36,7 @@ require "xcodeproj"
 module DeployGate
 end
 
+require "deploygate/version"
 require "deploygate/raven_ignore_exception"
 require "deploygate/api/v1/base"
 require "deploygate/api/v1/session"
@@ -72,4 +73,3 @@ require "deploygate/xcode/ios"
 require "deploygate/android/gradle_deploy"
 require "deploygate/android/gradle_plugin_installer"
 require "deploygate/android/gradle_project"
-require "deploygate/version"
