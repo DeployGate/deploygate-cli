@@ -16,12 +16,12 @@ module DeployGate
       # @param [String] build_configuration
       # @param [String] target_scheme
       # @return [DeployGate::Xcode::Analyze]
-      def initialize(workspaces, build_configuration = nil, target_scheme = nil)
+      def initialize(workspaces, build_configuration = nil, target_scheme = nil, xcodeproj_path = nil)
         @workspaces = workspaces
         @build_configuration = build_configuration || DEFAULT_BUILD_CONFIGURATION
         @scheme_workspace = find_scheme_workspace(workspaces)
         @build_workspace = find_build_workspace(workspaces)
-        @xcodeproj = File.dirname(@scheme_workspace)
+        @xcodeproj = xcodeproj_path.presence || File.dirname(@scheme_workspace)
 
         config = FastlaneCore::Configuration.create(Gym::Options.available_options, { project: @xcodeproj })
         Gym.config = config
