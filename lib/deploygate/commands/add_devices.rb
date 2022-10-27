@@ -21,9 +21,12 @@ module DeployGate
           distribution_key = options.distribution_key
           server           = options.server
 
+          build_configuration = options.configuration
+          xcodeproj_path = options.xcodeproj
+
           root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
           workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
-          analyze = DeployGate::Xcode::Analyze.new(workspaces, options.configuration)
+          analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, nil, xcodeproj_path)
           bundle_id = analyze.target_bundle_identifier
           developer_team = analyze.developer_team
           member_center = DeployGate::Xcode::MemberCenter.new(developer_team)

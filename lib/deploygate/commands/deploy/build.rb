@@ -34,8 +34,9 @@ module DeployGate
             DeployGate::Xcode::Export.check_local_certificates
             build_configuration = options.configuration
             target_scheme = options.scheme
+            xcodeproj_path = options.xcodeproj
 
-            analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme)
+            analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, target_scheme, xcodeproj_path)
             target_scheme = analyze.scheme
 
             code_sign_identity = nil
