@@ -1,7 +1,7 @@
 module DeployGate
   module Xcode
     class Analyze
-      attr_reader :workspaces, :scheme_workspace, :build_workspace, :scheme, :xcodeproj
+      attr_reader :workspaces, :build_workspace, :scheme, :xcodeproj
 
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       DEFAULT_BUILD_CONFIGURATION = 'Release'
@@ -19,9 +19,8 @@ module DeployGate
       def initialize(workspaces, build_configuration = nil, target_scheme = nil, xcodeproj_path = nil)
         @workspaces = workspaces
         @build_configuration = build_configuration || DEFAULT_BUILD_CONFIGURATION
-        @scheme_workspace = find_scheme_workspace(workspaces)
         @build_workspace = find_build_workspace(workspaces)
-        @xcodeproj = xcodeproj_path.presence || File.dirname(@scheme_workspace)
+        @xcodeproj = xcodeproj_path.presence || find_xcodeproj(workspaces)
 
         config = FastlaneCore::Configuration.create(Gym::Options.available_options, { project: @xcodeproj })
         Gym.config = config
@@ -114,18 +113,21 @@ module DeployGate
 
       # @param [Array] workspaces
       # @return [String]
-      def find_scheme_workspace(workspaces)
+      def find_xcodeproj(workspaces)
         return nil if workspaces.empty?
-        return workspaces.first if workspaces.count == 1
 
-        select = nil
-        workspaces.each do |workspace|
-          if BASE_WORK_DIR_NAME == File.basename(workspace)
-            select = workspace
+        if workspaces.count == 1
+          scheme_workspace = workspaces.first
+        else
+          scheme_workspace = nil
+          workspaces.each do |workspace|
+            if BASE_WORK_DIR_NAME == File.basename(workspace)
+              scheme_workspace = workspace
+            end
           end
         end
 
-        select
+        scheme_workspace != nil ? File.dirname(scheme_workspace) : nil
       end
 
       # @param [Array] workspaces
