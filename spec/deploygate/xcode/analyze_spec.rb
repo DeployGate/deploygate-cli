@@ -17,6 +17,23 @@ describe DeployGate::Xcode::Analyze do
         allow(Gym).to receive(:config=)
       end
 
+      context 'exists single xcodeproj files' do
+        let(:workspaces) do
+          %w[
+            /base_dir/Test/Test/Test.xcodeproj/project.xcworkspace
+          ]
+        end
+
+        context 'without scheme workspace arg' do
+          it 'build_workspace and xcodeproj is same' do
+            is_expected.to have_attributes(
+              build_workspace:  '/base_dir/Test/Test/Test.xcodeproj/project.xcworkspace',
+              xcodeproj:  '/base_dir/Test/Test/Test.xcodeproj'
+            )
+          end
+        end
+      end
+
       context 'exists multiple xcodeproj files' do
         let(:workspaces) do
           %w[
