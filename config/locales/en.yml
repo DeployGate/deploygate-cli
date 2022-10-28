@@ -18,7 +18,7 @@ en:
       scheme: 'Set Xcode build scheme (iOS app only)'
       open: 'Open a browser after the build uploaded (OS X only)'
       disable_notify: 'Disable email notification (iOS app only)'
-      xcodeproj: 'Manual set Xcode build xcodeproj file path (iOS app only)'
+      xcodeproj: 'The path to the target Xcode project file (iOS app only)'
     add_devices:
       description: 'Register devices to your Apple Developer account and refresh your provisioning profile. (iOS only) By default, it automatically finds new devices added to your application on DeployGate and ask you which device to register. You can also specify which device to register via command line options.'
       user: 'Owner user or organization name'
