@@ -17,7 +17,7 @@ jobs:
       - id: gem
         run: echo "::set-output name=result::$(find pkg -name 'deploygate-*.gem' -type f | head -1)"
       - run: |
-          curl --data-binary '@${{ steps.result.outputs.result }}' \
+          curl --data-binary '@${{ steps.gem.outputs.result }}' \
             -H 'Authorization: ${{ secrets.RUBYGEMS_API_KEY }}' \
             "https://rubygems.org/api/v1/gems"
       - uses: slackapi/slack-github-action@v1.16.0
