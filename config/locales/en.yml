@@ -25,6 +25,7 @@ en:
       udid: 'UDID to be registered'
       device_name: 'Device name to be registered'
       distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
+      disable_notify: 'Disable email notification (iOS app only)'
       xcodeproj: 'The path to the target Xcode project file (iOS app only)'
       server:
         description: 'Start the add-devices server. When added new device automatically run add-devices command.'

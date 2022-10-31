@@ -92,6 +92,7 @@ module DeployGate
         c.option '--distribution-key STRING', String, I18n.t('command_builder.add_devices.distribution_key')
         c.option '--configuration STRING', String, I18n.t('command_builder.deploy.configuration')
         c.option '--server', I18n.t('command_builder.add_devices.server.description')
+        c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
         c.option '--xcodeproj STRING', I18n.t('command_builder.add_devices.xcodeproj')
         c.action do |args, options|
           options.default :user => nil, :server => false, :command => 'add_devices'
