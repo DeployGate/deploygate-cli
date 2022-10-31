@@ -86,6 +86,7 @@ module DeployGate
       command ADD_DEVICES do |c|
         c.syntax = 'dg add-devices'
         c.description = I18n.t('command_builder.add_devices.description')
+        c.option '--message STRING', String, I18n.t('command_builder.deploy.message')
         c.option '--user STRING', String, I18n.t('command_builder.add_devices.user')
         c.option '--udid STRING', String, I18n.t('command_builder.add_devices.udid')
         c.option '--device-name STRING', String, I18n.t('command_builder.add_devices.device_name')
