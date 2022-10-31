@@ -91,7 +91,8 @@ module DeployGate
 
       def resolve_build_configuration(&block)
         gym = Gym::CodeSigningMapping.new(project: @project)
-        specified_configuration = gym.detect_configuration_for_archive
+        specified_configuration = @build_configuration.presence ||
+                                  gym.detect_configuration_for_archive
 
         Xcodeproj::Project.open(@xcodeproj).targets.each do |target|
           target.build_configuration_list.build_configurations.each do |build_configuration|
