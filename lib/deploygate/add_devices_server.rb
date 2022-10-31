@@ -44,7 +44,7 @@ module DeployGate
       puts HighLine.color(I18n.t('command_builder.add_devices.server.start_build'), HighLine::GREEN)
       pool.perform do
         DeployGate::Commands::AddDevices.register!(devices)
-        DeployGate::Commands::AddDevices.build!(bunlde_id, args, options)
+        DeployGate::Commands::AddDevices.build!(bunlde_id, member_center, args, options)
         puts HighLine.color(I18n.t('command_builder.add_devices.server.finish_build'), HighLine::GREEN)
         puts ''
       end
