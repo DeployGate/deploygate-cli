@@ -86,15 +86,15 @@ module DeployGate
       command ADD_DEVICES do |c|
         c.syntax = 'dg add-devices'
         c.description = I18n.t('command_builder.add_devices.description')
-        c.option '--message STRING', String, I18n.t('command_builder.add_devices.message')
-        c.option '--user STRING', String, I18n.t('command_builder.add_devices.user')
+        c.option '--message STRING', String, I18n.t('command_builder.deploy.message')
+        c.option '--user STRING', String, I18n.t('command_builder.deploy.user')
         c.option '--udid STRING', String, I18n.t('command_builder.add_devices.udid')
         c.option '--device-name STRING', String, I18n.t('command_builder.add_devices.device_name')
-        c.option '--distribution-key STRING', String, I18n.t('command_builder.add_devices.distribution_key')
+        c.option '--distribution-key STRING', String, I18n.t('command_builder.deploy.distribution_key')
         c.option '--configuration STRING', String, I18n.t('command_builder.deploy.configuration')
         c.option '--server', I18n.t('command_builder.add_devices.server.description')
-        c.option '--disable_notify', I18n.t('command_builder.add_devices.disable_notify')
-        c.option '--xcodeproj STRING', I18n.t('command_builder.add_devices.xcodeproj')
+        c.option '--disable_notify', I18n.t('command_builder.deploy.disable_notify')
+        c.option '--xcodeproj STRING', I18n.t('command_builder.deploy.xcodeproj')
         c.action do |args, options|
           options.default :user => nil, :server => false, :command => 'add_devices'
           begin

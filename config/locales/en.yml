@@ -21,13 +21,8 @@ en:
       xcodeproj: 'The path to the target Xcode project file (iOS app only)'
     add_devices:
       description: 'Register devices to your Apple Developer account and refresh your provisioning profile. (iOS only) By default, it automatically finds new devices added to your application on DeployGate and ask you which device to register. You can also specify which device to register via command line options.'
-      message: 'Build description message'
-      user: 'Owner user or organization name'
       udid: 'UDID to be registered'
       device_name: 'Device name to be registered'
-      distribution_key: 'If you also want to update distribution page, set the last part of the URL of the page'
-      disable_notify: 'Disable email notification (iOS app only)'
-      xcodeproj: 'The path to the target Xcode project file (iOS app only)'
       server:
         description: 'Start the add-devices server. When added new device automatically run add-devices command.'
         connecting: 'Connecting...'
