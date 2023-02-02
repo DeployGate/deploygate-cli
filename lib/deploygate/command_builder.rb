@@ -239,7 +239,15 @@ EOF
 
     # @return [Boolean]
     def internet_connection?
-      Net::Ping::HTTP.new(PING_URL).ping?
+      http = Net::Ping::HTTP.new(PING_URL)
+      puts :ping_start
+      ping_result = http.ping
+      puts :exception
+      puts http.exception
+      puts :warning
+      puts http.warning
+      puts :ping_end
+      ping_result
     end
   end
 end
