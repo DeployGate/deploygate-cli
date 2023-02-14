@@ -24,7 +24,7 @@ module DeployGate
                 { :file => file ,
                   :message => message,
                   :distribution_key => distribution_key,
-                  :disable_notify => disable_notify ? 'yes' : 'no',
+                  :disable_notify => disable_notify,
                   :dg_command => command || '',
                   :env_ci => env_ci
                 }) { process_block.call unless process_block.nil? }
