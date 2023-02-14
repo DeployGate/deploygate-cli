@@ -240,14 +240,17 @@ EOF
     # @return [Boolean]
     def internet_connection?
       http = Net::Ping::HTTP.new(PING_URL)
-      puts :ping_start
       ping_result = http.ping
-      puts :exception
-      puts http.exception
-      puts :warning
-      puts http.warning
-      puts :ping_end
-      ping_result
+      Raven.capture_message(
+        'ping result',
+        extra: {
+          exception: http.exception,
+          warning: http.warning,
+          result: ping_result
+        }
+      )
+
+      true
     end
   end
 end
