@@ -16,10 +16,10 @@ module DeployGate
 
     def setup
       # sentry config
-      Raven.configure do |config|
+      Sentry.init do |config|
         config.dsn = 'https://e0b4dda8fe2049a7b0d98c6d2759e067@sentry.io/1371610'
-        config.logger = Raven::Logger.new('/dev/null') # hide sentry log
-        config.excluded_exceptions = Raven::Configuration::IGNORE_DEFAULT + [DeployGate::RavenIgnoreException.name]
+        config.logger = Sentry::Logger.new('/dev/null') # hide sentry log
+        config.excluded_exceptions = Sentry::Configuration::IGNORE_DEFAULT + [DeployGate::RavenIgnoreException.name]
       end
 
       # set Ctrl-C trap
@@ -163,7 +163,7 @@ module DeployGate
         version = Gym::Xcode.xcode_version
         tags[:xcode_version] = version if version.present?
 
-        Raven.capture_exception(error, tags: tags)
+        Sentry.capture_exception(error, tags: tags)
         puts HighLine.color(I18n.t('command_builder.error_handling.thanks'), HighLine::GREEN)
       end
     end
