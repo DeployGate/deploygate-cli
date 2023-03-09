@@ -13,6 +13,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - run: gem update --system
       - run: bundle exec rake build
       - id: gem
         run: echo "result=$(find pkg -name 'deploygate-*.gem' -type f | head -1)" >> $GITHUB_OUTPUT
