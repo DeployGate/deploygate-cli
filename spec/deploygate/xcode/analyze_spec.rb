@@ -1,5 +1,3 @@
-require 'spec_helper'
-
 describe DeployGate::Xcode::Analyze do
   describe '#new' do
     subject(:analyze) do

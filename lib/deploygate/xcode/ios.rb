@@ -3,7 +3,6 @@ module DeployGate
     module Ios
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
-      IGNORE_DIRS = [ '.git', 'Carthage' ]
 
       class << self
         # @param [DeployGate::Xcode::Analyze] ios_analyze
@@ -50,23 +49,6 @@ module DeployGate
             Find.prune if FileTest.directory?(path)
           end
           false
-        end
-
-        # @param [String] base_path
-        # @param [Boolean] current_only
-        # @return [Array]
-        def find_workspaces(base_path)
-          projects = []
-          Find.find(base_path) do |path|
-            next if path == base_path
-            if File.extname(path) == WORK_DIR_EXTNAME
-              projects.push(path)
-            end
-
-            Find.prune if FileTest.directory?(path) && IGNORE_DIRS.include?(File.basename(path))
-          end
-
-          projects
         end
 
         # @param [String] path
