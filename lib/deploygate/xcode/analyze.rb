@@ -25,8 +25,6 @@ module DeployGate
       class NotSupportExportMethodError < DeployGate::RavenIgnoreException
       end
 
-      attr_reader :target_provisioning_profile
-
       # @param [String, nil] build_configuration
       # @param [String, nil] target_scheme
       # @param [String, nil] xcodeproj_path
@@ -35,9 +33,7 @@ module DeployGate
         xcodeproj_path: nil,
         workspace_path: nil,
         build_configuration: nil,
-        target_scheme: nil,
-        export_method: nil,
-        export_team_id: nil
+        target_scheme: nil
       )
         # Don't duplicate this options. This would be modified through fastlane's methods.
         options = FastlaneCore::Configuration.create(
@@ -46,9 +42,7 @@ module DeployGate
             project: xcodeproj_path.presence,
             workspace: workspace_path.presence,
             configuration: build_configuration,
-            scheme: target_scheme,
-            export_team_id: export_team_id,
-            export_method: export_method
+            scheme: target_scheme
           }
         )
 
@@ -56,26 +50,23 @@ module DeployGate
         # scheme, project/workspace, configuration, export_team_id would be resolved
         Gym.config = options
 
-        options[:export_team_id] ||= Gym.project.build_settings[DEVELOPMENT_TEAM_KEY]
+        options[:export_team_id] = Gym.project.build_settings[DEVELOPMENT_TEAM_KEY]
+        options[:codesigning_identity] = Gym.project.build_settings[CODE_SIGN_IDENTITY_KEY] if Gym.project.build_settings[CODE_SIGN_STYLE_KEY] == PROVISIONING_STYLE_MANUAL
 
         # TODO: Need to support UDID additions for watchOS and App Extension
 
-        if options[:export_method].nil?
-          if (profiles = Gym.config.dig(:export_options, :provisioningProfiles)).present?
-            @target_provisioning_profile = Xcode::Export.provisioning_profile(
-              bundle_identifier,
-              uuid = nil,
-              options[:export_team_id],
-              profiles[bundle_identifier.to_sym]
-            )
+        if (profiles = Gym.config.dig(:export_options, :provisioningProfiles)).present?
+          target_provisioning_profile = ::DeployGate::Xcode::Export.provisioning_profile(
+            bundle_identifier,
+            uuid = nil,
+            options[:export_team_id],
+            profiles[bundle_identifier.to_sym]
+          )
 
-            options[:export_method] = Xcode::Export.method(@target_provisioning_profile) || select_export_method
-          end
+          options[:export_method] = ::DeployGate::Xcode::Export.method(target_provisioning_profile) || select_export_method
         end
-
-        Gym.config[:codesigning_identity] = Gym.project.build_settings[CODE_SIGN_IDENTITY_KEY] if code_sign_style == PROVISIONING_STYLE_MANUAL
       ensure
-        # Run value substitutions again after filling all values
+        # Run value auto detection again after filling values
         Gym.config = Gym.config
       end
 
@@ -117,10 +108,6 @@ module DeployGate
 
       def bundle_identifier
         Gym.project.build_settings[PRODUCT_BUNDLE_IDENTIFIER_KEY]
-      end
-
-      def code_sign_style
-        Gym.project.build_settings[CODE_SIGN_STYLE_KEY]
       end
 
       # @return [Hash, FastlaneCore::Configuration]

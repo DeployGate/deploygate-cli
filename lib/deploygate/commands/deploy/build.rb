@@ -38,10 +38,14 @@ module DeployGate
             analyze = DeployGate::Xcode::Analyze.new(
                 build_configuration: options.configuration,
                 target_scheme: options.scheme,
-                xcodeproj_path: options.xcodeproj
+                xcodeproj_path: options.xcodeproj,
+                workspace_path: options.workspace
             )
 
-            ipa_path = DeployGate::Xcode::Ios.build(ios_analyze: analyze)
+            ipa_path = DeployGate::Xcode::Ios.build(
+              ios_analyze: analyze,
+              allow_provisioning_updates: true
+            )
             Push.upload([ipa_path], options)
           end
 

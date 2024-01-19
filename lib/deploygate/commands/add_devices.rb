@@ -25,12 +25,10 @@ module DeployGate
           distribution_key = options.distribution_key
           server           = options.server
 
-          build_configuration = options.configuration
-          xcodeproj_path = options.xcodeproj
-
           analyze = DeployGate::Xcode::Analyze.new(
-            build_configuration: build_configuration,
-            xcodeproj_path: xcodeproj_path
+            build_configuration: options.configuration,
+            xcodeproj_path: options.xcodeproj,
+            workspace_path: options.workspace
           )
 
           bundle_id = analyze.bundle_identifier
