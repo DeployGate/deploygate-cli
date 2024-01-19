@@ -1,150 +1,144 @@
 module DeployGate
   module Xcode
-    class Analyze
-      attr_reader :workspaces, :build_workspace, :scheme, :xcodeproj
 
+    # - xcworkspace can have multiple projects (.xcodeproj)
+    # - xcodeproj can have multiple subprojects (.xcodeproj)
+    #
+    # This means we have to satisfy the following constraints.
+    #
+    # 1. Choose one xcworkspace if multiple workspaces are found. Some of
+    # 2. Choose a proper xcodeproj (root. not subproject)
+    class Analyze
       BASE_WORK_DIR_NAME = 'project.xcworkspace'
       DEFAULT_BUILD_CONFIGURATION = 'Release'
 
       PROVISIONING_STYLE_AUTOMATIC = 'Automatic'
       PROVISIONING_STYLE_MANUAL    = 'Manual'
 
+      CODE_SIGN_STYLE_KEY = "CODE_SIGN_STYLE"
+      CODE_SIGN_IDENTITY_KEY = "CODE_SIGN_IDENTITY"
+      PRODUCT_BUNDLE_IDENTIFIER_KEY = "PRODUCT_BUNDLE_IDENTIFIER"
+      DEVELOPMENT_TEAM_KEY = "DEVELOPMENT_TEAM"
+
       class BundleIdentifierDifferentError < DeployGate::RavenIgnoreException
       end
+      class NotSupportExportMethodError < DeployGate::RavenIgnoreException
+      end
 
-      # @param [Array] workspaces
-      # @param [String] build_configuration
-      # @param [String] target_scheme
+      # @param [String, nil] build_configuration
+      # @param [String, nil] target_scheme
+      # @param [String, nil] xcodeproj_path
       # @return [DeployGate::Xcode::Analyze]
-      def initialize(workspaces, build_configuration = nil, target_scheme = nil, xcodeproj_path = nil)
-        @workspaces = workspaces
-        @build_configuration = build_configuration || DEFAULT_BUILD_CONFIGURATION
-        @build_workspace = find_build_workspace(workspaces)
-        @xcodeproj = xcodeproj_path.presence || find_xcodeproj(workspaces)
+      def initialize(
+        xcodeproj_path: nil,
+        workspace_path: nil,
+        build_configuration: nil,
+        target_scheme: nil
+      )
+        # Don't duplicate this options. This would be modified through fastlane's methods.
+        options = FastlaneCore::Configuration.create(
+          Gym::Options.available_options,
+          {
+            project: xcodeproj_path.presence,
+            workspace: workspace_path.presence,
+            configuration: build_configuration,
+            scheme: target_scheme
+          }
+        )
 
-        config = FastlaneCore::Configuration.create(Gym::Options.available_options, { project: @xcodeproj })
-        Gym.config = config
-        @project = FastlaneCore::Project.new(config)
+        # This will detect projects, scheme, configuration and so on. This also throws an error if invalid.
+        # scheme, project/workspace, configuration, export_team_id would be resolved
+        Gym.config = options
 
-        if @project.schemes.length > 1 && target_scheme && @project.schemes.include?(target_scheme)
-          @project.options[:scheme] = target_scheme
-        else
-          @project.select_scheme
+        options[:export_team_id] = Gym.project.build_settings(key: DEVELOPMENT_TEAM_KEY, optional: false)
+        options[:codesigning_identity] = Gym.project.build_settings(key: CODE_SIGN_IDENTITY_KEY, optional: false) if Gym.project.build_settings(key: CODE_SIGN_STYLE_KEY) == PROVISIONING_STYLE_MANUAL
+
+        # TODO: Need to support UDID additions for watchOS and App Extension
+
+        if (profiles = Gym.config.values.dig(:export_options, :provisioningProfiles)).present?
+          target_provisioning_profile = ::DeployGate::Xcode::Export.provisioning_profile(
+            bundle_identifier,
+            uuid = nil,
+            options[:export_team_id],
+            profiles[bundle_identifier.to_sym]
+          )
+
+          options[:export_method] = ::DeployGate::Xcode::Export.method(target_provisioning_profile) || select_export_method
         end
-        @scheme = @project.options[:scheme]
+      ensure
+        # Run value auto detection again after filling values
+        Gym.config = Gym.config
       end
 
-      def code_sign_style
-        style = nil
-        resolve_build_configuration do |build_configuration, target|
-          style = build_configuration.resolve_build_setting("CODE_SIGN_STYLE", target)
-        end
-
-        style
-      end
-
-      def code_sign_identity
-        identity = nil
-        resolve_build_configuration do |build_configuration, target|
-          identity = build_configuration.resolve_build_setting("CODE_SIGN_IDENTITY", target)
-        end
-
-        identity
-      end
-
-      # TODO: Need to support UDID additions for watchOS and App Extension
       # @return [String]
-      def target_bundle_identifier
-        bundle_identifier = nil
-        resolve_build_configuration do |build_configuration, target|
-          bundle_identifier = build_configuration.resolve_build_setting("PRODUCT_BUNDLE_IDENTIFIER", target)
+      def scheme
+        fastlane_project.options[:scheme]
+      end
+
+      # @return [String]
+      def xcodeproj_path
+        if fastlane_project.workspace?
+          available_schemes = fastlane_project.workspace.schemes.reject { |_, v| v.include?("Pods/Pods.xcodeproj") }
+          available_schemes[self.scheme]
+        else
+          fastlane_project.project.path&.to_s
         end
-
-        bundle_identifier
       end
 
-      def developer_team
-        team = nil
-        resolve_build_configuration do |build_configuration, target|
-          team = build_configuration.resolve_build_setting("DEVELOPMENT_TEAM", target)
-        end
-
-        team
+      def build_configuration
+        Gym.detect_configuration_for_archive
       end
 
-      def project_profile_info
-        gym = Gym::CodeSigningMapping.new(project: @project)
-
-        {
-            provisioningProfiles: gym.detect_project_profile_mapping
-        }
+      def export_team_id
+        fastlane_project.options[:export_team_id]
       end
 
-      def target_provisioning_profile
-        gym = Gym::CodeSigningMapping.new(project: @project)
-        bundle_id = target_bundle_identifier
+      def export_method
+        fastlane_project.options[:export_method]
+      end
 
-        Xcode::Export.provisioning_profile(bundle_id, nil, developer_team, gym.merge_profile_mapping[bundle_id.to_sym])
+      def bundle_identifier
+        Gym.project.build_settings(key: PRODUCT_BUNDLE_IDENTIFIER_KEY, optional: false)
+      end
+
+      # @return [Hash, FastlaneCore::Configuration]
+      def fastlane_config
+        Gym.config
       end
 
       private
 
-      def resolve_build_configuration(&block)
-        gym = Gym::CodeSigningMapping.new(project: @project)
-        specified_configuration = @build_configuration.presence ||
-                                  gym.detect_configuration_for_archive
-
-        Xcodeproj::Project.open(@xcodeproj).targets.each do |target|
-          target.build_configuration_list.build_configurations.each do |build_configuration|
-            # Used the following code as an example
-            # https://github.com/fastlane/fastlane/blob/2.148.1/gym/lib/gym/code_signing_mapping.rb#L138
-            current = build_configuration.build_settings
-            next if gym.test_target?(current)
-            sdk_root = build_configuration.resolve_build_setting("SDKROOT", target)
-            next unless gym.same_platform?(sdk_root)
-            next unless specified_configuration == build_configuration.name
-
-            # If SKIP_INSTALL is true, it is an app extension or watch app
-            next if current["SKIP_INSTALL"]
-
-            block.call(build_configuration, target)
-          end
+      def select_export_method
+        result = nil
+        cli = HighLine.new
+        cli.choose do |menu|
+          menu.prompt = I18n.t('commands.deploy.build.select_method.title')
+          menu.choice(::DeployGate::Xcode::Export::AD_HOC) {
+            result = ::DeployGate::Xcode::Export::AD_HOC
+          }
+          menu.choice(DeployGate::Xcode::Export::ENTERPRISE) {
+            result = ::DeployGate::Xcode::Export::ENTERPRISE
+          }
         end
+
+        raise NotSupportExportMethodError, "#{result} is not supported" unless ::DeployGate::Xcode::Export::SUPPORT_EXPORT_METHOD.include?(result)
+
+        result
       end
 
-      # @param [Array] workspaces
-      # @return [String]
-      def find_xcodeproj(workspaces)
-        return nil if workspaces.empty?
+      # @return [FastlaneCore::Project]
+      def fastlane_project
+        Gym.project
+      end
 
-        if workspaces.count == 1
-          scheme_workspace = workspaces.first
+      # @return [Xcodeproj::Project]
+      def xcode_project
+        #noinspection RubyMismatchedReturnType
+        if fastlane_project.workspace?
+          Xcodeproj::Project.open(self.xcodeproj_path)
         else
-          scheme_workspace = nil
-          workspaces.each do |workspace|
-            if BASE_WORK_DIR_NAME == File.basename(workspace)
-              scheme_workspace = workspace
-            end
-          end
+          fastlane_project.project
         end
-
-        scheme_workspace != nil ? File.dirname(scheme_workspace) : nil
-      end
-
-      # @param [Array] workspaces
-      # @return [String]
-      def find_build_workspace(workspaces)
-        return nil if workspaces.empty?
-        return workspaces.first if workspaces.count == 1
-
-        select = nil
-        workspaces.each do |workspace|
-          if BASE_WORK_DIR_NAME != File.basename(workspace)
-            select = workspace
-          end
-        end
-
-        select
       end
     end
   end
