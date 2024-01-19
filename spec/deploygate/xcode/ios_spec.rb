@@ -37,7 +37,7 @@ describe DeployGate::Xcode::Ios do
 
       expect {
         DeployGate::Xcode::Ios.build(AnalyzeMock.new, '', '', nil, '',  'not support export method')
-      }.to raise_error DeployGate::Xcode::Ios::NotSupportExportMethodError
+      }.to raise_error DeployGate::Xcode::Analyze::NotSupportExportMethodError
     end
   end
 

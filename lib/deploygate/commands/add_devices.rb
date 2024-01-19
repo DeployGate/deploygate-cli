@@ -9,6 +9,10 @@ module DeployGate
           work_dir = args.empty? ? Dir.pwd : args.first
           ios_only_command unless DeployGate::Project.ios?(work_dir)
 
+          # Change the current working directory for fastlane else.
+          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
+          Dir.chdir(root_path)
+
           session = DeployGate::Session.new
           unless session.login?
             Login.start_login()
@@ -24,12 +28,14 @@ module DeployGate
           build_configuration = options.configuration
           xcodeproj_path = options.xcodeproj
 
-          root_path = DeployGate::Xcode::Ios.project_root_path(work_dir)
-          workspaces = DeployGate::Xcode::Ios.find_workspaces(root_path)
-          analyze = DeployGate::Xcode::Analyze.new(workspaces, build_configuration, nil, xcodeproj_path)
-          bundle_id = analyze.target_bundle_identifier
-          developer_team = analyze.developer_team
-          member_center = DeployGate::Xcode::MemberCenter.new(developer_team)
+          analyze = DeployGate::Xcode::Analyze.new(
+            build_configuration: build_configuration,
+            xcodeproj_path: xcodeproj_path
+          )
+
+          bundle_id = analyze.bundle_identifier
+          export_team_id = analyze.export_team_id
+          member_center = DeployGate::Xcode::MemberCenter.new(export_team_id)
 
           if server
             run_server(session, owner, bundle_id, distribution_key, member_center, args, options)
