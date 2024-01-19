@@ -1,67 +1,83 @@
+require 'spec_helper'
+
 describe DeployGate::Xcode::Analyze do
   describe '#new' do
-    subject { described_class.new(workspaces, build_configuration, target_scheme, xcodeproj) }
+    subject(:analyze) do
+      described_class.new(
+        xcodeproj_path: xcodeproj_path,
+        workspace_path: workspace_path,
+        build_configuration: build_configuration,
+        target_scheme: target_scheme
+      )
+    end
 
+    let(:xcodeproj_path) { nil }
+    let(:workspace_path) { nil }
     let(:build_configuration) { nil }
     let(:target_scheme) { nil }
-    let(:xcodeproj) { nil }
 
-    describe 'detect scheme workspace and build workspace' do
-      before do
-        allow(FastlaneCore::Configuration).to receive(:create)
-        project = instance_double(FastlaneCore::Project)
-        allow(project).to receive(:select_scheme)
-        allow(project).to receive(:schemes).and_return([])
-        allow(project).to receive(:options).and_return({})
-        allow(FastlaneCore::Project).to receive(:new).and_return(project)
-        allow(Gym).to receive(:config=)
-      end
+    describe '#initialize' do
+      context 'if the project is the single xcodeproject' do
+        let(:expected_xcodeproj_path) { test_file_path("xcodeProjects", "Projects", "SingleProject", "SingleProject.xcodeproj") }
 
-      context 'exists single xcodeproj files' do
-        let(:workspaces) do
-          %w[
-            /base_dir/Test/Test/Test.xcodeproj/project.xcworkspace
-          ]
-        end
-
-        context 'without scheme workspace arg' do
-          it 'build_workspace and xcodeproj is same' do
-            is_expected.to have_attributes(
-              build_workspace:  '/base_dir/Test/Test/Test.xcodeproj/project.xcworkspace',
-              xcodeproj:  '/base_dir/Test/Test/Test.xcodeproj'
-            )
-          end
-        end
-      end
-
-      context 'exists multiple xcodeproj files' do
-        let(:workspaces) do
-          %w[
-            /base_dir/Test/ALib/ALib.xcodeproj/project.xcworkspace
-            /base_dir/Test/Hoge/Hoge.xcodeproj/project.xcworkspace
-            /base_dir/Test/Test/Test.xcodeproj/project.xcworkspace
-            /base_dir/Test/Test.xcworkspace
-            /base_dir/Test/ZLib/ZLib.xcodeproj/project.xcworkspace
-          ]
-        end
-
-        context 'without scheme workspace arg' do
-          it 'scheme workspace is last workspace has project.xcworkspace' do
-            is_expected.to have_attributes(
-              build_workspace:  '/base_dir/Test/Test.xcworkspace',
-              xcodeproj: '/base_dir/Test/ZLib/ZLib.xcodeproj'
-            )
+        around(:each) do |example|
+          Dir.chdir(test_file_path("xcodeProjects", "Projects", "SingleProject")) do
+            example.run
           end
         end
 
-        context 'with scheme workspace arg' do
-          let(:xcodeproj) { './ZLib.xcodeproj' }
+        it 'can find a project and get attributes' do
+          analyze
 
-          it 'scheme workspace is last workspace has project.xcworkspace' do
-            is_expected.to have_attributes(
-              build_workspace:  '/base_dir/Test/Test.xcworkspace',
-              xcodeproj: './ZLib.xcodeproj'
-            )
+          expect(Gym.project.project).not_to be_nil
+          expect(Gym.config[:workspace]).to be_nil
+          expect(analyze.xcodeproj_path).to eq(expected_xcodeproj_path)
+          expect(analyze.scheme).to eq("SingleProject")
+          expect(analyze.bundle_identifier).to eq("com.deploygate.example.SingleProject")
+        end
+      end
+
+      context 'if the project is the single xcworkspace' do
+        let(:expected_xcodeproj_path) { test_file_path("xcodeProjects", "Workspaces", "Single", "SingleWorkspace", "SingleWorkspace.xcodeproj") }
+
+        around(:each) do |example|
+          Dir.chdir(test_file_path("xcodeProjects", "Workspaces", "Single")) do
+            example.run
+          end
+        end
+
+        it 'can find a project and get attributes' do
+          analyze
+
+          expect(Gym.project.project).to be_nil
+          expect(Gym.project.workspace).not_to be_nil
+          expect(Gym.config[:workspace]).to eq("./SingleWorkspace.xcworkspace")
+          expect(analyze.xcodeproj_path).to eq(expected_xcodeproj_path)
+          expect(analyze.scheme).to eq("SingleWorkspace")
+          expect(analyze.bundle_identifier).to eq("com.deploygate.example.SingleWorkspace")
+        end
+      end
+
+      context 'if detection is nondeterministic' do
+        around(:each) do |example|
+          Dir.chdir(test_file_path("xcodeProjects")) do
+            example.run
+          end
+        end
+
+        it 'cannot choose any project' do
+          expect { analyze }.to raise_error(FastlaneCore::Interface::FastlaneCrash)
+        end
+
+        context 'if the project is in multi-xcodeproject' do
+          around(:each) do |example|
+            Dir.chdir(test_file_path("xcodeProjects", "Projects", "Multi")) do
+              example.run
+            end
+          end
+
+          it 'cannot choose any project' do
+            expect { analyze }.to raise_error(FastlaneCore::Interface::FastlaneCrash)
           end
         end
       end

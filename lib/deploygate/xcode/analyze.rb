@@ -50,12 +50,12 @@ module DeployGate
         # scheme, project/workspace, configuration, export_team_id would be resolved
         Gym.config = options
 
-        options[:export_team_id] = Gym.project.build_settings[DEVELOPMENT_TEAM_KEY]
-        options[:codesigning_identity] = Gym.project.build_settings[CODE_SIGN_IDENTITY_KEY] if Gym.project.build_settings[CODE_SIGN_STYLE_KEY] == PROVISIONING_STYLE_MANUAL
+        options[:export_team_id] = Gym.project.build_settings(key: DEVELOPMENT_TEAM_KEY, optional: false)
+        options[:codesigning_identity] = Gym.project.build_settings(key: CODE_SIGN_IDENTITY_KEY, optional: false) if Gym.project.build_settings(key: CODE_SIGN_STYLE_KEY) == PROVISIONING_STYLE_MANUAL
 
         # TODO: Need to support UDID additions for watchOS and App Extension
 
-        if (profiles = Gym.config.dig(:export_options, :provisioningProfiles)).present?
+        if (profiles = Gym.config.values.dig(:export_options, :provisioningProfiles)).present?
           target_provisioning_profile = ::DeployGate::Xcode::Export.provisioning_profile(
             bundle_identifier,
             uuid = nil,
@@ -81,16 +81,7 @@ module DeployGate
           available_schemes = fastlane_project.workspace.schemes.reject { |_, v| v.include?("Pods/Pods.xcodeproj") }
           available_schemes[self.scheme]
         else
-          fastlane_project.path
-        end
-      end
-
-      # @return [String, nil] nil if it's a workspace
-      def workspace_path
-        if fastlane_project.workspace?
-          fastlane_project.options[:workspace]
-        else
-          nil
+          fastlane_project.project.path&.to_s
         end
       end
 
@@ -107,7 +98,7 @@ module DeployGate
       end
 
       def bundle_identifier
-        Gym.project.build_settings[PRODUCT_BUNDLE_IDENTIFIER_KEY]
+        Gym.project.build_settings(key: PRODUCT_BUNDLE_IDENTIFIER_KEY, optional: false)
       end
 
       # @return [Hash, FastlaneCore::Configuration]
