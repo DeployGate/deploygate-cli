@@ -13,7 +13,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: gem update --system
+      - run: gem update --system 3.4.22 # The latest of Ruby 2.x support
       - run: bundle exec rake build
       - id: gem
         run: echo "result=$(find pkg -name 'deploygate-*.gem' -type f | head -1)" >> $GITHUB_OUTPUT
