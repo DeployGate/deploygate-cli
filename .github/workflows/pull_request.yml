@@ -18,5 +18,5 @@ jobs:
         with:
           ruby-version:  ${{ matrix.ruby_version }}
           bundler-cache: true
-      - run: gem update --system
+      - run: gem update --system 3.4.22 # The latest of Ruby 2.x support
       - run: bundle exec rake
