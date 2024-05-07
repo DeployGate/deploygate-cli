@@ -20,6 +20,8 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
+  spec.required_ruby_version = '~> 2.6'
+
   spec.add_runtime_dependency 'json', '~> 2.0'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
@@ -39,6 +41,9 @@ POST_INSTALL_MESSAGE
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.212.1'
+
+  # httparty requires multi_xml transitively but multi_xml 0.7+ requires Ruby 3.1+.
+  spec.add_runtime_dependency 'multi_xml', '~> 0.6.0' 
 
   spec.add_development_dependency 'bundler', '>= 2.1.4', '< 3.0'
   spec.add_development_dependency 'rake', '~> 12.0'
