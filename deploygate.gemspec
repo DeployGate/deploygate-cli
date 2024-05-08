@@ -20,7 +20,7 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
-  spec.required_ruby_version = '~> 2.6'
+  spec.required_ruby_version = '~> 2.6, <= 3.0'
 
   spec.add_runtime_dependency 'json', '~> 2.0'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
@@ -37,6 +37,8 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'net-ping', '~> 2.0'
   spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
   spec.add_runtime_dependency 'workers', '~> 0.6'
+  # Webrick has been removed from bundled gems since Ruby 3
+  spec.add_runtime_dependency 'webrick', '~> 1.8'
   spec.add_runtime_dependency 'sentry-ruby', '~> 5.8'
 
   # ios build
