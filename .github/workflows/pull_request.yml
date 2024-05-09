@@ -69,6 +69,11 @@ jobs:
           bundler-cache: true
       - run: gem update --system 3.4.22 # The latest of Ruby 2.x support
       - run: bundle exec rake install
+      - run: |
+          mkdir ~/.dg
+          cat<<EOF > ~/.dg/credentials
+          { "name": "owner_test_token", "token": "owner_test_token" }
+          EOF
       - run: dg deploy spec/fixtures/sample.apk
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
@@ -107,6 +112,11 @@ jobs:
           bundler-cache: true
       - run: gem update --system
       - run: bundle exec rake install
+      - run: |
+          mkdir ~/.dg
+          cat<<EOF > ~/.dg/credentials
+          { "name": "owner_test_token", "token": "owner_test_token" }
+          EOF
       - run: dg deploy spec/fixtures/sample.apk
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
