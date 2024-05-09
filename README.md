@@ -17,6 +17,9 @@ Add this line to your application's Gemfile:
 
 ```
 gem 'deploygate'
+
+# Only when you are using Ruby 2.x
+gem 'multi_xml' '~> 0.6.0'
 ```
 
 And then execute:
@@ -28,6 +31,7 @@ $ bundle
 Or install it yourself as:
 
 ```
+$ gem 'multi_xml' -v '~> 0.6.0' # Run this only when you are using Ruby 2.x
 $ gem install deploygate
 ```
 
