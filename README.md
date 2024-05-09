@@ -7,9 +7,9 @@ dg: A command-line interface for DeployGate
 
 ## Requirements
 
-*dg* runs with a minimal set of requirements.
+- Ruby 2.6+
 
-- Ruby 2.6+ (Depends on [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/))
+We will drop old ruby versions with following [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/).
 
 ## Installation
 
@@ -31,7 +31,7 @@ $ bundle
 Or install it yourself as:
 
 ```
-$ gem 'multi_xml' -v '~> 0.6.0' # Run this only when you are using Ruby 2.x
+$ gem install 'multi_xml' -v '~> 0.6.0' # Run this only when you are using Ruby 2.x
 $ gem install deploygate
 ```
 

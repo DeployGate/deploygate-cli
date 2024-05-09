@@ -2,7 +2,6 @@ module DeployGate
   module Commands
     module Deploy
       class Push
-        BASE_URL = 'https://deploygate.com'
         COMMAND  = 'push'
 
         class << self
