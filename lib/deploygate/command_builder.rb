@@ -15,6 +15,13 @@ module DeployGate
     CONFIG      = 'config'
 
     def setup
+      # sentry config
+      Sentry.init do |config|
+        config.dsn = 'https://e0b4dda8fe2049a7b0d98c6d2759e067@sentry.io/1371610'
+        config.logger = Sentry::Logger.new('/dev/null') # hide sentry log
+        config.excluded_exceptions = Sentry::Configuration::IGNORE_DEFAULT + [DeployGate::RavenIgnoreException.name]
+      end
+
       # set Ctrl-C trap
       Signal.trap(:INT){
         puts ''
@@ -156,6 +163,7 @@ module DeployGate
         version = Gym::Xcode.xcode_version
         tags[:xcode_version] = version if version.present?
 
+        Sentry.capture_exception(error, tags: tags)
         puts HighLine.color(I18n.t('command_builder.error_handling.thanks'), HighLine::GREEN)
       end
     end

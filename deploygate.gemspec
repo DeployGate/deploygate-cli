@@ -36,6 +36,7 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'net-ping', '~> 2.0'
   spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
   spec.add_runtime_dependency 'workers', '~> 0.6'
+  spec.add_runtime_dependency 'sentry-ruby', '~> 5.8'
   # Webrick has been removed from bundled gems since Ruby 3
   spec.add_runtime_dependency 'webrick', '~> 1.8'
 
