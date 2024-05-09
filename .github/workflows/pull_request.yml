@@ -71,25 +71,21 @@ jobs:
           ruby-version:  ${{ matrix.ruby_version }}
           bundler-cache: true
       - run: gem update --system 3.4.22 # The latest of Ruby 2.x support
-      - id: home
-        run: echo "result=$RUNNER_TEMP" >> $GITHUB_OUTPUT
-      - run: |
-          mkdir ${{ steps.home.outputs.result }}/.dg
-          cat<<EOF > ${{ steps.home.outputs.result }}/.dg/credentials
-          { "name": "owner_test_token", "token": "owner_test_token" }
-          EOF
       - run: bundle exec dg deploy spec/fixtures/sample.apk
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
       - run: bundle exec dg deploy spec/fixtures/sample.aab
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
       - run: bundle exec dg deploy spec/fixtures/sample.ipa
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
 
   instrument-ruby3:
     strategy:
@@ -119,22 +115,18 @@ jobs:
           ruby-version:  ${{ matrix.ruby_version }}
           bundler-cache: true
       - run: gem update --system
-      - id: home
-        run: echo "result=$RUNNER_TEMP" >> $GITHUB_OUTPUT
-      - run: |
-          mkdir ${{ steps.home.outputs.result }}/.dg
-          cat<<EOF > ${{ steps.home.outputs.result }}/.dg/credentials
-          { "name": "owner_test_token", "token": "owner_test_token" }
-          EOF
       - run: bundle exec dg deploy spec/fixtures/sample.apk
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
       - run: bundle exec dg deploy spec/fixtures/sample.aab
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
       - run: bundle exec dg deploy spec/fixtures/sample.ipa
         env:
           DG_DEVELOP_URL: http://localhost:${{ job.services.app.ports[3000] }}
-          HOME: ${{ steps.home.outputs.result }}
+          DG_USER_NAME: 'owner_test'
+          DG_TOKEN: 'owner_test'
