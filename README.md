@@ -7,9 +7,7 @@ dg: A command-line interface for DeployGate
 
 ## Requirements
 
-- Ruby 2.6+
-
-We will drop old ruby versions with following [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/).
+- Ruby 2.6+ (Depends on [Ruby Maintenance Branches](https://www.ruby-lang.org/en/downloads/branches/))
 
 ## Installation
 
