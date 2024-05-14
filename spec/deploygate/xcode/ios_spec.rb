@@ -1,80 +1,77 @@
-describe DeployGate::Xcode::Ios do
-  before do
-    class ProjectMock
-      def schemes
-        []
-      end
-    end
-    class AnalyzeMock
-      def build_workspace
-        ''
-      end
-      def xcodeproj
-        ''
-      end
-    end
+class FakeGemManager
+  def initialize(ipa_path:)
+    @ipa_path = ipa_path
   end
 
-  describe "#build" do
-    it "should call Gym Manager" do
-      call_gym_manager = false
-      allow(FastlaneCore::Configuration).to receive(:create) {}
-      allow_any_instance_of(Gym::Manager).to receive(:work) { call_gym_manager = true }
-      allow(File).to receive(:exist?).and_return(true)
-      allow(File).to receive(:expand_path).and_return('path')
-      allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
+  def work(*)
+    @work = true
+    @ipa_path
+  end
 
-      DeployGate::Xcode::Ios.build(AnalyzeMock.new, '', '')
-      expect(call_gym_manager).to be_truthy
+  def has_called_work?
+    @work
+  end
+end
+
+describe DeployGate::Xcode::Ios do
+  let(:xcodeproj_path) { test_file_path("xcodeProjects", "Projects", "SingleProject", "SingleProject.xcodeproj") }
+  let(:workspace_path) { test_file_path("xcodeProjects", "Workspaces", "Single", "SingleWorkspace.xcworkspace") }
+
+  describe "#build" do
+    let(:gem_manager) { FakeGemManager.new(ipa_path: test_file_path("xcodeProjects", "fake.ipa")) }
+
+    before do
+      allow(Gym::Manager).to receive(:new).and_return(gem_manager)
     end
 
-    it "raise not support export" do
-      allow(FastlaneCore::Configuration).to receive(:create) {}
-      allow_any_instance_of(Gym::Manager).to receive(:work) {}
-      allow(File).to receive(:exist?).and_return(true)
-      allow(File).to receive(:expand_path).and_return('path')
-      allow(FastlaneCore::Project).to receive(:new).and_return(ProjectMock.new)
+    it "should call Gym Manager and allow provisioning updates without an option" do
+      DeployGate::Xcode::Ios.build(
+        ios_analyze: DeployGate::Xcode::Analyze.new(
+          xcodeproj_path: xcodeproj_path
+        )
+      )
 
-      expect {
-        DeployGate::Xcode::Ios.build(AnalyzeMock.new, '', '', nil, '',  'not support export method')
-      }.to raise_error DeployGate::Xcode::Ios::NotSupportExportMethodError
+      expect(gem_manager).to be_has_called_work
+      expect(Gym.config.values).to include(
+                                     xcargs: '-allowProvisioningUpdates',
+                                     export_xcargs: '-allowProvisioningUpdates'
+                                   )
+    end
+
+    it "should call Gym Manager and disallow provisioning updates if an option is provided" do
+      DeployGate::Xcode::Ios.build(
+        ios_analyze: DeployGate::Xcode::Analyze.new(
+          xcodeproj_path: xcodeproj_path
+        ),
+        allow_provisioning_updates: false
+      )
+
+      expect(gem_manager).to be_has_called_work
+      expect(Gym.config.values).not_to include(
+                                     xcargs: include('-allowProvisioningUpdates'),
+                                     export_xcargs: include('-allowProvisioningUpdates')
+                                   )
     end
   end
 
   describe "#workspace?" do
-    it "pod workspace" do
-      allow(File).to receive(:extname).and_return('.xcworkspace')
-
-      result = DeployGate::Xcode::Ios.workspace?('path')
-      expect(result).to be_truthy
+    it "returns true if it's a workspace file" do
+      expect(DeployGate::Xcode::Ios.workspace?(workspace_path)).to be_truthy
     end
 
-    it "xcode project" do
-      allow(File).to receive(:extname).and_return('.xcodeproj')
-
-      result = DeployGate::Xcode::Ios.workspace?('path')
-      expect(result).to be_falsey
+    it "returns false if it's a xcode project file" do
+      expect(DeployGate::Xcode::Ios.workspace?(xcodeproj_path)).to be_falsey
     end
   end
 
   describe "#project?" do
-    it "pod workspace" do
-      allow(File).to receive(:extname).and_return('.xcworkspace')
-
-      result = DeployGate::Xcode::Ios.project?('path')
-      expect(result).to be_falsey
+    it "returns false if it's a workspace file" do
+      expect(DeployGate::Xcode::Ios.project?(workspace_path)).to be_falsey
     end
 
-    it "xcode project" do
-      allow(File).to receive(:extname).and_return('.xcodeproj')
-
-      result = DeployGate::Xcode::Ios.project?('path')
-      expect(result).to be_truthy
+    it "returns true if it's a xcode project file" do
+      expect(DeployGate::Xcode::Ios.project?(xcodeproj_path)).to be_truthy
     end
-  end
-
-  describe "#find_workspaces" do
-    # TODO: add test
   end
 
   describe "#project_root_path" do

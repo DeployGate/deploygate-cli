@@ -48,6 +48,7 @@ POST_INSTALL_MESSAGE
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'webmock', '~> 2.3'
   spec.add_development_dependency 'i18n-tasks', '~> 1.0'
+  spec.add_development_dependency 'debug', '>= 1.0.0'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
