@@ -20,6 +20,8 @@ dg installed! To get started fast:
 
 POST_INSTALL_MESSAGE
 
+  spec.required_ruby_version = '>= 2.6'
+
   spec.add_runtime_dependency 'json', '~> 2.0'
   spec.add_runtime_dependency 'httpclient', '~> 2.8'
   spec.add_runtime_dependency 'commander', '~> 4.4'
@@ -28,14 +30,15 @@ POST_INSTALL_MESSAGE
   spec.add_runtime_dependency 'highline', '~> 2.0'
   spec.add_runtime_dependency 'uuid', '~> 2.3'
   spec.add_runtime_dependency 'gem_update_checker', '~> 0.2'
-  spec.add_runtime_dependency 'activesupport', '~> 4.2'
-  spec.add_runtime_dependency 'i18n', '~> 0.7'
+  spec.add_runtime_dependency 'activesupport', '~> 6.1'
   spec.add_runtime_dependency 'launchy', '~> 2.4'
   spec.add_runtime_dependency 'locale', '~> 2.1'
   spec.add_runtime_dependency 'net-ping', '~> 2.0'
   spec.add_runtime_dependency 'socket.io-client-simple', '~> 1.2'
   spec.add_runtime_dependency 'workers', '~> 0.6'
   spec.add_runtime_dependency 'sentry-ruby', '~> 5.8'
+  # Webrick has been removed from bundled gems since Ruby 3
+  spec.add_runtime_dependency 'webrick', '~> 1.8'
 
   # ios build
   spec.add_runtime_dependency 'fastlane', '~> 2.212.1'
@@ -44,7 +47,7 @@ POST_INSTALL_MESSAGE
   spec.add_development_dependency 'rake', '~> 12.0'
   spec.add_development_dependency 'rspec', '~> 3.5'
   spec.add_development_dependency 'webmock', '~> 2.3'
-  spec.add_development_dependency 'i18n-tasks', '~> 0.9'
+  spec.add_development_dependency 'i18n-tasks', '~> 1.0'
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }

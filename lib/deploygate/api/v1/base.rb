@@ -60,7 +60,7 @@ module DeployGate
           extheaders = BASE_HEADERS.dup
 
           unless @token.nil?
-            extheaders.push(['AUTHORIZATION', @token])
+            extheaders.push(['AUTHORIZATION', "token #{@token}"])
           end
 
           extheaders

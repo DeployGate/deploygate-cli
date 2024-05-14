@@ -9,7 +9,7 @@ describe DeployGate::API::V1::Session do
           :results => {'name' => name}
       }
       stub_request(:get, "#{API_ENDPOINT}/sessions/user").
-          with(:headers => { 'AUTHORIZATION' => token }).
+          with(:headers => { 'AUTHORIZATION' => "token #{token}" }).
           to_return(:body => response.to_json)
 
 
@@ -24,7 +24,7 @@ describe DeployGate::API::V1::Session do
           :because => 'error message'
       }
       stub_request(:get, "#{API_ENDPOINT}/sessions/user").
-          with(:headers => { 'AUTHORIZATION' => token }).
+          with(:headers => { 'AUTHORIZATION' => "token #{token}" }).
           to_return(:body => response.to_json)
 
       results = DeployGate::API::V1::Session.show(token)

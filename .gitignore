@@ -27,5 +27,11 @@ spec/test_files/.dg
 # binary files
 *.app.dSYM.zip
 *.ipa
+*.apk
+*.aab
 
 .DS_Store
+
+!/spec/fixtures/*.apk
+!/spec/fixtures/*.aab
+!/spec/fixtures/*.ipa
