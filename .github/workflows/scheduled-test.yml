@@ -5,7 +5,7 @@ on:
     branches:
       - master
   schedule:
-    - cron: "0 1 * * *" # everyday at 10am JST
+    - cron: "0 1,9 * * *" # everyday at 10am, 6pm JST
 
 jobs:
   instrument-ruby2:
