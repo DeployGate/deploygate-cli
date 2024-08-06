@@ -1,8 +1,6 @@
 module DeployGate
   module Commands
     class Login
-      class AccountNotFoundError < DeployGate::RavenIgnoreException; end
-
       class << self
 
         # @return [void]
@@ -22,21 +20,16 @@ module DeployGate
         end
 
         # @return [void]
-        # @raise [AccountNotFoundError] emailに一致するUserが存在しないとき
         def start_login
           puts ''
           email = ask(I18n.t('commands.login.start_login.email'))
 
           puts ''
           puts I18n.t('commands.login.start_login.check_account')
-          if DeployGate::User.registered?('', email)
-            puts ''
-            password = input_password(I18n.t('commands.login.start_login.input_password'))
-            puts ''
-            start(email, password)
-          else
-            raise AccountNotFoundError, HighLine.color(I18n.t('errors.account_not_found_error'))
-          end
+          puts ''
+          password = input_password(I18n.t('commands.login.start_login.input_password'))
+          puts ''
+          start(email, password)
         end
 
         # @param [String] email
