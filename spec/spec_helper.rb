@@ -3,6 +3,8 @@ require "json"
 
 require "deploygate"
 
+ENV["CI"] = "true"
+
 RSpec.configure do |config|
   config.before :each do
     # config file mock
@@ -13,6 +15,6 @@ end
 API_ENDPOINT = "https://deploygate.com/api"
 SPEC_FILE_PATH = File.dirname(__FILE__)
 
-def test_file_path
-  File.join(SPEC_FILE_PATH, 'test_files/DeployGateSample.apk')
+def test_file_path(*paths)
+  File.join(SPEC_FILE_PATH, 'test_files', *paths)
 end
