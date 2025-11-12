@@ -2,6 +2,12 @@
 
 [![Gem Version](https://badge.fury.io/rb/deploygate.svg)](https://badge.fury.io/rb/deploygate)
 
+## :warning: This tool is no longer supported
+
+This CLI tool is no longer actively maintained or supported. Please use the [DeployGate API](https://docs.deploygate.com/docs/api) instead for integrating DeployGate into your workflows.
+
+---
+
 dg: A command-line interface for DeployGate
 
 ## Requirements
