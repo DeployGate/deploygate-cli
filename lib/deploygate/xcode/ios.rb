@@ -3,52 +3,22 @@ module DeployGate
     module Ios
       WORK_DIR_EXTNAME = '.xcworkspace'
       PROJECT_DIR_EXTNAME = '.xcodeproj'
-      IGNORE_DIRS = [ '.git', 'Carthage' ]
-
-      class NotSupportExportMethodError < DeployGate::RavenIgnoreException
-      end
 
       class << self
-        # @param [Analyze] ios_analyze
-        # @param [String] target_scheme
-        # @param [String] codesigning_identity
-        # @param [String] provisioning_profile_info
-        # @param [String] build_configuration
-        # @param [String] export_method
+        # @param [DeployGate::Xcode::Analyze] ios_analyze
         # @param [Boolean] allow_provisioning_updates
         # @return [String]
-        def build(ios_analyze,
-                  target_scheme,
-                  codesigning_identity,
-                  provisioning_profile_info = nil,
-                  build_configuration = nil,
-                  export_method = DeployGate::Xcode::Export::AD_HOC,
-                  allow_provisioning_updates = false)
-          raise NotSupportExportMethodError, 'Not support export' unless DeployGate::Xcode::Export::SUPPORT_EXPORT_METHOD.include?(export_method)
-
-          values = {
-              export_method: export_method,
-              configuration: build_configuration || DeployGate::Xcode::Analyze::DEFAULT_BUILD_CONFIGURATION,
-              scheme: target_scheme
-          }
-
-          if ios_analyze.build_workspace
-            values[:workspace] = ios_analyze.build_workspace
-          else
-            values[:project] = ios_analyze.xcodeproj
-          end
-
-          values[:codesigning_identity] = codesigning_identity if codesigning_identity
+        def build(
+          ios_analyze:,
+          allow_provisioning_updates: true
+        )
           if allow_provisioning_updates
-            values[:xcargs]        = '-allowProvisioningUpdates'
-            values[:export_xcargs] = '-allowProvisioningUpdates'
+            Gym.config[:xcargs]        = '-allowProvisioningUpdates'
+            Gym.config[:export_xcargs] = '-allowProvisioningUpdates'
           end
-          values[:export_options] = provisioning_profile_info if provisioning_profile_info
-
-          v = FastlaneCore::Configuration.create(Gym::Options.available_options, values)
 
           begin
-            absolute_ipa_path = File.expand_path(Gym::Manager.new.work(v))
+            absolute_ipa_path = File.expand_path(Gym::Manager.new.work(ios_analyze.fastlane_config))
           rescue => e
             # TODO: build error handling
             use_xcode_path = `xcode-select -p`
@@ -79,23 +49,6 @@ module DeployGate
             Find.prune if FileTest.directory?(path)
           end
           false
-        end
-
-        # @param [String] base_path
-        # @param [Boolean] current_only
-        # @return [Array]
-        def find_workspaces(base_path)
-          projects = []
-          Find.find(base_path) do |path|
-            next if path == base_path
-            if File.extname(path) == WORK_DIR_EXTNAME
-              projects.push(path)
-            end
-
-            Find.prune if FileTest.directory?(path) && IGNORE_DIRS.include?(File.basename(path))
-          end
-
-          projects
         end
 
         # @param [String] path
