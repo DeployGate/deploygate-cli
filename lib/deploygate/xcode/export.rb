@@ -186,9 +186,10 @@ module DeployGate
         end
 
         def load_profile_paths
+          home_path = File.expand_path("~")
           profiles_paths = [
-            File.expand_path("~") + "/Library/MobileDevice/Provisioning Profiles/*.mobileprovision",
-            File.expand_path("~") + "/Library/Developer/Xcode/UserData/Provisioning Profiles/*.mobileprovision"
+            home_path + "/Library/MobileDevice/Provisioning Profiles/*.mobileprovision",
+            home_path + "/Library/Developer/Xcode/UserData/Provisioning Profiles/*.mobileprovision"
           ]
           profiles_paths.flat_map { |path| Dir[path] }
         end
