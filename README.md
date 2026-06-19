@@ -4,7 +4,11 @@
 
 ## :warning: This tool is no longer supported
 
-This CLI tool is no longer actively maintained or supported. Please use the [DeployGate API](https://docs.deploygate.com/docs/api) instead for integrating DeployGate into your workflows.
+This CLI tool is no longer actively maintained or supported. Please consider using the following replacements:
+
+- Let your AI favorite agent to set up a complete workflow with [DeployGate Agent Plugin](https://docs.deploygate.com/docs/developer-tools/agent-plugin/)
+- Use [fastlane `deploygate` Action](https://docs.deploygate.com/docs/developer-tools/fastlane/) for uploading iOS builds
+- [DeployGate API](https://docs.deploygate.com/docs/api)
 
 ---
 
